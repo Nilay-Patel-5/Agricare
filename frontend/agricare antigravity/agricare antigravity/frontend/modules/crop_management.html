@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Management | AgriSmart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+    <div class="min-h-screen flex flex-col relative overflow-hidden">
+        <!-- Decoration -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-emerald-100 rounded-full blur-3xl opacity-30 -mr-48 -mt-48">
+        </div>
+
+        <!-- Top Nav -->
+        <header class="glass-card sticky top-0 z-50 border-b border-gray-100">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-white text-xl shadow-lg">
+                        <i class="fas fa-wheat-awn"></i>
+                    </div>
+                    <h1 class="text-xl font-black text-gray-900 tracking-tight">Crop Management</h1>
+                </div>
+                <a href="../dashboard/farmer.html"
+                    class="flex items-center text-xs font-black text-emerald-600 hover:text-emerald-700 tracking-widest uppercase transition-all">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Dashboard
+                </a>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-7xl w-full mx-auto py-10 px-4 sm:px-6 lg:px-8 relative z-10">
+
+            <!-- Add Crop Form -->
+            <div class="glass-card rounded-[2.5rem] shadow-xl border border-white p-8 mb-12">
+                <div class="lg:grid lg:grid-cols-3 lg:gap-10">
+                    <div class="mb-8 lg:mb-0">
+                        <h3 class="text-2xl font-black text-gray-900 tracking-tight mb-2">Register New Crop</h3>
+                        <p class="text-sm text-gray-500 font-medium leading-relaxed">Seed the future of your farm.
+                            Register your crops to receive AI-powered lifecycle insights and alerts.</p>
+                        <div class="mt-6 flex gap-2">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i data-lucide="check" class="w-4 h-4"></i></div>
+                            <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mt-2">Verified
+                                Seeds</p>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2">
+                        <form action="#" method="POST" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">Crop
+                                    Name</label>
+                                <select id="crop-name" name="crop-name"
+                                    class="block w-full py-3 px-4 border border-gray-200 bg-gray-50 font-bold text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm">
+                                    <option>Wheat (Wheat)</option>
+                                    <option>Rice (Paddy)</option>
+                                    <option>Cotton</option>
+                                    <option>Groundnut</option>
+                                    <option>Sugarcane</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">Sowing
+                                    Date</label>
+                                <input type="date" name="sowing-date" id="sowing-date"
+                                    class="block w-full py-3 px-4 border border-gray-200 bg-gray-50 font-bold text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm">
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">Area
+                                    (Acres)</label>
+                                <input type="number" name="area" id="area" step="0.1"
+                                    class="block w-full py-3 px-4 border border-gray-200 bg-gray-50 font-bold text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm"
+                                    placeholder="e.g. 5.5">
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">Season</label>
+                                <select id="season" name="season"
+                                    class="block w-full py-3 px-4 border border-gray-200 bg-gray-50 font-bold text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm">
+                                    <option>Kharif (Monsoon)</option>
+                                    <option>Rabi (Winter)</option>
+                                    <option>Zaid (Summer)</option>
+                                </select>
+                            </div>
+
+                            <div class="sm:col-span-2 flex justify-end mt-2">
+                                <button type="submit"
+                                    class="w-full sm:w-auto py-4 px-10 bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-bold rounded-2xl tracking-widest uppercase hover:from-emerald-700 hover:to-teal-800 shadow-lg hover:shadow-emerald-500/30 transition-all active:scale-95">
+                                    ADD CROP TO SYSTEM
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Crops List -->
+            <div class="space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <h3 class="text-2xl font-black text-gray-900 tracking-tight">Active Crops</h3>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total: 01</span>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-[2.5rem] shadow-xl overflow-hidden border border-gray-100">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50/50">
+                                <tr>
+                                    <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Crop
+                                        Details</th>
+                                    <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                        Timeline</th>
+                                    <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                        Growth Status</th>
+                                    <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Next
+                                        Task</th>
+                                    <th class="px-8 py-4"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 bg-white/50">
+                                <tr class="hover:bg-emerald-50/30 transition-colors">
+                                    <td class="px-8 py-8">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 shadow-inner">
+                                                <i data-lucide="wheat" class="w-8 h-8"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-lg font-black text-gray-900 leading-none mb-1">Wheat
+                                                    (Raj-A1)</p>
+                                                <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest">
+                                                    2.5 Acres Registered</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-8">
+                                        <p class="text-sm font-black text-gray-800">Nov 15, 2025</p>
+                                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sowing
+                                            Date</p>
+                                    </td>
+                                    <td class="px-8 py-8">
+                                        <div class="flex items-center gap-4 mb-2">
+                                            <span
+                                                class="px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700 rounded-lg">Vegetative
+                                                stage</span>
+                                            <span class="text-[10px] font-bold text-gray-400 tracking-widest">60%</span>
+                                        </div>
+                                        <div class="w-32 bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                                            <div class="bg-emerald-500 h-full rounded-full" style="width: 60%"></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-8">
+                                        <div class="flex items-center gap-2 text-rose-500">
+                                            <i data-lucide="droplets" class="w-4 h-4"></i>
+                                            <span class="text-xs font-black uppercase tracking-tighter">Irrigation due
+                                                in 48h</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-8 text-right">
+                                        <button
+                                            class="w-12 h-12 glass-card rounded-xl flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all shadow-sm">
+                                            <i data-lucide="sliders" class="w-5 h-5"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Officer Dashboard | AgriSmart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .sidebar-gradient {
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="hidden md:flex md:flex-shrink-0">
+            <div class="flex flex-col w-72">
+                <div class="flex flex-col h-0 flex-1 sidebar-gradient shadow-2xl text-white">
+                    <div class="flex-1 flex flex-col pt-8 pb-4 overflow-y-auto">
+                        <div class="flex items-center flex-shrink-0 px-6 mb-10">
+                            <div
+                                class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-white text-xl shadow-lg mr-3">
+                                <i class="fas fa-wheat-awn"></i>
+                            </div>
+                            <span class="text-2xl font-black text-white tracking-tight">AgriSmart</span>
+                        </div>
+
+                        <nav class="mt-5 flex-1 px-4 space-y-2">
+                            <a href="#"
+                                class="bg-white/20 text-white group flex items-center px-4 py-3 text-sm font-bold rounded-2xl w-full border border-white/10">
+                                <i data-lucide="layout-dashboard" class="mr-3 h-5 w-5 text-blue-200"></i>
+                                Dashboard
+                            </a>
+                            <a href="#"
+                                class="text-blue-100 hover:bg-white/5 hover:text-white group flex items-center px-4 py-3 text-sm font-bold rounded-2xl w-full transition-all">
+                                <i data-lucide="users" class="mr-3 h-5 w-5 text-blue-200"></i>
+                                Farmers List
+                            </a>
+                            <a href="#"
+                                class="text-blue-100 hover:bg-white/5 hover:text-white group flex items-center px-4 py-3 text-sm font-bold rounded-2xl w-full transition-all">
+                                <i data-lucide="file-text" class="mr-3 h-5 w-5 text-blue-200"></i>
+                                Soil Reports
+                            </a>
+                            <a href="#"
+                                class="text-blue-100 hover:bg-white/5 hover:text-white group flex items-center px-4 py-3 text-sm font-bold rounded-2xl w-full transition-all">
+                                <i data-lucide="send" class="mr-3 h-5 w-5 text-blue-200"></i>
+                                Advisories
+                            </a>
+                            <a href="../modules/disease_detection.html"
+                                class="text-blue-100 hover:bg-white/5 hover:text-white group flex items-center px-4 py-3 text-sm font-bold rounded-2xl w-full transition-all">
+                                <i data-lucide="scan-eye" class="mr-3 h-5 w-5 text-blue-200"></i>
+                                Disease Detection
+                            </a>
+                        </nav>
+                    </div>
+
+                    <div class="flex-shrink-0 flex p-6 mb-4">
+                        <a href="../index.html"
+                            class="flex items-center w-full group p-4 bg-red-500/10 hover:bg-red-500/20 rounded-2xl transition-all border border-red-500/20">
+                            <i data-lucide="log-out" class="h-5 w-5 text-red-400 mr-3"></i>
+                            <span
+                                class="text-sm font-bold text-white group-hover:text-red-200 uppercase tracking-widest">Sign
+                                Out</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="flex-1 flex flex-col w-0 overflow-hidden relative">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-20 -mr-48 -mt-48">
+            </div>
+
+            <main class="flex-1 relative overflow-y-auto focus:outline-none p-8">
+                <div class="max-w-7xl mx-auto">
+                    <div class="flex justify-between items-center mb-10">
+                        <div>
+                            <h1 class="text-4xl font-black text-gray-900 tracking-tight">Officer Dashboard</h1>
+                            <p class="text-gray-500 font-medium">Regional Agricultural Supervision</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-3 p-2 pr-4 glass-card rounded-2xl border border-gray-200">
+                                <div
+                                    class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold">
+                                    AO</div>
+                                <div class="hidden sm:block">
+                                    <p class="text-xs font-bold text-gray-900 leading-none">Agri Officer</p>
+                                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Supervisor
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-10">
+                        <div
+                            class="glass-card p-8 rounded-[2rem] shadow-xl border border-gray-100 group transition-all hover:shadow-2xl">
+                            <div class="flex items-center mb-4">
+                                <div
+                                    class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mr-4 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="users" class="h-6 w-6"></i>
+                                </div>
+                                <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Total Farmers</p>
+                            </div>
+                            <p class="text-4xl font-black text-gray-900">124</p>
+                        </div>
+                        <div
+                            class="glass-card p-8 rounded-[2rem] shadow-xl border border-gray-100 group transition-all hover:shadow-2xl">
+                            <div class="flex items-center mb-4">
+                                <div
+                                    class="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center text-yellow-600 mr-4 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="alert-circle" class="h-6 w-6"></i>
+                                </div>
+                                <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Pending Requests
+                                </p>
+                            </div>
+                            <p class="text-4xl font-black text-gray-900">12</p>
+                        </div>
+                        <div
+                            class="glass-card p-8 rounded-[2rem] shadow-xl border border-gray-100 group transition-all hover:shadow-2xl">
+                            <div class="flex items-center mb-4">
+                                <div
+                                    class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mr-4 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="check-circle" class="h-6 w-6"></i>
+                                </div>
+                                <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Resolved Issues</p>
+                            </div>
+                            <p class="text-4xl font-black text-gray-900">85</p>
+                        </div>
+                    </div>
+
+                    <!-- Request Table -->
+                    <div class="glass-card rounded-[2.5rem] shadow-xl overflow-hidden border border-gray-100">
+                        <div class="p-8 border-b border-gray-100">
+                            <h2 class="text-2xl font-black text-gray-900 tracking-tight">Recent Farmer Requests</h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-gray-50/50">
+                                    <tr>
+                                        <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                            Farmer</th>
+                                        <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                            Type</th>
+                                        <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                            Status</th>
+                                        <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                                            Date</th>
+                                        <th class="px-8 py-4"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-8 py-6 font-bold text-gray-900">John Doe</td>
+                                        <td class="px-8 py-6 font-medium text-gray-500">Soil Analysis</td>
+                                        <td class="px-8 py-6">
+                                            <span
+                                                class="px-3 py-1 text-[10px] font-black uppercase tracking-widest bg-yellow-100 text-yellow-700 rounded-lg">Pending</span>
+                                        </td>
+                                        <td class="px-8 py-6 text-sm font-medium text-gray-400">2026-02-09</td>
+                                        <td class="px-8 py-6 text-right">
+                                            <button
+                                                class="text-xs font-bold text-blue-600 hover:text-blue-800 uppercase tracking-widest">Process</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

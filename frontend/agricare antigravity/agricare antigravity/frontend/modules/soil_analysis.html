@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soil Analysis | AgriSmart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+    <div class="min-h-screen flex flex-col relative overflow-hidden">
+        <!-- Decoration -->
+        <div class="absolute top-0 left-0 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-30 -ml-48 -mt-48"></div>
+
+        <!-- Header -->
+        <header class="glass-card sticky top-0 z-50 border-b border-gray-100">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-700 rounded-xl flex items-center justify-center text-white text-xl shadow-lg">
+                        <i data-lucide="test-tube-2" class="w-6 h-6"></i>
+                    </div>
+                    <h1 class="text-xl font-black text-gray-900 tracking-tight">Soil Analysis Hub</h1>
+                </div>
+                <a href="../dashboard/farmer.html"
+                    class="flex items-center text-xs font-black text-blue-600 hover:text-blue-700 tracking-widest uppercase transition-all">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Dashboard
+                </a>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-7xl w-full mx-auto py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Request Form -->
+                <div class="glass-card rounded-[3rem] shadow-2xl border border-white p-10">
+                    <div class="mb-10">
+                        <h3 class="text-2xl font-black text-gray-900 tracking-tight mb-2">Request New Lab Test</h3>
+                        <p class="text-sm text-gray-500 font-medium">Submit your soil sample details to our agriculture
+                            officers for professional nutritional analysis.</p>
+                    </div>
+
+                    <form class="space-y-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="sm:col-span-2">
+                                <label
+                                    class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">Sample
+                                    Identification (Optional)</label>
+                                <input type="text" placeholder="e.g. North Field Plot A"
+                                    class="block w-full py-3 px-4 border border-gray-100 bg-gray-50 font-bold text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">Collection
+                                    Date</label>
+                                <input type="date"
+                                    class="block w-full py-3 px-4 border border-gray-100 bg-gray-50 font-bold text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">Soil
+                                    Type</label>
+                                <select
+                                    class="block w-full py-3 px-4 border border-gray-100 bg-gray-50 font-bold text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm">
+                                    <option>Clayey Soil</option>
+                                    <option>Loamy (Farm Standard)</option>
+                                    <option>Sandy/Grit</option>
+                                    <option>Silty/Compact</option>
+                                </select>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label
+                                    class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 ml-1">Estimated
+                                    pH Level</label>
+                                <input type="number" step="0.1" placeholder="7.0"
+                                    class="block w-full py-3 px-4 border border-gray-100 bg-gray-50 font-bold text-gray-900 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm">
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="w-full py-4 px-8 bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-black rounded-2xl tracking-widest uppercase hover:from-blue-700 hover:to-indigo-800 shadow-xl hover:shadow-blue-500/30 transition-all active:scale-95 mt-4">
+                            SUBMIT SAMPLE FOR REVIEW
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Recent Reports -->
+                <div class="space-y-8">
+                    <div class="flex items-center justify-between px-2">
+                        <h3 class="text-2xl font-black text-gray-900 tracking-tight">Testing History</h3>
+                        <span
+                            class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg uppercase tracking-widest">Reports:
+                            02</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div
+                            class="glass-card p-6 rounded-3xl border border-white shadow-xl hover:shadow-2xl transition-all group overflow-hidden relative">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 font-black text-sm">
+                                        #88</div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Batch
+                                            ID #8821</p>
+                                        <h3 class="text-xl font-bold text-gray-900 mb-2">Highly Productive</h3>
+                                        <div class="flex gap-4 text-[10px] font-black uppercase text-gray-500">
+                                            <span>PH: <b class="text-gray-900">6.5</b></span>
+                                            <span>NPK: <b
+                                                    class="text-gray-900 text-emerald-600 uppercase">Balanced</b></span>
+                                        </div>
+                                        <p class="text-xs text-gray-400 mt-2 italic font-medium">Rec: Regular organic
+                                            composting recommended.</p>
+                                    </div>
+                                </div>
+                                <span
+                                    class="text-[10px] font-black text-emerald-600 py-1.5 px-3 bg-emerald-50 rounded-lg uppercase">Success</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="glass-card p-6 rounded-3xl border border-white shadow-xl hover:shadow-2xl transition-all group overflow-hidden relative">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-yellow-400"></div>
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-4">
+                                    <div
+                                        class="w-12 h-12 bg-yellow-50 rounded-2xl flex items-center justify-center text-yellow-600 font-black text-sm">
+                                        #88</div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Batch
+                                            ID #8805</p>
+                                        <h3 class="text-xl font-bold text-gray-900 mb-2">Analyzing Sample...</h3>
+                                        <p class="text-[10px] font-medium text-gray-400 mt-2 uppercase tracking-widest">
+                                            Submitted on Feb 01, 2026</p>
+                                    </div>
+                                </div>
+                                <span
+                                    class="text-[10px] font-black text-yellow-600 py-1.5 px-3 bg-yellow-50 rounded-lg uppercase">Pending</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>

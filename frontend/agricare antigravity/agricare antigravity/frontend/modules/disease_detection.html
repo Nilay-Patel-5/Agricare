@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Disease Detection | AgriSmart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        #image-preview {
+            max-width: 100%;
+            height: auto;
+            border-radius: 2rem;
+            display: none;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .glow-button {
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+    <div class="min-h-screen flex flex-col relative overflow-hidden">
+        <!-- Decoration -->
+        <div class="absolute top-0 left-0 w-96 h-96 bg-emerald-100 rounded-full blur-3xl opacity-30 -ml-48 -mt-48">
+        </div>
+
+        <!-- Top Nav -->
+        <header class="glass-card sticky top-0 z-50 border-b border-gray-100">
+            <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-xl flex items-center justify-center text-white text-xl shadow-lg">
+                        <i data-lucide="scan-eye" class="w-6 h-6"></i>
+                    </div>
+                    <h1 class="text-xl font-black text-gray-900 tracking-tight">AI Disease Detection</h1>
+                </div>
+                <a href="../dashboard/farmer.html"
+                    class="flex items-center text-xs font-black text-emerald-600 hover:text-emerald-700 tracking-widest uppercase transition-all">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Dashboard
+                </a>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-5xl w-full mx-auto py-12 px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+                <!-- Left: Upload Section -->
+                <div class="space-y-8">
+                    <div class="glass-card p-10 rounded-[3rem] shadow-2xl border border-white">
+                        <h2 class="text-2xl font-black mb-2 tracking-tight">Visual Diagnosis</h2>
+                        <p class="text-sm text-gray-500 font-medium mb-8">Let the AgriSmart AI analyze your crop's
+                            health. Upload a high-resolution photo of the leaf symptoms.</p>
+
+                        <div id="drop-zone"
+                            class="border-4 border-dashed border-emerald-100 rounded-[2rem] p-12 text-center hover:border-emerald-400 hover:bg-emerald-50 transition-all cursor-pointer group bg-white/20">
+                            <input type="file" id="file-input" class="hidden" accept="image/*">
+                            <div class="space-y-6">
+                                <div
+                                    class="bg-emerald-500 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform">
+                                    <i data-lucide="camera" class="text-white w-10 h-10"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-gray-900">TAP TO CAPTURE OR UPLOAD</p>
+                                    <p class="text-xs font-bold text-emerald-600/60 mt-2 uppercase tracking-widest">JPG,
+                                        PNG, WEBP</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 transition-all duration-500">
+                            <img id="image-preview" src="" alt="Preview">
+                        </div>
+
+                        <button id="analyze-btn"
+                            class="w-full mt-8 bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-black py-4 px-8 rounded-2xl shadow-xl hover:shadow-emerald-500/30 glow-button disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-3 uppercase tracking-widest text-sm"
+                            disabled>
+                            <i data-lucide="zap" class="w-5 h-5"></i>
+                            <span>Analyze Health Now</span>
+                        </button>
+                    </div>
+
+                    <!-- Model Status -->
+                    <div id="model-status"
+                        class="glass-card border border-emerald-100 p-5 rounded-2xl flex items-center gap-4 bg-emerald-50/50">
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-emerald-600 shadow-sm"
+                            id="status-icon-container">
+                            <i data-lucide="loader-2" class="w-5 h-5 animate-spin" id="status-icon"></i>
+                        </div>
+                        <div>
+                            <p id="status-text" class="text-xs font-black text-emerald-800 uppercase tracking-widest">
+                                Powering up AI Engine...</p>
+                            <p class="text-[10px] font-bold text-emerald-600/60 uppercase">AgriSmart Neural Network v2.4
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Results Section -->
+                <div>
+                    <div id="result-container"
+                        class="hidden space-y-8 animate-in fade-in slide-in-from-right-8 duration-700">
+                        <div class="glass-card p-10 rounded-[3rem] shadow-2xl border border-white">
+                            <div class="flex items-center justify-between mb-8">
+                                <h2 class="text-2xl font-black tracking-tight">Diagnosis Report</h2>
+                                <span id="confidence-badge"
+                                    class="px-4 py-2 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-xl shadow-inner">Analyzing...</span>
+                            </div>
+
+                            <div
+                                class="flex items-start gap-6 p-6 bg-emerald-50/50 rounded-3xl border border-emerald-100 mb-8 relative overflow-hidden group">
+                                <div
+                                    class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-150 transition-transform duration-1000">
+                                    <i data-lucide="microscope" class="w-24 h-24"></i>
+                                </div>
+                                <div
+                                    class="bg-white w-16 h-16 rounded-2xl shadow-md flex items-center justify-center text-emerald-600 shrink-0">
+                                    <i data-lucide="stethoscope" class="w-8 h-8"></i>
+                                </div>
+                                <div>
+                                    <h3 id="disease-name" class="font-black text-2xl text-gray-900 tracking-tight">
+                                        Processing...</h3>
+                                    <p id="disease-desc"
+                                        class="text-xs font-bold text-gray-500 mt-1 uppercase tracking-widest italic opacity-70">
+                                        Symptom detection in progress</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-6">
+                                <div
+                                    class="glass-card p-5 rounded-2xl border border-gray-100 group hover:shadow-md transition-all">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+                                            <i data-lucide="droplet" class="w-4 h-4"></i>
+                                        </div>
+                                        <h4 class="text-xs font-black text-gray-900 uppercase tracking-widest">Water
+                                            Management</h4>
+                                    </div>
+                                    <p id="irrigation-text"
+                                        class="text-sm text-gray-500 font-medium leading-relaxed italic">Analyzing
+                                        optimal irrigation levels...</p>
+                                </div>
+
+                                <div
+                                    class="glass-card p-5 rounded-2xl border border-gray-100 group hover:shadow-md transition-all">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600">
+                                            <i data-lucide="flask-conical" class="w-4 h-4"></i>
+                                        </div>
+                                        <h4 class="text-xs font-black text-gray-900 uppercase tracking-widest">Treatment
+                                            Protocol</h4>
+                                    </div>
+                                    <p id="treatment-text"
+                                        class="text-sm text-gray-500 font-medium leading-relaxed italic">Consulting
+                                        biological database...</p>
+                                </div>
+
+                                <div
+                                    class="glass-card p-5 rounded-2xl border border-gray-100 group hover:shadow-md transition-all">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600">
+                                            <i data-lucide="leaf" class="w-4 h-4"></i>
+                                        </div>
+                                        <h4 class="text-xs font-black text-gray-900 uppercase tracking-widest">
+                                            Nutritional Guidance</h4>
+                                    </div>
+                                    <p id="fertilizer-text"
+                                        class="text-sm text-gray-500 font-medium leading-relaxed italic">Calculating NPK
+                                        adjustments...</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-10 pt-8 border-t border-gray-100 text-center">
+                                <button onclick="window.location.reload()"
+                                    class="text-[10px] font-black text-emerald-600 hover:text-emerald-700 uppercase tracking-[0.2em] underline decoration-2 underline-offset-8 decoration-emerald-100 hover:decoration-emerald-500 transition-all">
+                                    GENERATE NEW SCAN
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="empty-state"
+                        class="flex flex-col items-center justify-center bg-white/50 border-4 border-dashed border-gray-200 rounded-[3rem] p-20 text-center animate-pulse">
+                        <div
+                            class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-gray-300 mb-6">
+                            <i data-lucide="file-search" class="w-10 h-10"></i>
+                        </div>
+                        <p class="text-xl font-black text-gray-400 tracking-tight">Awaiting Input Data</p>
+                        <p class="text-xs font-bold text-gray-300 max-w-xs mt-3 uppercase tracking-widest">Upload your
+                            plant photo on the left to activate AI vision.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let model;
+        const MODEL_URL = 'https://raw.githubusercontent.com/rexsimiloluwah/PLANT-DISEASE-CLASSIFIER-WEB-APP-TENSORFLOWJS/master/tensorflowjs-model/model.json';
+
+        const labels = [
+            "Apple Scab", "Apple Black Rot", "Apple Cedar Rust", "Apple Healthy",
+            "Blueberry Healthy", "Cherry Powdery Mildew", "Cherry Healthy",
+            "Corn Gray Leaf Spot", "Corn Common Rust", "Corn Northern Leaf Blight", "Corn Healthy",
+            "Grape Black Rot", "Grape Esca", "Grape Leaf Blight", "Grape Healthy",
+            "Orange Haunglongbing (Citrus Greening)", "Peach Bacterial Spot", "Peach Healthy",
+            "Pepper Bell Bacterial Spot", "Pepper Bell Healthy",
+            "Potato Early Blight", "Potato Late Blight", "Potato Healthy",
+            "Raspberry Healthy", "Soybean Healthy", "Squash Powdery Mildew",
+            "Strawberry Leaf Scorch", "Strawberry Healthy",
+            "Tomato Bacterial Spot", "Tomato Early Blight", "Tomato Late Blight", "Tomato Leaf Mold",
+            "Tomato Septoria Leaf Spot", "Tomato Spider Mites", "Tomato Target Spot",
+            "Tomato Yellow Leaf Curl Virus", "Tomato Mosaic Virus", "Tomato Healthy"
+        ];
+
+        const diseaseInfo = {
+            "Blight": {
+                desc: "Fungal disease causing rapid browning and death of plant tissues.",
+                irrigation: "Avoid overhead irrigation; keep leaves dry.",
+                treatment: "Use copper-based fungicides. Remove infected debris.",
+                fertilizer: "Apply balanced NPK; avoid excessive nitrogen."
+            },
+            "Rust": {
+                desc: "Fungal infection appearing as orange or brown pustules on leaves.",
+                irrigation: "Water only at the base. Reduce humidity if in a greenhouse.",
+                treatment: "Apply sulfur or neem oil. Space plants for better airflow.",
+                fertilizer: "Increase Potassium (K) to strengthen cell walls."
+            },
+            "Spot": {
+                desc: "Bacterial or fungal infection causing small, dark lesions.",
+                irrigation: "Ensure proper drainage. Do not water during cloudy weather.",
+                treatment: "Use Mancozeb or similar protective fungicides.",
+                fertilizer: "Add micronutrients (Zinc/Boron) to boost immunity."
+            },
+            "Healthy": {
+                desc: "The plant shows no signs of disease and appears vigorous.",
+                irrigation: "Maintain standard optimal watering schedule.",
+                treatment: "No treatment required. Continue monitoring.",
+                fertilizer: "Low-dose organic compost for sustained growth."
+            }
+        };
+
+        lucide.createIcons();
+
+        async function init() {
+            try {
+                document.getElementById('status-text').textContent = 'Syncing Specialized Weights...';
+                model = await tf.loadLayersModel(MODEL_URL);
+                document.getElementById('status-text').textContent = 'AI Vision Engine Online';
+                document.getElementById('status-icon-container').innerHTML = '<i data-lucide="check" class="text-white w-5 h-5"></i>';
+                document.getElementById('status-icon-container').className = 'w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg';
+                document.getElementById('model-status').className = 'glass-card border border-emerald-500/30 p-5 rounded-2xl flex items-center gap-4 bg-emerald-500/5 shadow-xl';
+                lucide.createIcons();
+            } catch (e) {
+                console.error(e);
+                document.getElementById('status-text').textContent = 'Offline Engine Activated';
+                document.getElementById('status-icon-container').innerHTML = '<i data-lucide="alert-triangle" class="text-orange-500 w-5 h-5"></i>';
+                lucide.createIcons();
+            }
+        }
+
+        init();
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const preview = document.getElementById('image-preview');
+        const analyzeBtn = document.getElementById('analyze-btn');
+
+        dropZone.onclick = () => fileInput.click();
+
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    preview.src = re.target.result;
+                    preview.style.display = 'block';
+                    dropZone.style.display = 'none';
+                    analyzeBtn.disabled = false;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        analyzeBtn.onclick = async () => {
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>Neural Mapping...</span>';
+            lucide.createIcons();
+
+            try {
+                const tensor = tf.browser.fromPixels(preview)
+                    .resizeNearestNeighbor([224, 224])
+                    .toFloat()
+                    .expandDims();
+
+                const normalized = tensor.div(tf.scalar(255));
+                const predictions = await model.predict(normalized).data();
+                const topIndex = predictions.indexOf(Math.max(...predictions));
+                const confidence = predictions[topIndex];
+                const label = labels[topIndex] || "Unknown Condition";
+
+                document.getElementById('empty-state').classList.add('hidden');
+                document.getElementById('result-container').classList.remove('hidden');
+                document.getElementById('disease-name').textContent = label;
+                document.getElementById('confidence-badge').textContent = `${Math.round(confidence * 100)}% TRUST SCORE`;
+
+                let infoKey = "Stable Condition";
+                if (label.toLowerCase().includes('healthy')) infoKey = "Healthy";
+                else if (label.toLowerCase().includes('rust')) infoKey = "Rust";
+                else if (label.toLowerCase().includes('blight')) infoKey = "Blight";
+                else if (label.toLowerCase().includes('spot') || label.toLowerCase().includes('mold')) infoKey = "Spot";
+
+                const info = diseaseInfo[infoKey] || diseaseInfo["Healthy"];
+
+                document.getElementById('disease-desc').textContent = info.desc;
+                document.getElementById('irrigation-text').textContent = info.irrigation;
+                document.getElementById('treatment-text').textContent = info.treatment;
+                document.getElementById('fertilizer-text').textContent = info.fertilizer;
+
+            } catch (err) {
+                console.error(err);
+                alert("Neural Mapping failed. Ensure image contrast is high.");
+            } finally {
+                analyzeBtn.innerHTML = '<i data-lucide="check" class="w-5 h-5"></i><span>Scan Complete</span>';
+                lucide.createIcons();
+            }
+        };
+    </script>
+</body>
+
+</html>

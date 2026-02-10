@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | AgriSmart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gradient-to-br from-emerald-50 via-white to-teal-50 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+
+    <div
+        class="max-w-md w-full space-y-8 glass-card p-10 rounded-[2.5rem] shadow-2xl border border-white relative overflow-hidden">
+        <!-- Abstract Decoration -->
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-200 rounded-full blur-3xl opacity-50"></div>
+        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-emerald-200 rounded-full blur-3xl opacity-50"></div>
+
+        <div class="text-center relative z-10">
+            <a href="../index.html" class="inline-flex items-center gap-3 group mb-6">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-emerald-600 rounded-xl flex items-center justify-center text-white text-xl shadow-lg group-hover:scale-110 transition-transform">
+                    <i class="fas fa-wheat-awn"></i>
+                </div>
+                <span class="text-2xl font-black text-gray-800 tracking-tight">AgriSmart</span>
+            </a>
+            <h2 class="text-3xl font-black text-gray-900 tracking-tight">Welcome Back</h2>
+            <p class="mt-2 text-sm text-gray-500 font-medium">
+                New to AgriSmart? <a href="register.html"
+                    class="text-emerald-600 hover:text-emerald-700 font-bold underline decoration-2 underline-offset-4">Create
+                    account</a>
+            </p>
+        </div>
+
+        <!-- Role Selector -->
+        <div class="flex justify-center space-x-1 bg-gray-100/50 p-1.5 rounded-2xl mb-8 relative z-10">
+            <button onclick="selectRole('farmer')" id="btn-farmer"
+                class="flex-1 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-emerald-700 transition-all">FARMER</button>
+            <button onclick="selectRole('officer')" id="btn-officer"
+                class="flex-1 py-2.5 text-xs font-bold rounded-xl text-gray-500 hover:text-gray-700 transition-all">OFFICER</button>
+            <button onclick="selectRole('admin')" id="btn-admin"
+                class="flex-1 py-2.5 text-xs font-bold rounded-xl text-gray-500 hover:text-gray-700 transition-all">ADMIN</button>
+            <button onclick="selectRole('buyer')" id="btn-buyer"
+                class="flex-1 py-2.5 text-xs font-bold rounded-xl text-gray-500 hover:text-gray-700 transition-all">BUYER</button>
+        </div>
+
+        <form class="mt-8 space-y-6 relative z-10" action="#" method="GET" onsubmit="handleLogin(event)">
+            <input type="hidden" name="role" id="role-input" value="farmer">
+            <div class="space-y-4">
+                <div>
+                    <label for="email-address"
+                        class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1">Email
+                        Address</label>
+                    <input id="email-address" name="email" type="email" autocomplete="email" required
+                        class="appearance-none rounded-2xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                        placeholder="name@example.com">
+                </div>
+                <div>
+                    <label for="password"
+                        class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1">Password</label>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required
+                        class="appearance-none rounded-2xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                        placeholder="••••••••">
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox"
+                        class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded-lg">
+                    <label for="remember-me" class="ml-2 block text-sm text-gray-600 font-medium"> Remember me </label>
+                </div>
+                <div class="text-sm">
+                    <a href="#" class="font-bold text-emerald-600 hover:text-emerald-700"> Forgot password? </a>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                    class="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all">
+                    SIGN IN
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function selectRole(role) {
+            document.querySelectorAll('button[id^="btn-"]').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-emerald-700');
+                btn.classList.add('text-gray-500', 'hover:text-gray-700');
+            });
+            const activeBtn = document.getElementById(`btn-${role}`);
+            activeBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
+            activeBtn.classList.add('bg-white', 'shadow-sm', 'text-emerald-700');
+            document.getElementById('role-input').value = role;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const role = document.getElementById('role-input').value;
+            window.location.href = `../dashboard/${role}.html`;
+        }
+    </script>
+</body>
+
+</html>
