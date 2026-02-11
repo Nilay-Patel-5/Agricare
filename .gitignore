@@ -1,0 +1,11 @@
+# Node packages (never commit these)
+node_modules/
+
+# Tailwind generated file
+frontend/output.css
+
+# VS Code settings
+.vscode/
+
+# Windows junk files
+Thumbs.db
