@@ -10,7 +10,6 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         body {
@@ -50,6 +49,22 @@
         ::-webkit-scrollbar-thumb {
             background: #10b981;
             border-radius: 4px;
+        }
+
+        /* No Data Placeholder Styles */
+        .no-data-icon {
+            width: 80px;
+            height: 80px;
+            background: #f8fafc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #f1f5f9;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            color: #94a3b8;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
         }
     </style>
 </head>
@@ -322,8 +337,19 @@
         </div>
 
         <!-- Result Placeholder -->
-        <div id="resultsArea" class="hidden">
-            <!-- Table would go here after search -->
+        <div id="resultsArea" class="mt-8">
+            <div id="noDataPlaceholder"
+                class="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
+                <div class="no-data-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800" data-lang="no_data_available">No Data Available</h3>
+                <p class="text-gray-500 mt-2" data-lang="no_data_subtitle">Select criteria and click search to view
+                    prices</p>
+            </div>
+            <div id="tableContainer" class="hidden">
+                <!-- Table will be injected here -->
+            </div>
         </div>
     </main>
 
@@ -363,7 +389,8 @@
                                 Advisory</a></li>
                         <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
                                 Disease Identification</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_market">Market
+                        <li><a href="market.html" class="hover:text-emerald-400 transition-colors"
+                                data-lang="sol_market">Market
                                 Connect</a></li>
                         <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_weather">Weather
                                 Station</a></li>
@@ -421,11 +448,13 @@
                 no_districts_found: 'No districts found',
                 select_district_first: 'Select a district first',
                 no_markets_found: 'No markets found',
-                no_groups_found: 'No groups found',
-                no_commodities_found: 'No commodities found',
+                "no_groups_found": "No groups found",
+                "no_commodities_found": "No commodities found",
+                "no_data_available": "No Data Available",
+                "no_data_subtitle": "Select criteria and click search to view prices",
                 "Cereals": "Cereals", "Fibre Crops": "Fibre Crops", "Oil Seeds": "Oil Seeds", "Pulses": "Pulses", "Vegetables": "Vegetables", "Others": "Others",
                 // Districts
-                "Ahmedabad": "Ahmedabad", "Amreli": "Amreli", "Anand": "Anand", "Aravalli": "Aravalli", "Banaskanth": "Banaskantha",
+                "Ahmedabad": "Ahmedabad", "Amreli": "Amreli", "Anand": "Anand", "Aravalli": "Aravalli", "Banaskantha": "Banaskantha",
                 "Bharuch": "Bharuch", "Bhavnagar": "Bhavnagar", "Botad": "Botad", "Chhota Udaipur": "Chhota Udaipur", "Dahod": "Dahod",
                 "Dang": "Dang", "Devbhumi Dwarka": "Devbhumi Dwarka", "Gandhinagar": "Gandhinagar", "Gir Somnath": "Gir Somnath",
                 "Jamnagar": "Jamnagar", "Junagarh": "Junagadh", "Kachchh": "Kutch", "Kheda": "Kheda", "Mahisagar": "Mahisagar",
@@ -495,10 +524,12 @@
                 "Vyara": "Vyara", "Paati": "Paati", "Sanjeli": "Sanjeli",
                 "Bardoli": "Bardoli", "Becharaji": "Becharaji", "Davgadbaria": "Devgadhbaria", "Dhanera": "Dhanera",
                 "Dhansura": "Dhansura", "Dharampur": "Dharampur", "Dhari": "Dhari", "Junagadh": "Junagadh", "Junagarh": "Junagadh",
-                "cotton": "Cotton", "Kapadan": "Kapadvanj", "Kapadvanj": "Kapadvanj", "Mahuva": "Mahuva", "Manas": "Mansa",
+                "cotton": "Cotton", "Kapadan": "Kapadvanj", "Kapadvanj": "Kapadvanj", "Kapadanj": "Kapadvanj", "Mahuva": "Mahuva", "Manas": "Mansa",
                 "Matar": "Matar", "Zalod": "Jhalod", "Vadodara": "Vadodara", "Nadiyad": "Nadiad", "Modasa": "Modasa",
+                "Anjar": "Anjar", "Samarwada": "Samarwada", "Chalala": "Chalala", "Limbasi": "Limbasi",
+                "APMC": "APMC", "Sub yard": "Sub Yard",
                 "Mehmadabad": "Mahemdavad", "Meghraj": "Meghraj", "District": "District",
-                "Veg,Yard": "Vegetable Yard", "Veg,Sub": "Sub Yard"
+                "Veg,Yard": "Vegetable Yard", "Veg,Sub": "Sub Yard", "Station Road": "Station Road", "Dist.": "District", "Dist": "District"
             },
             gu: {
                 logo: 'એગ્રીકેર',
@@ -531,11 +562,13 @@
                 no_districts_found: 'કોઈ જિલ્લા મળ્યા નથી',
                 select_district_first: 'પહેલા જિલ્લા પસંદ કરો',
                 no_markets_found: 'કોઈ બજાર મળ્યા નથી',
-                no_groups_found: 'કોઈ જૂથ મળ્યા નથી',
-                no_commodities_found: 'કોઈ પાક મળ્યા નથી',
+                "no_groups_found": "કોઈ જૂથ મળ્યા નથી",
+                "no_commodities_found": "કોઈ પાક મળ્યા નથી",
+                "no_data_available": "કોઈ માહિતી ઉપલબ્ધ નથી",
+                "no_data_subtitle": "માપદંડ પસંદ કરો અને ભાવ જોવા માટે શોધો પર ક્લિક કરો",
                 "Cereals": "ધાન્ય", "Fibre Crops": "રેસાવાળા પાક", "Oil Seeds": "તેલીબિયાં", "Pulses": "કઠોળ", "Vegetables": "શાકભાજી", "Others": "અન્ય",
                 // Districts
-                "Ahmedabad": "અમદાવાદ", "Amreli": "અમરેલી", "Anand": "આણંદ", "Aravalli": "અરવલ્લી", "Banaskanth": "બનાસકાંઠા",
+                "Ahmedabad": "અમદાવાદ", "Amreli": "અમરેલી", "Anand": "આણંદ", "Aravalli": "અરવલ્લી", "Banaskantha": "બનાસકાંઠા",
                 "Bharuch": "ભરૂચ", "Bhavnagar": "ભાવનગર", "Botad": "બોટાદ", "Chhota Udaipur": "છોટા ઉદેપુર", "Dahod": "દાહોદ",
                 "Dang": "ડાંગ", "Devbhumi Dwarka": "દેવભૂમિ દ્વારકા", "Gandhinagar": "ગાંધીનગર", "Gir Somnath": "ગીર સોમનાથ",
                 "Jamnagar": "જામનગર", "Junagarh": "જૂનાગઢ", "Kachchh": "કચ્છ", "Kheda": "ખેડા", "Mahisagar": "મહીસાગર",
@@ -605,10 +638,12 @@
                 "Vyara": "વ્યારા", "Paati": "પાટી", "Sanjeli": "સંજેલી",
                 "Bardoli": "બારડોલી", "Becharaji": "બેચરાજી", "Davgadbaria": "દેવગઢબારિયા", "Dhanera": "ધાનેરા",
                 "Dhansura": "ધનસુરા", "Dharampur": "ધરમપુર", "Dhari": "ધારી", "Junagadh": "જૂનાગઢ", "Junagarh": "જૂનાગઢ",
-                "cotton": "કપાસ", "Kapadan": "કપડવંજ", "Kapadvanj": "કપડવંજ", "Mahuva": "મહુવા", "Manas": "માણસા",
+                "cotton": "કપાસ", "Kapadan": "કપડવંજ", "Kapadvanj": "કપડવંજ", "Kapadanj": "કપડવંજ", "Mahuva": "મહુવા", "Manas": "માણસા",
                 "Matar": "માતર", "Zalod": "ઝાલોદ", "Vadodara": "વડોદરા", "Nadiyad": "નડીઆદ", "Modasa": "મોડાસા",
+                "Anjar": "અંજાર", "Samarwada": "સમરવાડા", "Chalala": "ચલાલા", "Limbasi": "લીંબાસી",
+                "APMC": "એપીએમસી", "Sub yard": "પેટા યાર્ડ",
                 "Mehmadabad": "મહેમદાવાદ", "Meghraj": "મેઘરજ", "District": "જિલ્લો",
-                "Veg,Yard": "શાકભાજી માર્કેટ", "Veg,Sub": "પેટા યાર્ડ"
+                "Veg,Yard": "શાકભાજી માર્કેટ", "Veg,Sub": "પેટા યાર્ડ", "Veg": "શાકભાજી", "Market": "માર્કેટ", "Station Road": "સ્ટેશન રોડ", "Dist.": "જિલ્લો", "Dist": "જિલ્લો"
             },
             hi: {
                 logo: 'एग्रीकेयर',
@@ -641,11 +676,13 @@
                 no_districts_found: 'कोई जिला नहीं मिला',
                 select_district_first: 'पहले जिला चुनें',
                 no_markets_found: 'कोई बाजार नहीं मिला',
-                no_groups_found: 'कोई समूह नहीं मिला',
-                no_commodities_found: 'कोई फसल नहीं मिली',
+                "no_groups_found": "कोई समूह नहीं मिला",
+                "no_commodities_found": "कोई फसल नहीं मिली",
+                "no_data_available": "कोई डेटा उपलब्ध नहीं",
+                "no_data_subtitle": "मानदंड चुनें और भाव देखने के लिए खोजें पर क्लिक करें",
                 "Cereals": "अनाज", "Fibre Crops": "रेशेदार फसलें", "Oil Seeds": "तिलहन", "Pulses": "दलहन", "Vegetables": "सब्जियाँ", "Others": "अन्य",
                 // Districts
-                "Ahmedabad": "अहमदाबाद", "Amreli": "अमरेली", "Anand": "आणंद", "Aravalli": "अरावली", "Banaskanth": "बनासकांठा",
+                "Ahmedabad": "अहमदाबाद", "Amreli": "अमरेली", "Anand": "आणंद", "Aravalli": "अरावली", "Banaskantha": "बनासकांठा",
                 "Bharuch": "भरूच", "Bhavnagar": "भावनगर", "Botad": "बोटाद", "Chhota Udaipur": "छोटा उदयपुर", "Dahod": "दाहोद",
                 "Dang": "डांग", "Devbhumi Dwarka": "देवभूमि द्वारका", "Gandhinagar": "गांधीनगर", "Gir Somnath": "गिर सोमनाथ",
                 "Jamnagar": "जामनगर", "Junagarh": "जूनागढ़", "Kachchh": "कच्छ", "Kheda": "खेड़ा", "Mahisagar": "महीसागर",
@@ -715,10 +752,12 @@
                 "Vyara": "व्यारा", "Paati": "पाटी", "Sanjeli": "संजेली",
                 "Bardoli": "बारडोली", "Becharaji": "बेचराजी", "Davgadbaria": "देवगढ़बारिया", "Dhanera": "धानेरा",
                 "Dhansura": "धनसुरा", "Dharampur": "धर्मपुर", "Dhari": "धारी", "Junagadh": "जूनागढ़", "Junagarh": "जूनागढ़",
-                "cotton": "कपास", "Kapadan": "कपड़वंज", "Kapadvanj": "कपड़वंज", "Mahuva": "महुआ", "Manas": "मानसा",
+                "cotton": "कपास", "Kapadan": "कपड़वंज", "Kapadvanj": "कपड़वंज", "Kapadanj": "कपड़वंज", "Mahuva": "महुआ", "Manas": "मानसा",
                 "Matar": "मातर", "Zalod": "झालोद", "Vadodara": "वड़ोदरा", "Nadiyad": "नडियाद", "Modasa": "मोडासा",
+                "Anjar": "अंजार", "Samarwada": "समरवाड़ा", "Chalala": "चलाला", "Limbasi": "लिंबासी",
+                "APMC": "एपीएमसी", "Sub yard": "उप मंडी",
                 "Mehmadabad": "महमदाबाद", "Meghraj": "मेघराज", "District": "जिला",
-                "Veg,Yard": "सब्जी मंडी", "Veg,Sub": "उप मंडी"
+                "Veg,Yard": "सब्जी मंडी", "Veg,Sub": "उप मंडी", "Market": "बाजार", "Station Road": "स्टेशन रोड", "Dist.": "जिला", "Dist": "जिला", "Veg": "सब्जी"
             }
         };
 
@@ -755,23 +794,44 @@
             if (lang === 'hi') body.classList.add('hi-text');
 
             // Refresh displays to reflect language change
+            renderDistricts();
             updateDistrictDisplay();
+            renderMarkets();
             updateMarketDisplay();
+            renderCommodityGroups();
             updateCommodityGroupDisplay();
+            renderCommodities();
             updateCommodityDisplay();
         }
 
         function getLocalizedMarketName(market, lang) {
-            if (lang === 'en') return market;
-
             let localized = market;
             const suffixes = {
+                en: {
+                    ' APMC': ' APMC',
+                    ' Veg.': ' Vegetable',
+                    ' veg.': ' vegetable',
+                    ' Veg Yard': ' Vegetable Yard',
+                    ' Veg.Market': ' Vegetable Market',
+                    ' Veg,Market': ' Vegetable Market',
+                    ' Veg,Yard': ' Vegetable Yard',
+                    ' Veg.market': ' Vegetable Market',
+                    ' Market': ' Market',
+                    ' Dist.': ' District',
+                    ' dist.': ' district',
+                    ' Station Road': ' Station Road',
+                    ' station road': ' station road'
+                },
                 gu: {
                     ' APMC': ' એપીએમસી',
+                    ' Veg.': ' શાકભાજી',
+                    ' veg.': ' શાકભાજી',
                     ' Veg Yard': ' શાકભાજી માર્કેટ',
                     ' Veg.Market': ' શાકભાજી માર્કેટ',
                     ' Veg,Market': ' શાકભાજી માર્કેટ',
                     ' Veg,Yard': ' શાકભાજી માર્કેટ',
+                    ' Veg': ' શાકભાજી',
+                    ' veg': ' શાકભાજી',
                     ' Fruit Market': ' ફળ બજાર',
                     ' Grain Market': ' અનાજ બજાર',
                     ' Sub yard': ' પેટા યાર્ડ',
@@ -779,11 +839,15 @@
                     ' Yard': ' યાર્ડ',
                     ' Veg.market': ' શાકભાજી માર્કેટ',
                     ' Market': ' માર્કેટ',
+                    ' Dist.': ' જિલ્લો',
+                    ' dist.': ' જિલ્લો',
                     ' station road': ' સ્ટેશન રોડ',
                     ' Station Road': ' સ્ટેશન રોડ'
                 },
                 hi: {
                     ' APMC': ' एपीएमसी',
+                    ' Veg.': ' सब्जी मंडी',
+                    ' veg.': ' सब्जी मंडी',
                     ' Veg Yard': ' सब्जी मंडी',
                     ' Veg.Market': ' सब्जी मंडी',
                     ' Veg,Market': ' सब्जी मंडी',
@@ -795,6 +859,8 @@
                     ' Yard': ' मंडी',
                     ' Veg.market': ' सब्जी मंडी',
                     ' Market': ' बाजार',
+                    ' Dist.': ' जिला',
+                    ' dist.': ' जिला',
                     ' station road': ' स्टेशन रोड',
                     ' Station Road': ' स्टेशन रोड'
                 }
@@ -810,12 +876,13 @@
                 .sort((a, b) => b.length - a.length);
 
             for (const eng of sortedKeys) {
-                // Use case-insensitive regex for the English source name
-                const regex = new RegExp(escapeRegExp(eng), 'gi');
+                const regex = new RegExp(`\\b${escapeRegExp(eng)}\\b`, 'gi');
+
                 if (regex.test(localized)) {
                     localized = localized.replace(regex, translations[lang][eng]);
                 }
             }
+
 
             // Replace suffixes
             if (suffixes[lang]) {
@@ -1015,7 +1082,7 @@
                 "Upleta APMC"
             ],
             "Sabarkantha": [
-                "APMCKHEDBRAHMA", "Bayad APMC", "Bayad(Demai) APMC",
+                "APMC Khedbrahma", "Bayad APMC", "Bayad(Demai) APMC",
                 "Bayad(Sadamba) APMC", "Bhiloda APMC", "Dhansura APMC",
                 "Himatnagar APMC", "Himatnagar(Gambhoi) APMC",
                 "Himatnagar(Veg.Market Himatnagar) APMC", "Idar APMC", "Idar(Jadar) APMC",
@@ -1710,7 +1777,6 @@
             // District
             if (!districtDisplay.contains(e.target) && !districtWrapper.contains(e.target)) {
                 if (!districtWrapper.classList.contains('hidden')) {
-                    if (selectedDistricts.length === 0) toggleAllDistricts(true);
                     districtWrapper.classList.add('hidden');
                     districtArrow.classList.remove('rotate-180');
                 }
@@ -1718,7 +1784,6 @@
             // Market
             if (!marketDisplay.contains(e.target) && !marketWrapper.contains(e.target)) {
                 if (!marketWrapper.classList.contains('hidden')) {
-                    if (selectedMarkets.length === 0) toggleAllMarkets(true);
                     marketWrapper.classList.add('hidden');
                     marketArrow.classList.remove('rotate-180');
                 }
@@ -1726,7 +1791,6 @@
             // Commodity Group
             if (!commodityGroupDisplay.contains(e.target) && !commodityGroupWrapper.contains(e.target)) {
                 if (!commodityGroupWrapper.classList.contains('hidden')) {
-                    if (selectedCommodityGroups.length === 0) toggleAllCommodityGroups(true);
                     commodityGroupWrapper.classList.add('hidden');
                     commodityGroupArrow.classList.remove('rotate-180');
                 }
@@ -1734,7 +1798,6 @@
             // Commodity
             if (!commodityDisplay.contains(e.target) && !commodityWrapper.contains(e.target)) {
                 if (!commodityWrapper.classList.contains('hidden')) {
-                    if (selectedCommodities.length === 0) toggleAllCommodities(true);
                     commodityWrapper.classList.add('hidden');
                     commodityArrow.classList.remove('rotate-180');
                 }
