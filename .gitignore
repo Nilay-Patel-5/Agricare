@@ -9,3 +9,7 @@ frontend/output.css
 
 # Windows junk files
 Thumbs.db
+
+/vendor/
+/node_modules/
+/.env
