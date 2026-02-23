@@ -119,10 +119,40 @@
                 transform: translate3d(4px, 0, 0);
             }
         }
+
+        .desktop-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Hide scrollbar for mobile menu */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 4px;
+        }
+
+        .farm-hero {
+            background:
+                linear-gradient(135deg, rgba(236, 253, 245, 0.85), rgba(209, 250, 229, 0.90)),
+                url('assets/images/weather-bg-web.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
     </style>
 </head>
 
-<body class="text-gray-800">
+<body class="text-gray-800 farm-hero min-h-screen">
+
+    <div id="progressBar"></div>
 
     <!-- Access Modal -->
     <div id="accessModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
@@ -173,31 +203,113 @@
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="fixed top-0 w-full bg-white/95 backdrop-blur-md shadow-sm border-b-4 border-emerald-500 z-50">
-        <div class="max-w-7xl mx-auto px-6 lg:px-12 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-4 group">
-                <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 via-orange-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg">
-                    <i class="fas fa-wheat-awn"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-black text-gray-800 tracking-tight" data-lang="logo">AgriCare</h1>
-                </div>
-            </a>
-
-            <div class="flex items-center gap-4">
-                <!-- Language Switcher -->
-                <div class="hidden sm:flex bg-gray-100 p-1 rounded-xl">
-                    <button onclick="changeLang('en')" class="lang-btn px-3 py-1 text-sm font-bold rounded-lg transition-all active bg-white shadow text-emerald-700" data-lang-key="en">EN</button>
-                    <button onclick="changeLang('gu')" class="lang-btn px-3 py-1 text-sm font-bold rounded-lg text-gray-500 hover:text-emerald-700 transition-all" data-lang-key="gu">ગુ</button>
-                    <button onclick="changeLang('hi')" class="lang-btn px-3 py-1 text-sm font-bold rounded-lg text-gray-500 hover:text-emerald-700 transition-all" data-lang-key="hi">हिं</button>
-                </div>
-
-                <button onclick="resetLocation()" class="text-sm font-bold text-gray-500 hover:text-emerald-600 underline" data-lang="changeLoc">Change Location</button>
-                <a href="index.html" class="flex items-center gap-2 text-emerald-600 font-bold hover:text-emerald-800 transition-colors">
-                    <i class="fas fa-home"></i> <span data-lang="navHome">Home</span>
+    <header
+        class="fixed top-0 w-full bg-white/95 backdrop-blur-3xl shadow-lg border-b-4 border-emerald-500 z-50 transition-all duration-500">
+        <div class="desktop-container px-6 lg:px-12 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index.php" class="flex items-center gap-4 group">
+                    <div
+                        class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-yellow-400 via-orange-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-110 transition-all duration-300">
+                        <i class="fas fa-wheat-awn"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-2xl lg:text-3xl font-black text-gray-800 tracking-tight" data-lang="logo">
+                            AgriCare</h1>
+                        <p class="text-xs font-bold text-emerald-600 tracking-wider uppercase hidden sm:block"
+                            data-lang="tagline">Gujarat's Smart Farming Platform</p>
+                    </div>
                 </a>
+
+                <nav class="hidden xl:flex items-center gap-1">
+                    <a href="index.php#home"
+                        class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
+                        data-lang="home">🏠 Home</a>
+                    <a href="index.php#features"
+                        class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
+                        data-lang="features">✨ Features</a>
+                    <a href="market.php"
+                        class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
+                        data-lang="market">📈 Market</a>
+                    <a href="weather.php"
+                        class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
+                        data-lang="weather">🌤️ Weather</a>
+                    <a href="about.php"
+                        class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
+                        data-lang="contact">ℹ️ About</a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <div class="hidden sm:flex bg-gray-100 p-1 rounded-xl">
+                        <button onclick="changeLang('en')"
+                            class="lang-btn px-3 py-1 text-sm font-bold rounded-lg transition-all active bg-white shadow text-emerald-700"
+                            data-lang-key="en">EN</button>
+                        <button onclick="changeLang('gu')"
+                            class="lang-btn px-3 py-1 text-sm font-bold rounded-lg text-gray-500 hover:text-emerald-700 transition-all"
+                            data-lang-key="gu">ગુ</button>
+                        <button onclick="changeLang('hi')"
+                            class="lang-btn px-3 py-1 text-sm font-bold rounded-lg text-gray-500 hover:text-emerald-700 transition-all"
+                            data-lang-key="hi">हिं</button>
+                    </div>
+
+                    <button onclick="resetLocation()" class="text-sm font-bold text-gray-500 hover:text-emerald-600 underline hidden lg:block border-l-2 border-gray-200 pl-4" data-lang="changeLoc">Change Location</button>
+
+                    <a href="login.php" data-lang="loginBtn"
+                        class="hidden lg:inline-flex text-emerald-700 font-bold py-3 px-6 hover:text-emerald-900 transition-all">
+                        Login
+                    </a>
+                    <a href="register.php"
+                        class="hidden lg:inline-flex bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
+                        data-lang="registerBtn">
+                        Register
+                    </a>
+
+                    <button id="mobileMenuBtn" class="xl:hidden text-2xl text-gray-700 p-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
             </div>
+        </div>
+
+        <div id="mobileMenuOverlay"
+            class="xl:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+        <div id="mobileMenu"
+            class="xl:hidden fixed right-0 top-0 h-full w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50 p-6 overflow-y-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-black text-emerald-800">Menu</h2>
+                <button onclick="closeMobileMenu()" class="text-2xl text-gray-500 hover:text-red-500"><i
+                        class="fas fa-times"></i></button>
+            </div>
+
+            <div class="flex gap-2 mb-8 justify-center bg-gray-50 p-3 rounded-xl">
+                <button onclick="changeLang('en')"
+                    class="flex-1 py-2 font-bold rounded bg-white shadow text-emerald-600 text-center">EN</button>
+                <button onclick="changeLang('gu')"
+                    class="flex-1 py-2 font-bold rounded hover:bg-white text-gray-600 text-center">ગુ</button>
+                <button onclick="changeLang('hi')"
+                    class="flex-1 py-2 font-bold rounded hover:bg-white text-gray-600 text-center">हिं</button>
+            </div>
+
+            <button onclick="resetLocation(); closeMobileMenu();" class="w-full text-center text-sm font-bold text-gray-500 hover:text-emerald-600 underline py-2 mb-4 bg-gray-50 rounded-lg" data-lang="changeLoc">Change Location</button>
+
+            <nav class="space-y-4">
+                <a href="index.php#home" onclick="closeMobileMenu()"
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">🏠 Home</a>
+                <a href="index.php#features" onclick="closeMobileMenu()"
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">✨
+                    Features</a>
+                <a href="market.php" onclick="closeMobileMenu()"
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">📈 Market</a>
+                <a href="weather.php" onclick="closeMobileMenu()"
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">🌤️ Weather</a>
+                <a href="about.php" onclick="closeMobileMenu()"
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">ℹ️
+                    About</a>
+                <a href="login.php" data-lang="loginBtn"
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">Login</a>
+                <a href="register.php"
+                    class="block bg-emerald-600 text-white font-bold py-3 rounded-xl text-center mt-6 shadow-lg">Register
+                    Now</a>
+            </nav>
         </div>
     </header>
 
@@ -324,8 +436,64 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-8 text-center border-t-8 border-emerald-600">
-        <p data-lang="copyright">© 2026 AgriCare. Made with ❤️ for Farmers.</p>
+    <footer id="contact" class="bg-gray-900 text-white pt-20 pb-10">
+        <div class="desktop-container px-6 lg:px-12">
+            <div class="grid lg:grid-cols-4 gap-12 mb-16">
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-2xl">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <span class="text-3xl font-black" data-lang="logo">AgriCare</span>
+                    </div>
+                    <p class="text-gray-400 text-lg mb-8 max-w-md" data-lang="footer-desc">
+                        Empowering farmers with data, connecting markets with transparency, and building a sustainable
+                        future.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition-colors"><i
+                                class="fab fa-twitter"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition-colors"><i
+                                class="fab fa-facebook"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition-colors"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xl font-bold mb-6 border-l-4 border-emerald-500 pl-4" data-lang="solutions">
+                        Solutions</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_advisory">Crop
+                                Advisory</a></li>
+                        <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
+                                Disease Identification</a></li>
+                        <li><a href="market.php" class="hover:text-emerald-400 transition-colors"
+                                data-lang="sol_market">Market
+                                Connect</a></li>
+                        <li><a href="weather.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_weather">Weather
+                                Station</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xl font-bold mb-6 border-l-4 border-orange-500 pl-4" data-lang="contact">ℹ️ About
+                    </h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li data-lang="location">⚲ Location: Gujarat, India</li>
+                        <li data-lang="email">✉ Contact: project@agricare.demo</li>
+                        <li data-lang="phone">🕻 Phone: Available on request</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 flex justify-center items-center text-gray-500 text-sm">
+                <p data-lang="copyright">© 2026 AgriCare. Made with ❤️ for Farmers.</p>
+            </div>
+        </div>
     </footer>
 
     <script>
@@ -333,6 +501,14 @@
         const translations = {
             en: {
                 logo: 'AgriCare',
+                tagline: "Gujarat's Smart Farming Platform",
+                home: '🏠 Home',
+                features: '✨ Features',
+                market: '📈 Market',
+                weather: '🌤️ Weather',
+                contact: 'ℹ️ About',
+                loginBtn: 'Login',
+                registerBtn: 'Register',
                 modalTitle: 'Check Weather',
                 modalDesc: 'Get accurate forecasts for your farm.',
                 labelState: 'State',
@@ -358,6 +534,15 @@
                 forecastTitle: '7-Day Forecast',
                 advisoryTitle: '🌾 Agricultural Advisory',
                 tipsTitle: 'Specific Tips:',
+                location: '⚲ Location: Gujarat, India',
+                email: '✉ Contact: project@agricare.demo',
+                phone: '🕻 Phone: Available on request',
+                'footer-desc': 'Empowering farmers with data, connecting markets with transparency, and building a sustainable future.',
+                solutions: 'Solutions',
+                sol_advisory: 'Crop Advisory',
+                sol_disease: 'Crop Disease Identification',
+                sol_market: 'Market Connect',
+                sol_weather: 'Weather Station',
                 copyright: '© 2026 AgriCare. Made with ❤️ for Farmers.',
                 loading: 'Loading...',
                 updated: 'Updated:',
@@ -367,6 +552,14 @@
             },
             gu: {
                 logo: 'એગ્રીકેર',
+                tagline: "ગુજરાતનું સ્માર્ટ કૃષિ પ્લેટફોર્મ",
+                home: '🏠 મુખ્ય',
+                features: '✨ સુવિધાઓ',
+                market: '📈 બજાર',
+                weather: '🌤️ હવામાન',
+                contact: 'ℹ️ પરિચય',
+                loginBtn: 'લોગિન',
+                registerBtn: 'નોંધણી',
                 modalTitle: 'હવામાન તપાસો',
                 modalDesc: 'તમારા ખેતર માટે સચોટ આગાહી મેળવો.',
                 labelState: 'રાજ્ય',
@@ -392,6 +585,15 @@
                 forecastTitle: '૭ દિવસની આગાહી',
                 advisoryTitle: '🌾 કૃષિ સલાહ',
                 tipsTitle: 'ચોક્કસ ટીપ્સ:',
+                location: '⚲ સ્થળ: ગુજરાત, ભારત',
+                email: '✉ સંપર્ક: project@agricare.demo',
+                phone: '🕻 ફોન: વિનંતી પર ઉપલબ્ધ',
+                'footer-desc': 'ખેડૂતોને સશક્તિકરણ, પારદર્શિતા સાથે બજારોને જોડવું અને ટકાઉ ભવિષ્યનું નિર્માણ.',
+                solutions: 'ઉકેલો',
+                sol_advisory: 'પાક સલાહ',
+                sol_disease: 'પાક રોગ ઓળખ',
+                sol_market: 'બજાર જોડાણ',
+                sol_weather: 'હવામાન સ્ટેશન',
                 copyright: '© 2026 એગ્રીકેર. ખેડૂતો માટે ❤️ થી બનાવેલ.',
                 loading: 'લોડિંગ...',
                 updated: 'અપડેટ:',
@@ -401,6 +603,14 @@
             },
             hi: {
                 logo: 'एग्रीकेयर',
+                tagline: "गुजरात का स्मार्ट कृषि-मंच",
+                home: '🏠 होम',
+                features: '✨ विशेषताएँ',
+                market: '📈 बाज़ार',
+                weather: '🌤️ मौसम',
+                contact: 'ℹ️ परिचय',
+                loginBtn: 'लॉगिन',
+                registerBtn: 'रजिस्टर',
                 modalTitle: 'मौसम की जाँच करें',
                 modalDesc: 'अपने खेत के लिए सटीक पूर्वानुमान प्राप्त करें।',
                 labelState: 'राज्य',
@@ -426,6 +636,15 @@
                 forecastTitle: '7-दिवसीय पूर्वानुमान',
                 advisoryTitle: '🌾 कृषि सलाह',
                 tipsTitle: 'विशिष्ट सुझाव:',
+                location: '⚲ स्थान: गुजरात, भारत',
+                email: '✉ संपर्क: project@agricare.demo',
+                phone: '🕻 फोन: अनुरोध पर उपलब्ध',
+                'footer-desc': 'किसानों को डेटा के साथ सशक्त बनाना और एक स्थायी भविष्य का निर्माण करना।',
+                solutions: 'समाधान',
+                sol_advisory: 'फसल सलाह',
+                sol_disease: 'फसल रोग पहचान',
+                sol_market: 'बाज़ार संपर्क',
+                sol_weather: 'मौसम स्टेशन',
                 copyright: '© 2026 एग्रीकेयर। किसानों के लिए ❤️ से बनाया गया।',
                 loading: 'लोड हो रहा है...',
                 updated: 'अपडेट:',
@@ -910,6 +1129,7 @@
         }
 
         function changeLang(lang) {
+            localStorage.setItem('agricare_lang', lang);
             state.lang = lang;
 
             // Update Buttons logic...
@@ -940,6 +1160,28 @@
             if (state.weatherData) {
                 renderWeather();
             }
+        }
+
+        // --- Mobile Menu Logic ---
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('mobileMenuOverlay');
+        const menuBtn = document.getElementById('mobileMenuBtn');
+
+        if (menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                overlay.classList.add('opacity-100');
+            });
+        }
+
+        function closeMobileMenu() {
+            if (mobileMenu) mobileMenu.classList.add('translate-x-full');
+            if (overlay) overlay.classList.add('hidden');
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', closeMobileMenu);
         }
 
         function resetLocation() {
@@ -997,6 +1239,29 @@
             } else {
                 alert("Please select a city.");
             }
+        });
+
+        // Scroll Progress Bar
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            let bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "100";
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialLang = urlParams.get('lang') || localStorage.getItem('agricare_lang') || 'en';
+            changeLang(initialLang);
         });
     </script>
 </body>

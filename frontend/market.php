@@ -77,7 +77,7 @@
         class="fixed top-0 w-full bg-white/95 backdrop-blur-3xl shadow-lg border-b-4 border-emerald-500 z-50 transition-all duration-500">
         <div class="desktop-container px-6 lg:px-12 py-4">
             <div class="flex justify-between items-center">
-                <a href="index.html" class="flex items-center gap-4 group">
+                <a href="index.php" class="flex items-center gap-4 group">
                     <div
                         class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-yellow-400 via-orange-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-110 transition-all duration-300">
                         <i class="fas fa-wheat-awn"></i>
@@ -91,19 +91,19 @@
                 </a>
 
                 <nav class="hidden xl:flex items-center gap-1">
-                    <a href="index.html"
+                    <a href="index.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="home">🏠 Home</a>
-                    <a href="index.html#features"
+                    <a href="index.php#features"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="features">✨ Features</a>
                     <a href="market.php"
                         class="text-emerald-700 bg-emerald-50 font-bold px-6 py-3 rounded-full transition-all decoration-2"
                         data-lang="market">📈 Market</a>
-                    <a href="#"
+                    <a href="weather.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="weather">🌤️ Weather</a>
-                    <a href="#"
+                    <a href="about.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="contact">ℹ️ About</a>
                 </nav>
@@ -121,11 +121,11 @@
                             data-lang-key="hi">हिं</button>
                     </div>
 
-                    <a href="auth/login.html" data-lang="loginBtn"
+                    <a href="login.php" data-lang="loginBtn"
                         class="hidden lg:inline-flex text-emerald-700 font-bold py-3 px-6 hover:text-emerald-900 transition-all">
                         Login
                     </a>
-                    <a href="auth/register.html"
+                    <a href="register.php"
                         class="hidden lg:inline-flex bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
                         data-lang="registerBtn">
                         Register
@@ -158,10 +158,10 @@
             </div>
 
             <nav class="space-y-4">
-                <a href="index.html" onclick="closeMobileMenu()"
+                <a href="index.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b"
                     data-lang="home">🏠 Home</a>
-                <a href="index.html#features" onclick="closeMobileMenu()"
+                <a href="index.php#features" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b"
                     data-lang="features">✨
                     Features</a>
@@ -169,13 +169,17 @@
                     class="block text-lg font-semibold text-emerald-600 py-2 border-b bg-emerald-50 rounded pl-2"
                     data-lang="market">📈
                     Market</a>
-                <a href="#" onclick="closeMobileMenu()"
+                <a href="weather.php" onclick="closeMobileMenu()"
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b"
+                    data-lang="weather">🌤️
+                    Weather</a>
+                <a href="about.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b"
                     data-lang="contact">ℹ️
                     About</a>
-                <a href="auth/login.html" data-lang="loginBtn"
+                <a href="login.php" data-lang="loginBtn"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">Login</a>
-                <a href="auth/register.html" data-lang="registerBtn"
+                <a href="register.php" data-lang="registerBtn"
                     class="block bg-emerald-600 text-white font-bold py-3 rounded-xl text-center mt-6 shadow-lg">Register
                     Now</a>
             </nav>
@@ -189,7 +193,7 @@
                 <h1 class="text-4xl lg:text-5xl font-black text-gray-900 mb-2" data-lang="mandi_title">
                     <span class="text-emerald-600">Live</span> Mandi Prices
                 </h1>
-                <p class="text-gray-600 text-lg" data-lang="mandi_subtitle">Real-time agricultural market rates from
+                <p class="text-gray-600 text-lg mb-4" data-lang="mandi_subtitle">Real-time agricultural market rates from
                     across Gujarat</p>
             </div>
         </div>
@@ -336,8 +340,15 @@
             </div>
         </div>
 
+        <!-- Arrival Date Display -->
+        <div class="flex justify-end mb-4">
+            <div id="arrivalDateDisplay" class="hidden inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 px-4 py-2 rounded-full text-sm font-bold border border-emerald-200 shadow-sm">
+                <i class="far fa-calendar-alt"></i> Data as of: <span id="arrivalDateText">--</span>
+            </div>
+        </div>
+
         <!-- Result Placeholder -->
-        <div id="resultsArea" class="mt-8">
+        <div id="resultsArea">
             <div id="noDataPlaceholder"
                 class="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
                 <div class="no-data-icon">
@@ -392,7 +403,7 @@
                         <li><a href="market.php" class="hover:text-emerald-400 transition-colors"
                                 data-lang="sol_market">Market
                                 Connect</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_weather">Weather
+                        <li><a href="weather.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_weather">Weather
                                 Station</a></li>
                     </ul>
                 </div>
@@ -476,33 +487,50 @@
             if (!rows || rows.length === 0) {
                 placeholder.classList.remove("hidden");
                 container.classList.add("hidden");
+
+                // Hide arrival date if no data
+                const dateDisplay = document.getElementById("arrivalDateDisplay");
+                if (dateDisplay) dateDisplay.classList.add("hidden");
+
                 return;
             }
 
             placeholder.classList.add("hidden");
             container.classList.remove("hidden");
 
+            // Display dynamic arrival date from first record
+            const dateDisplay = document.getElementById("arrivalDateDisplay");
+            const dateText = document.getElementById("arrivalDateText");
+            if (dateDisplay && dateText && rows[0].arrival_date) {
+                dateText.innerText = rows[0].arrival_date;
+                dateDisplay.classList.remove("hidden");
+            }
+
             let html = `
     <div class="overflow-x-auto bg-white rounded-2xl shadow">
     <table class="w-full text-sm text-left">
     <thead class="bg-emerald-600 text-white">
         <tr>
-            <th class="p-3">District</th>
-            <th class="p-3">Market</th>
-            <th class="p-3">Commodity</th>
-            <th class="p-3">Min Price</th>
-            <th class="p-3">Max Price</th>
-            <th class="p-3">Modal Price</th>
+            <th class="p-3" data-lang="district_label">${translations[currentLang]['district_label'] || 'District'}</th>
+            <th class="p-3" data-lang="market_label">${translations[currentLang]['market_label'] || 'Market'}</th>
+            <th class="p-3" data-lang="commodity_label">${translations[currentLang]['commodity_label'] || 'Commodity'}</th>
+            <th class="p-3" data-lang="min_price">${translations[currentLang]['min_price'] || 'Min Price'}</th>
+            <th class="p-3" data-lang="max_price">${translations[currentLang]['max_price'] || 'Max Price'}</th>
+            <th class="p-3" data-lang="modal_price">${translations[currentLang]['modal_price'] || 'Modal Price'}</th>
         </tr>
     </thead>
     <tbody>`;
 
             rows.forEach(r => {
+                const trDistrict = getLocalizedMarketName(r.district, currentLang);
+                const trMarket = getLocalizedMarketName(r.market, currentLang);
+                const trCommodity = getLocalizedMarketName(r.commodity, currentLang);
+
                 html += `
         <tr class="border-b hover:bg-gray-50">
-            <td class="p-3">${r.district}</td>
-            <td class="p-3">${r.market}</td>
-            <td class="p-3">${r.commodity}</td>
+            <td class="p-3">${trDistrict}</td>
+            <td class="p-3">${trMarket}</td>
+            <td class="p-3">${trCommodity}</td>
             <td class="p-3">₹${r.min}</td>
             <td class="p-3">₹${r.max}</td>
             <td class="p-3 font-bold text-emerald-700">₹${r.modal}</td>
@@ -517,7 +545,7 @@
         const translations = {
             en: {
                 logo: 'AgriCare',
-                tagline: "Gujarat's Smart Platform",
+                tagline: "Gujarat's Smart Farming Platform",
                 home: '🏠 Home',
                 features: '✨ Features',
                 market: '📈 Market',
@@ -543,6 +571,9 @@
                 market_label: 'Market',
                 group_label: 'Commodity Group',
                 commodity_label: 'Commodity',
+                min_price: 'Min Price',
+                max_price: 'Max Price',
+                modal_price: 'Modal Price',
                 all_districts: 'All Districts',
                 all_markets: 'All Markets',
                 all_groups: 'All Groups',
@@ -935,7 +966,7 @@
                 features: '✨ સુવિધાઓ',
                 market: '📈 બજાર',
                 weather: '🌤️ હવામાન',
-                contact: 'ℹ️ અમારા વિશે',
+                contact: 'ℹ️ પરિચય',
                 loginBtn: 'લોગિન',
                 registerBtn: 'નોંધણી',
                 'footer-desc': 'ખેડૂતોને સશક્તિકરણ, પારદર્શિતા સાથે બજારોને જોડવું અને ટકાઉ ભવિષ્યનું નિર્માણ.',
@@ -956,6 +987,9 @@
                 market_label: 'બજાર',
                 group_label: 'પાક જૂથ',
                 commodity_label: 'પાક',
+                min_price: 'લઘુત્તમ ભાવ',
+                max_price: 'મહત્તમ ભાવ',
+                modal_price: 'સામાન્ય ભાવ',
                 all_districts: 'બધા જિલ્લાઓ',
                 all_markets: 'બધા બજારો',
                 all_groups: 'બધા જૂથો',
@@ -1350,7 +1384,7 @@
                 features: '✨ विशेषताएँ',
                 market: '📈 बाज़ार',
                 weather: '🌤️ मौसम',
-                contact: 'ℹ️ हमारे बारे में',
+                contact: 'ℹ️ परिचय',
                 loginBtn: 'लॉगिन',
                 registerBtn: 'रजिस्टर',
                 'footer-desc': 'किसानों को डेटा के साथ सशक्त बनाना और एक स्थायी भविष्य का निर्माण करना।',
@@ -1371,6 +1405,9 @@
                 market_label: 'बाजार',
                 group_label: 'फसल समूह',
                 commodity_label: 'फसल',
+                min_price: 'न्यूनतम भाव',
+                max_price: 'अधिकतम भाव',
+                modal_price: 'मॉडल भाव',
                 all_districts: 'सभी जिले',
                 all_markets: 'सभी बाजार',
                 all_groups: 'सभी समूह',
@@ -1763,6 +1800,7 @@
         let currentLang = 'en';
 
         function changeLang(lang) {
+            localStorage.setItem('agricare_lang', lang);
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('bg-white', 'shadow', 'text-emerald-700');
@@ -1899,6 +1937,12 @@
 
         const mobileMenu = document.getElementById('mobileMenu');
         const overlay = document.getElementById('mobileMenuOverlay');
+        setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialLang = urlParams.get('lang') || localStorage.getItem('agricare_lang') || 'en';
+        changeLang(initialLang);
+
         const menuBtn = document.getElementById('mobileMenuBtn');
 
         menuBtn.addEventListener('click', () => {
@@ -2813,6 +2857,23 @@
         renderCommodityGroups();
         updateCommodityGroupDisplay();
         updateCommodityOptions();
+
+        // Scroll Progress Bar
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            let bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "100";
+            }
+        };
     </script>
 </body>
 

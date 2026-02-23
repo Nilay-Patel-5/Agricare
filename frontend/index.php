@@ -157,7 +157,7 @@
         class="fixed top-0 w-full bg-white/95 backdrop-blur-3xl shadow-lg border-b-4 border-emerald-500 z-50 transition-all duration-500">
         <div class="desktop-container px-6 lg:px-12 py-4">
             <div class="flex justify-between items-center">
-                <a href="index.html" class="flex items-center gap-4 group">
+                <a href="index.php" class="flex items-center gap-4 group">
                     <div
                         class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-yellow-400 via-orange-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-110 transition-all duration-300">
                         <i class="fas fa-wheat-awn"></i>
@@ -183,7 +183,7 @@
                     <a href="weather.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="weather">🌤️ Weather</a>
-                    <a href="#"
+                    <a href="about.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="contact">ℹ️ About</a>
                 </nav>
@@ -201,11 +201,11 @@
                             data-lang-key="hi">हिं</button>
                     </div>
 
-                    <a href="auth/login.html" data-lang="loginBtn"
+                    <a href="login.php" data-lang="loginBtn"
                         class="hidden lg:inline-flex text-emerald-700 font-bold py-3 px-6 hover:text-emerald-900 transition-all">
                         Login
                     </a>
-                    <a href="auth/register.html"
+                    <a href="register.php"
                         class="hidden lg:inline-flex bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
                         data-lang="registerBtn">
                         Register
@@ -247,12 +247,12 @@
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">📈 Market</a>
                 <a href="weather.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">🌤️ Weather</a>
-                <a href="#" onclick="closeMobileMenu()"
+                <a href="about.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">ℹ️
                     About</a>
-                <a href="auth/login.html" data-lang="loginBtn"
+                <a href="login.php" data-lang="loginBtn"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">Login</a>
-                <a href="auth/register.html"
+                <a href="register.php"
                     class="block bg-emerald-600 text-white font-bold py-3 rounded-xl text-center mt-6 shadow-lg">Register
                     Now</a>
             </nav>
@@ -299,7 +299,7 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="auth/register.html"
+                        <a href="register.php"
                             class="px-8 py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-xl hover:bg-emerald-700 hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
                             <i class="fas fa-rocket"></i> <span data-lang="cta1">START NOW</span>
                         </a>
@@ -337,23 +337,9 @@
         </div>
 
         <div class="whitespace-nowrap overflow-hidden flex hover:[animation-play-state:paused]">
-            <div
+            <div id="mandiTicker" style="animation-duration: 120s;"
                 class="animate-[shimmer_60s_linear_infinite] flex gap-16 text-xl font-mono font-bold text-emerald-400 hover:[animation-play-state:paused]">
-
-                <span>🌾 WHEAT (Rajkot): ₹2,450 <span class="text-green-400">▲ 1.2%</span></span>
-                <span>🍚 RICE (Anand): ₹3,800 <span class="text-red-400">▼ 0.5%</span></span>
-                <span>🌽 MAIZE (Dahod): ₹1,920 <span class="text-green-400">▲ 2.4%</span></span>
-                <span>🥜 COTTON (Amreli): ₹7,200 <span class="text-green-400">▲ 0.8%</span></span>
-                <span>🧅 ONION (Bhavnagar): ₹1,450 <span class="text-red-400">▼ 4.2%</span></span>
-                <span>🥔 POTATO (Deesa): ₹1,100 <span class="text-green-400">▲ 1.5%</span></span>
-
-                <span>🌾 WHEAT (Rajkot): ₹2,450 <span class="text-green-400">▲ 1.2%</span></span>
-                <span>🍚 RICE (Anand): ₹3,800 <span class="text-red-400">▼ 0.5%</span></span>
-                <span>🌽 MAIZE (Dahod): ₹1,920 <span class="text-green-400">▲ 2.4%</span></span>
-                <span>🥜 COTTON (Amreli): ₹7,200 <span class="text-green-400">▲ 0.8%</span></span>
-                <span>🧅 ONION (Bhavnagar): ₹1,450 <span class="text-red-400">▼ 4.2%</span></span>
-                <span>🥔 POTATO (Deesa): ₹1,100 <span class="text-green-400">▲ 1.5%</span></span>
-
+                <span>Loading live market data...</span>
             </div>
         </div>
     </section>
@@ -466,9 +452,12 @@
         const translations = {
             en: {
                 logo: 'AgriCare',
-                tagline: "Gujarat's Smart Platform",
-                home: '🏠 Home', features: '✨ Features', market: '📈 Market',
-                weather: '🌤️ Weather', contact: 'ℹ️ About',
+                tagline: "Gujarat's Smart Farming Platform",
+                home: '🏠 Home',
+                features: '✨ Features',
+                market: '📈 Market',
+                weather: '🌤️ Weather',
+                contact: 'ℹ️ About',
                 loginBtn: 'Login',
                 registerBtn: 'Register',
                 heroTitle: 'Smart Farming',
@@ -477,25 +466,38 @@
                 location: '⚲ Location: Gujarat, India',
                 email: '✉ Contact: project@agricare.demo',
                 phone: '🕻 Phone: Available on request',
-                stat1_title: 'Digital Platform', stat1_desc: 'For Farmers',
-                stat2_title: '100+ Crops', stat2_desc: 'Covered',
-                stat3_title: 'Smart Insights', stat3_desc: 'AI Assisted',
-                cta1: 'START NOW', cta2: 'VIEW MARKETS',
+                stat1_title: 'Digital Platform',
+                stat1_desc: 'For Farmers',
+                stat2_title: '100+ Crops',
+                stat2_desc: 'Covered',
+                stat3_title: 'Smart Insights',
+                stat3_desc: 'AI Assisted',
+                cta1: 'START NOW',
+                cta2: 'VIEW MARKETS',
                 tools: 'Powerful Tools',
                 'tools-desc': 'Technology designed specifically for the needs of Indian agriculture.',
-                prediction: 'Crop Disease Detector', 'prediction-desc': 'Identify crop diseases at an early stage using image-based analysis and smart pattern detection',
-                climate: 'Weather Alerts', 'climate-desc': 'Hyper-local weather forecasts with automatic irrigation advisory for your village.',
-                market_intel: 'Mandi Prices', 'market-desc': 'Direct APMC connection to find the best selling price for your crops near you.',
+                prediction: 'Crop Disease Detector',
+                'prediction-desc': 'Identify crop diseases at an early stage using image-based analysis and smart pattern detection',
+                climate: 'Weather Alerts',
+                'climate-desc': 'Hyper-local weather forecasts with automatic irrigation advisory for your village.',
+                market_intel: 'Mandi Prices',
+                'market-desc': 'Direct APMC connection to find the best selling price for your crops near you.',
                 'footer-desc': 'Empowering farmers with data, connecting markets with transparency, and building a sustainable future.',
-                solutions: 'Solutions', copyright: '© 2026 AgriCare. Made with ❤️ for Farmers.',
-                sol_advisory: 'Crop Advisory', sol_disease: 'Crop Disease Identification',
-                sol_market: 'Market Connect', sol_weather: 'Weather Station'
+                solutions: 'Solutions',
+                copyright: '© 2026 AgriCare. Made with ❤️ for Farmers.',
+                sol_advisory: 'Crop Advisory',
+                sol_disease: 'Crop Disease Identification',
+                sol_market: 'Market Connect',
+                sol_weather: 'Weather Station'
             },
             gu: {
                 logo: 'એગ્રીકેર',
                 tagline: "ગુજરાતનું સ્માર્ટ કૃષિ પ્લેટફોર્મ",
-                home: '🏠 મુખ્ય', features: '✨ સુવિધાઓ', market: '📈 બજાર',
-                weather: '🌤️ હવામાન', contact: 'ℹ️ અમારા વિશે',
+                home: '🏠 મુખ્ય',
+                features: '✨ સુવિધાઓ',
+                market: '📈 બજાર',
+                weather: '🌤️ હવામાન',
+                contact: 'ℹ️ પરિચય',
                 loginBtn: 'લોગિન',
                 registerBtn: 'નોંધણી',
                 heroTitle: 'સ્માર્ટ ખેતી',
@@ -504,25 +506,38 @@
                 location: '⚲ સ્થળ: ગુજરાત, ભારત',
                 email: '✉ સંપર્ક: project@agricare.demo',
                 phone: '🕻 ફોન: વિનંતી પર ઉપલબ્ધ',
-                stat1_title: 'ડિજિટલ પ્લેટફોર્મ', stat1_desc: 'ખેડૂતો માટે',
-                stat2_title: '100+ પાક', stat2_desc: 'આવરી લેવાયેલ',
-                stat3_title: 'સ્માર્ટ તારણો', stat3_desc: 'AI સહાયિત',
-                cta1: 'શરૂ કરો', cta2: 'બજાર જુઓ',
+                stat1_title: 'ડિજિટલ પ્લેટફોર્મ',
+                stat1_desc: 'ખેડૂતો માટે',
+                stat2_title: '100+ પાક',
+                stat2_desc: 'આવરી લેવાયેલ',
+                stat3_title: 'સ્માર્ટ તારણો',
+                stat3_desc: 'AI સહાયિત',
+                cta1: 'શરૂ કરો',
+                cta2: 'બજાર જુઓ',
                 tools: 'મજબૂત સાધનો',
                 'tools-desc': 'ભારતીય કૃષિની જરૂરિયાતો માટે ખાસ તૈયાર કરેલ ટેકનોલોજી.',
-                prediction: 'પાક રોગ ઓળખ', 'prediction-desc': 'ઇમેજ-આધારિત વિશ્લેષણ અને સ્માર્ટ પેટર્ન ઓળખનો ઉપયોગ કરીને પ્રારંભિક તબક્કે પાક રોગોને ઓળખો.',
-                climate: 'હવામાન ચેતવણી', 'climate-desc': 'તમારા ગામ માટે આપમેળે સિંચાઈ સલાહ સાથે સચોટ હવામાન આગાહી.',
-                market_intel: 'મંડી ભાવ', 'market-desc': 'તમારા પાક માટે શ્રેષ્ઠ વેચાણ કિંમત શોધવા માટે સીધું APMC કનેક્શન.',
+                prediction: 'પાક રોગ ઓળખ',
+                'prediction-desc': 'ઇમેજ-આધારિત વિશ્લેષણ અને સ્માર્ટ પેટર્ન ઓળખનો ઉપયોગ કરીને પ્રારંભિક તબક્કે પાક રોગોને ઓળખો.',
+                climate: 'હવામાન ચેતવણી',
+                'climate-desc': 'તમારા ગામ માટે આપમેળે સિંચાઈ સલાહ સાથે સચોટ હવામાન આગાહી.',
+                market_intel: 'મંડી ભાવ',
+                'market-desc': 'તમારા પાક માટે શ્રેષ્ઠ વેચાણ કિંમત શોધવા માટે સીધું APMC કનેક્શન.',
                 'footer-desc': 'ખેડૂતોને સશક્તિકરણ, પારદર્શિતા સાથે બજારોને જોડવું અને ટકાઉ ભવિષ્યનું નિર્માણ.',
-                solutions: 'ઉકેલો', copyright: '© 2026 એગ્રીકેર. ખેડૂતો માટે ❤️ થી બનાવેલ.',
-                sol_advisory: 'પાક સલાહ', sol_disease: 'પાક રોગ ઓળખ',
-                sol_market: 'બજાર જોડાણ', sol_weather: 'હવામાન સ્ટેશન'
+                solutions: 'ઉકેલો',
+                copyright: '© 2026 એગ્રીકેર. ખેડૂતો માટે ❤️ થી બનાવેલ.',
+                sol_advisory: 'પાક સલાહ',
+                sol_disease: 'પાક રોગ ઓળખ',
+                sol_market: 'બજાર જોડાણ',
+                sol_weather: 'હવામાન સ્ટેશન'
             },
             hi: {
                 logo: 'एग्रीकेयर',
                 tagline: "गुजरात का स्मार्ट कृषि-मंच",
-                home: '🏠 होम', features: '✨ विशेषताएँ', market: '📈 बाज़ार',
-                weather: '🌤️ मौसम', contact: 'ℹ️ हमारे बारे में',
+                home: '🏠 होम',
+                features: '✨ विशेषताएँ',
+                market: '📈 बाज़ार',
+                weather: '🌤️ मौसम',
+                contact: 'ℹ️ परिचय',
                 loginBtn: 'लॉगिन',
                 registerBtn: 'रजिस्टर',
                 heroTitle: 'स्मार्ट खेती',
@@ -531,24 +546,35 @@
                 location: '⚲ स्थान: गुजरात, भारत',
                 email: '✉ संपर्क: project@agricare.demo',
                 phone: '🕻 फोन: अनुरोध पर उपलब्ध',
-                stat1_title: 'डिजिटल प्लेटफॉर्म', stat1_desc: 'किसानों के लिए',
-                stat2_title: '100+ फसलें', stat2_desc: 'कवर की गई',
-                stat3_title: 'स्मार्ट इनसाइट्स', stat3_desc: 'AI समर्थित',
-                cta1: 'शुरू करें', cta2: 'बाजार देखें',
+                stat1_title: 'डिजिटल प्लेटफॉर्म',
+                stat1_desc: 'किसानों के लिए',
+                stat2_title: '100+ फसलें',
+                stat2_desc: 'कवर की गई',
+                stat3_title: 'स्मार्ट इनसाइट्स',
+                stat3_desc: 'AI समर्थित',
+                cta1: 'शुरू करें',
+                cta2: 'बाजार देखें',
                 tools: 'शक्तिशाली उपकरण',
                 'tools-desc': 'भारतीय कृषि की आवश्यकताओं के लिए विशेष रूप से डिजाइन की गई तकनीक।',
-                prediction: 'फसल रोग डिटेक्टर', 'prediction-desc': 'छवि-आधारित विश्लेषण और स्मार्ट पैटर्न पहचान का उपयोग करके शुरुआती चरण में फसल रोगों की पहचान करें।',
-                climate: 'मौसम अलर्ट', 'climate-desc': 'आपके गाँव के लिए स्वचालित सिंचाई सलाह के साथ सटीक मौसम पूर्वानुमान।',
-                market_intel: 'मंडी भाव', 'market-desc': 'अपने पास की सबसे अच्छी बिक्री मूल्य खोजने के लिए सीधा APMC कनेक्शन।',
+                prediction: 'फसल रोग डिटेक्टर',
+                'prediction-desc': 'छवि-आधारित विश्लेषण और स्मार्ट पैटर्न पहचान का उपयोग करके शुरुआती चरण में फसल रोगों की पहचान करें।',
+                climate: 'मौसम अलर्ट',
+                'climate-desc': 'आपके गाँव के लिए स्वचालित सिंचाई सलाह के साथ सटीक मौसम पूर्वानुमान।',
+                market_intel: 'मंडी भाव',
+                'market-desc': 'अपने पास की सबसे अच्छी बिक्री मूल्य खोजने के लिए सीधा APMC कनेक्शन।',
                 'footer-desc': 'किसानों को डेटा के साथ सशक्त बनाना और एक स्थायी भविष्य का निर्माण करना।',
-                solutions: 'समाधान', copyright: '© 2026 एग्रीकेयर। किसानों के लिए ❤️ से बनाया गया।',
-                sol_advisory: 'फसल सलाह', sol_disease: 'फसल रोग पहचान',
-                sol_market: 'बाज़ार संपर्क', sol_weather: 'मौसम स्टेशन'
+                solutions: 'समाधान',
+                copyright: '© 2026 एग्रीकेयर। किसानों के लिए ❤️ से बनाया गया।',
+                sol_advisory: 'फसल सलाह',
+                sol_disease: 'फसल रोग पहचान',
+                sol_market: 'बाज़ार संपर्क',
+                sol_weather: 'मौसम स्टेशन'
             }
         };
 
         // 2. Language Switcher Logic
         function changeLang(lang) {
+            localStorage.setItem('agricare_lang', lang);
             // Remove active classes from all buttons
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('bg-white', 'shadow', 'text-emerald-700');
@@ -595,7 +621,7 @@
         overlay.addEventListener('click', closeMobileMenu);
 
         // 4. Scroll Progress Bar
-        window.onscroll = function () {
+        window.onscroll = function() {
             let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             let scrolled = (winScroll / height) * 100;
@@ -641,6 +667,58 @@
         const statsSection = document.querySelector('.stats-counter');
         if (statsSection) observeStats.observe(statsSection.parentElement);
 
+        // --- Fetch Live Mandi Prices for Ticker ---
+        async function fetchMandiTicker() {
+            try {
+                const res = await fetch("../backend/get_market.php", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        districts: [],
+                        markets: [],
+                        commodities: []
+                    })
+                });
+
+                if (!res.ok) throw new Error("Backend error");
+
+                const data = await res.json();
+                const ticker = document.getElementById('mandiTicker');
+
+                if (data && data.length > 0) {
+                    // Take top 15 results to scroll
+                    const displayData = data.slice(0, 15);
+                    const emojis = ['🌾', '🍚', '🌽', '🥜', '🧅', '🥔', '🍅', '🥕', '🥬', '🥦'];
+
+                    // Generate items
+                    const content = displayData.map((r, i) => {
+                        const emoji = emojis[i % emojis.length];
+                        return `<span>${emoji} ${r.commodity.toUpperCase()} (${r.district}): ₹${r.modal} <span class="text-green-400">● Live</span></span>`;
+                    }).join('');
+
+                    // Single content string without duplication creates a blank gap between repetitions
+                    ticker.innerHTML = content;
+                } else {
+                    ticker.innerHTML = '<span>No live market data available at the moment.</span>';
+                }
+            } catch (err) {
+                console.error("Mandi ticker error:", err);
+                const ticker = document.getElementById('mandiTicker');
+                if (ticker) ticker.innerHTML = '<span>System offline. Could not fetch live prices.</span>';
+            }
+        }
+
+        // Initialize fetching on load and automatically refresh every 5 minutes
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchMandiTicker();
+            setInterval(fetchMandiTicker, 5 * 60 * 1000);
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialLang = urlParams.get('lang') || localStorage.getItem('agricare_lang') || 'en';
+            changeLang(initialLang);
+        });
     </script>
 </body>
 

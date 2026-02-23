@@ -92,7 +92,8 @@ foreach ($data as $row) {
         'district'  => $row['district'] ?? '',
         'min'       => (int)($row['min_price'] ?? 0),
         'max'       => (int)($row['max_price'] ?? 0),
-        'modal'     => (int)($row['modal_price'] ?? 0)
+        'modal'     => (int)($row['modal_price'] ?? 0),
+        'arrival_date' => $row['arrival_date'] ?? ''
     ];
 }
 
