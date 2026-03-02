@@ -1,6 +1,50 @@
 # Node packages (never commit these)
 node_modules/
+# =========================
+# Dependencies
+# =========================
+/vendor/
+/node_modules/
 
+# =========================
+# AI / ML (IMPORTANT)
+# =========================
+ai/dataset/
+ai/*.keras
+ai/*.h5
+ai/*.ipynb
+ai/kaggle.json
+
+# =========================
+# Composer
+# =========================
+composer.phar
+
+# =========================
+# Environment files
+# =========================
+.env
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Build / Generated files
+# =========================
+frontend/output.css
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# OS junk
+# =========================
+Thumbs.db
+.DS_Store
 # Tailwind generated file
 frontend/output.css
 
@@ -12,4 +56,4 @@ Thumbs.db
 
 /vendor/
 /node_modules/
-/.env
+.env

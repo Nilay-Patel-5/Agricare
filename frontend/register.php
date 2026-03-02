@@ -54,230 +54,236 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-emerald-50 via-white to-teal-50 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<body class="bg-gradient-to-br from-emerald-50 via-white to-teal-50 h-screen flex items-center justify-center p-4 overflow-hidden">
 
-    <div class="max-w-2xl w-full space-y-8 glass-card p-10 rounded-[2.5rem] shadow-2xl border border-white relative overflow-hidden">
-        <!-- Decoration -->
-        <div class="absolute -top-12 -left-12 w-40 h-40 bg-yellow-100 rounded-full blur-3xl opacity-60"></div>
-        <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-emerald-100 rounded-full blur-3xl opacity-60"></div>
+    <div class="flex max-w-5xl w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden min-h-[600px] border border-gray-100">
+        <!-- Left Side: Image & Branding -->
+        <div class="hidden lg:flex lg:w-1/2 relative bg-emerald-900 overflow-hidden items-end justify-start">
+            <div class="absolute inset-0 bg-emerald-900/30 mix-blend-multiply z-10"></div>
+            <img src="assets/images/Crop.jpg" alt="Crop" class="absolute inset-0 w-full h-full object-cover object-top z-0">
 
-        <!-- Header -->
-        <div class="text-center relative z-10">
-            <a href="index.php" class="inline-flex items-center gap-3 group mb-6">
-                <div class="w-14 h-14 bg-gradient-to-br from-yellow-400 to-emerald-600 rounded-xl flex items-center justify-center text-white text-xl shadow-lg group-hover:scale-110 transition-transform">
-                    <i class="fas fa-wheat-awn"></i>
+            <div class="relative z-20 text-white p-12 w-full bg-gradient-to-t from-emerald-900 via-emerald-900/80 to-transparent pt-32">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-white text-xl shadow-lg border border-white/30">
+                        <i class="fas fa-wheat-awn"></i>
+                    </div>
+                    <span class="text-2xl font-black text-white tracking-tight" data-lang="logo">AgriCare</span>
                 </div>
-                <span class="text-2xl font-black text-gray-800 tracking-tight" data-lang="logo">AgriCare</span>
-            </a>
-            <h2 class="text-4xl font-black text-gray-900 tracking-tight" data-lang="title">Join AgriCare</h2>
-            <p class="mt-2 text-lg text-gray-600 font-medium" data-lang="subtitle">
-                Create your account to access live mandi prices, crop recommendations & more
-            </p>
-            <p class="text-sm text-gray-500 font-medium">
-                <span data-lang="haveAccount">Already have an account?</span>
-                <a href="login.php" class="text-emerald-600 hover:text-emerald-700 font-bold underline decoration-2 underline-offset-4 transition-all">Log in</a>
-            </p>
-        </div>
-
-        <!-- Language Switcher -->
-        <div class="flex justify-center mb-6 relative z-10">
-            <div class="flex bg-gray-100/70 p-1 rounded-full shadow-sm">
-                <button onclick="changeLang('en')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 transition-all active:bg-emerald-500 active:text-white active:shadow-md" data-lang-key="en">EN</button>
-                <button onclick="changeLang('gu')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="gu">ગુ</button>
-                <button onclick="changeLang('hi')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="hi">हिं</button>
+                <h1 class="text-4xl font-black mb-3 tracking-tight drop-shadow-lg" data-lang="title">Join AgriCare</h1>
+                <p class="text-lg text-emerald-50 max-w-lg font-medium drop-shadow-md leading-relaxed" data-lang="subtitle">Create your account to access crop recommendations & more</p>
             </div>
         </div>
 
-        <!-- Role Toggle -->
-        <div class="flex justify-center mb-8 relative z-10">
-            <div class="bg-gray-100/50 p-1.5 rounded-2xl inline-flex w-full max-w-md">
-                <button onclick="toggleRole('farmer')" id="reg-btn-farmer"
-                    class="flex-1 py-3.5 px-4 text-sm font-black rounded-xl bg-white shadow-sm text-emerald-700 transition-all border-2 border-emerald-200 flex items-center justify-center gap-2">
-                    <i class="fas fa-tractor text-emerald-500"></i><span data-lang="farmer">FARMER (ખેડૂત)</span>
-                </button>
-                <button onclick="toggleRole('buyer')" id="reg-btn-buyer"
-                    class="flex-1 py-3.5 px-4 text-sm font-black rounded-xl text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all border-2 border-transparent flex items-center justify-center gap-2">
-                    <i class="fas fa-store text-gray-400"></i><span data-lang="buyer">BUYER (વેપારી)</span>
-                </button>
+        <!-- Right Side: Register Form -->
+        <div class="w-full lg:w-1/2 flex flex-col p-8 sm:p-12 relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+            <!-- Decoration -->
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-200 rounded-full blur-3xl opacity-50 z-0"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-emerald-200 rounded-full blur-3xl opacity-50 z-0"></div>
+
+            <div class="relative z-10 flex flex-col h-full h-[80vh] min-h-[500px]">
+
+                <!-- Top Navigation (Back & Lang) -->
+                <div class="flex justify-between items-center mb-6">
+                    <a href="index.php" class="inline-flex items-center gap-2 text-gray-500 hover:text-emerald-600 transition-colors font-semibold text-sm">
+                        <i class="fas fa-arrow-left"></i>
+                        <span data-lang="backToHome">Back to Home</span>
+                    </a>
+
+                    <div class="flex bg-gray-100/70 p-1 rounded-full shadow-sm">
+                        <button onclick="changeLang('en')" class="lang-btn px-4 py-2 text-sm font-bold rounded-full mx-0.5 transition-all text-gray-600 hover:bg-emerald-100" data-lang-key="en">EN</button>
+                        <button onclick="changeLang('gu')" class="lang-btn px-4 py-2 text-sm font-bold rounded-full mx-0.5 transition-all text-gray-600 hover:bg-emerald-100" data-lang-key="gu">ગુ</button>
+                        <button onclick="changeLang('hi')" class="lang-btn px-4 py-2 text-sm font-bold rounded-full mx-0.5 transition-all text-gray-600 hover:bg-emerald-100" data-lang-key="hi">हिं</button>
+                    </div>
+                </div>
+
+                <p class="text-sm text-center text-gray-500 font-medium mb-6">
+                    <span data-lang="haveAccount">Already have an account?</span>
+                    <a href="login.php" class="text-emerald-600 hover:text-emerald-700 font-bold underline decoration-2 underline-offset-4 transition-all" data-lang="logIn">Log in</a>
+                </p>
+
+                <!-- Role Toggle -->
+                <div class="flex justify-center mb-6">
+                    <div class="bg-gray-100/50 p-1.5 rounded-2xl inline-flex w-full max-w-sm">
+                        <button onclick="toggleRole('farmer')" id="reg-btn-farmer"
+                            class="flex-1 py-3 px-3 text-sm font-black rounded-xl bg-white shadow-sm text-emerald-700 transition-all border-2 border-emerald-200 flex items-center justify-center gap-2">
+                            <i class="fas fa-tractor text-emerald-500"></i><span data-lang="farmer">FARMER</span>
+                        </button>
+                        <button onclick="toggleRole('admin')" id="reg-btn-admin"
+                            class="flex-1 py-3 px-3 text-sm font-black rounded-xl text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all border-2 border-transparent flex items-center justify-center gap-2">
+                            <i class="fas fa-user-shield text-gray-400"></i><span data-lang="admin">ADMIN</span>
+                        </button>
+                    </div>
+                </div>
+
+                <form class="flex-1 flex flex-col min-h-0 relative z-10" action="#" method="POST" id="registerForm" onsubmit="handleRegister(event)">
+                    <input type="hidden" name="role" id="reg-role-input" value="farmer">
+
+                    <!-- Scrollable Content Area -->
+                    <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+
+                        <!-- COMMON FIELDS (Always visible) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                            <!-- 1. User ID -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                    <i class="fas fa-id-badge text-emerald-500"></i><span data-lang="userIdLbl">User ID</span> <span class="text-red-500">*</span>
+                                </label>
+                                <input id="user_id" name="user_id" type="text" required maxlength="12"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
+                                    placeholder="JAY001 (Unique ID)">
+                            </div>
+
+                            <!-- 2. Full Name -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                    <i class="fas fa-user text-emerald-500"></i><span data-lang="fullNameLbl">Full Name</span> <span class="text-red-500">*</span>
+                                </label>
+                                <input id="full_name" name="full_name" type="text" required
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
+                                    placeholder="Jaykumar Ramanbhai Patel">
+                            </div>
+
+                            <!-- 3. Email -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                    <i class="fas fa-envelope text-emerald-500"></i><span data-lang="emailLbl">Email</span>
+                                </label>
+                                <input id="email" name="email" type="email"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
+                                    placeholder="jay.patel@agricare.in">
+                            </div>
+
+                            <!-- 4. Phone Number -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                    <i class="fas fa-phone text-emerald-500"></i><span data-lang="phoneLbl">Phone Number</span> <span class="text-red-500">*</span>
+                                </label>
+                                <input id="phone_no" name="phone_no" type="tel" required
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
+                                    placeholder="9876543210">
+                            </div>
+                        </div>
+
+                        <!-- FARMER SPECIFIC FIELDS -->
+                        <div id="farmer-fields" class="role-specific active mb-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                <!-- District -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                        <i class="fas fa-map text-emerald-500"></i><span data-lang="districtLbl">District</span> <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="district" name="district" required onchange="updateCities()"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm bg-white">
+                                        <option value="">-- Select District --</option>
+                                        <option>Ahmedabad</option>
+                                        <option>Amreli</option>
+                                        <option>Anand</option>
+                                        <option>Arvalli</option>
+                                        <option>Banaskantha</option>
+                                        <option>Bharuch</option>
+                                        <option>Bhavnagar</option>
+                                        <option>Botad</option>
+                                        <option>Chhota Udaipur</option>
+                                        <option>Dahod</option>
+                                        <option>Dang</option>
+                                        <option>Devbhoomi Dwarka</option>
+                                        <option>Gandhinagar</option>
+                                        <option>Gir Somnath</option>
+                                        <option>Jamnagar</option>
+                                        <option>Junagadh</option>
+                                        <option>Kheda</option>
+                                        <option>Kutch</option>
+                                        <option>Mahisagar</option>
+                                        <option>Mehsana</option>
+                                        <option>Morbi</option>
+                                        <option>Narmada</option>
+                                        <option>Navsari</option>
+                                        <option>Panchmahal</option>
+                                        <option>Patan</option>
+                                        <option>Porbandar</option>
+                                        <option>Rajkot</option>
+                                        <option>Sabarkantha</option>
+                                        <option>Surat</option>
+                                        <option>Surendranagar</option>
+                                        <option>Tapi</option>
+                                        <option>Vadodara</option>
+                                        <option>Valsad</option>
+                                    </select>
+                                </div>
+
+                                <!-- City -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                        <i class="fas fa-city text-emerald-500"></i><span data-lang="cityLbl">City</span> <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="city" name="city" required
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm bg-white">
+                                        <option value="">-- Select District First --</option>
+                                    </select>
+                                </div>
+
+                                <!-- Pincode -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                        <i class="fas fa-map-pin text-emerald-500"></i><span data-lang="pincodeLbl">Pincode</span> <span class="text-red-500">*</span>
+                                    </label>
+                                    <input id="pincode" name="pincode" type="text" required maxlength="6"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
+                                        placeholder="392001">
+                                </div>
+
+                                <!-- Preferred Language -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                        <i class="fas fa-language text-emerald-500"></i><span data-lang="prefLangLbl">Preferred Language</span> <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="pref_lang" name="pref_lang" required
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm bg-white">
+                                        <option value="" data-lang="selectLang">-- Select Language --</option>
+                                        <option value="en" data-lang="langEn">English</option>
+                                        <option value="gu" data-lang="langGu">Gujarati</option>
+                                        <option value="hi" data-lang="langHi">Hindi</option>
+                                    </select>
+                                </div>
+
+                                <!-- PIN -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                        <i class="fas fa-lock text-emerald-500"></i><span data-lang="pin">6-Digit PIN</span> <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input id="pin" name="pin" type="password" required maxlength="6" pattern="\d{6}" inputmode="numeric"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm pr-10"
+                                            placeholder="••••••">
+                                        <button type="button" onclick="togglePin()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-emerald-600 transition-colors focus:outline-none">
+                                            <i id="pin-icon" class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <p id="pin-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="pinError">Please enter exactly 6 digits.</p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- ADMIN SPECIFIC FIELDS -->
+                        <div id="admin-fields" class="role-specific mb-5">
+                            <!-- Admin specific fields can be added here if needed -->
+                        </div>
+
+                    </div> <!-- End Scrollable Content -->
+
+                    <!-- Submit Button (Sticky at bottom) -->
+                    <div class="pt-4 mt-auto border-t border-gray-100">
+                        <button type="submit" id="submit-btn"
+                            class="group relative w-full flex items-center justify-center gap-3 py-3.5 px-6 border border-transparent text-base font-black rounded-xl text-white bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-xl hover:shadow-emerald-500/50 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
+                            <i class="fas fa-user-plus"></i>
+                            <span data-lang="createAccount">CREATE ACCOUNT</span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-
-        <form class="mt-8 space-y-5 relative z-10" action="#" method="POST" id="registerForm" onsubmit="handleRegister(event)">
-            <input type="hidden" name="role" id="reg-role-input" value="farmer">
-
-            <!-- COMMON FIELDS -->
-            <div class="space-y-5">
-                <!-- 1. User ID -->
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                        <i class="fas fa-id-badge text-emerald-500"></i>User ID <span class="text-red-500">*</span>
-                    </label>
-                    <input id="user_id" name="user_id" type="text" required maxlength="12"
-                        class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-base shadow-sm"
-                        placeholder="JAY001 (Unique ID)">
-                </div>
-
-                <!-- 2. Full Name -->
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                        <i class="fas fa-user text-emerald-500"></i>Full Name <span class="text-red-500">*</span>
-                    </label>
-                    <input id="full_name" name="full_name" type="text" required
-                        class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-base shadow-sm"
-                        placeholder="Jaykumar Ramanbhai Patel">
-                </div>
-
-                <!-- 3. Email -->
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                        <i class="fas fa-envelope text-emerald-500"></i>Email
-                    </label>
-                    <input id="email" name="email" type="email"
-                        class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-base shadow-sm"
-                        placeholder="jay.patel@agricare.in">
-                </div>
-
-                <!-- 4. Phone Number -->
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                        <i class="fas fa-phone text-emerald-500"></i>Phone Number <span class="text-red-500">*</span>
-                    </label>
-                    <input id="phone_no" name="phone_no" type="tel" required
-                        class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-base shadow-sm"
-                        placeholder="9876543210">
-                </div>
-
-                <!-- 5. Password -->
-                <div class="relative">
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                        <i class="fas fa-lock text-emerald-500"></i>Password <span class="text-red-500">*</span>
-                    </label>
-                    <input id="password" name="password" type="password" required minlength="8"
-                        class="w-full pr-12 py-3.5 border-2 border-gray-200 rounded-2xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-base shadow-sm"
-                        placeholder="Minimum 8 characters">
-                    <button type="button" onclick="togglePassword()" class="absolute right-4 top-11 text-gray-400 hover:text-emerald-600 transition-all">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- FARMER SPECIFIC FIELDS -->
-            <div id="farmer-fields" class="role-specific active space-y-5">
-                <!-- 8. Pincode -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                            <i class="fas fa-map-pin text-emerald-500"></i>Pincode <span class="text-red-500">*</span>
-                        </label>
-                        <input id="pincode" name="pincode" type="text" required maxlength="6"
-                            class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-base shadow-sm"
-                            placeholder="392001">
-                    </div>
-                </div>
-
-                <!-- 11. City & 12. Village -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                            <i class="fas fa-city text-emerald-500"></i>City <span class="text-red-500">*</span>
-                        </label>
-                        <select id="district" name="district" required onchange="updateVillages()"
-                            class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-base shadow-sm bg-white">
-                            <option value="">-- Select City --</option>
-                            <option>Ahmedabad</option>
-                            <option>Amreli</option>
-                            <option>Anand</option>
-                            <option>Banaskantha</option>
-                            <option>Bharuch</option>
-                            <option>Bhavnagar</option>
-                            <option>Botad</option>
-                            <option>Chhota Udaipur</option>
-                            <option>Dahod</option>
-                            <option>Dang</option>
-                            <option>Devbhoomi Dwarka</option>
-                            <option>Gandhinagar</option>
-                            <option>Gir Somnath</option>
-                            <option>Jamnagar</option>
-                            <option>Junagadh</option>
-                            <option>Kheda</option>
-                            <option>Kutch</option>
-                            <option>Mahisagar</option>
-                            <option>Mehsana</option>
-                            <option>Morbi</option>
-                            <option>Narmada</option>
-                            <option>Navsari</option>
-                            <option>Panchmahal</option>
-                            <option>Patan</option>
-                            <option>Porbandar</option>
-                            <option>Rajkot</option>
-                            <option>Sabarkantha</option>
-                            <option>Surat</option>
-                            <option>Surendranagar</option>
-                            <option>Tapi</option>
-                            <option>Vadodara</option>
-                            <option>Valsad</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                            <i class="fas fa-home text-emerald-500"></i>Village <span class="text-red-500">*</span>
-                        </label>
-                        <select id="village" name="village" required
-                            class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-base shadow-sm bg-white">
-                            <option value="">-- Select City First --</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- BUYER SPECIFIC FIELDS -->
-            <div id="buyer-fields" class="role-specific space-y-5">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                            <i class="fas fa-building text-orange-500"></i>Business Name <span class="text-red-500">*</span>
-                        </label>
-                        <input id="business_name" name="business_name" type="text" required
-                            class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-3 focus:ring-orange-500/30 focus:border-orange-500 transition-all text-base shadow-sm"
-                            placeholder="Patel Agro Traders">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                            <i class="fas fa-warehouse text-orange-500"></i>Storage Capacity
-                        </label>
-                        <input id="storage_capacity" name="storage_capacity" type="text"
-                            class="w-full px-4 py-3.5 border-2 border-gray-200 rounded-2xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-3 focus:ring-orange-500/30 focus:border-orange-500 transition-all text-base shadow-sm"
-                            placeholder="500 Tons">
-                    </div>
-                </div>
-            </div>
-
-            <!-- TERMS & CONDITIONS ✅ LINK FIXED HERE -->
-            <div class="flex items-start pt-2">
-                <div class="flex items-center h-5 mt-1">
-                    <input id="terms" name="terms" type="checkbox" required
-                        class="h-5 w-5 text-emerald-600 focus:ring-emerald-500 border-2 border-gray-300 rounded-lg shadow-sm">
-                </div>
-                <div class="ml-4 text-sm">
-                    <label for="terms" class="font-medium text-gray-700 select-none">
-                        <span data-lang="terms">I agree to the</span>
-                        <a href="terms.html" target="_blank"
-                            class="text-emerald-600 hover:text-emerald-700 font-bold underline decoration-2 underline-offset-2 transition-all hover:underline-offset-4 hover:shadow-emerald-200">
-                            Terms and Conditions
-                        </a>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <div>
-                <button type="submit" id="submit-btn"
-                    class="group relative w-full flex items-center justify-center gap-3 py-4 px-6 border border-transparent text-base font-black rounded-2xl text-white bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-xl hover:shadow-emerald-500/50 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                    <i class="fas fa-user-plus"></i>
-                    <span data-lang="createAccount">CREATE ACCOUNT</span>
-                </button>
-            </div>
-        </form>
     </div>
 
     <script>
@@ -289,58 +295,111 @@
             en: {
                 logo: 'AgriCare',
                 title: 'Join AgriCare',
-                subtitle: 'Create your account to access live mandi prices, crop recommendations & more',
+                subtitle: 'Create your account to access crop recommendations & more',
                 haveAccount: 'Already have an account?',
-                farmer: 'FARMER (ખેડૂત)',
-                buyer: 'BUYER (વેપારી)',
-                terms: 'I agree to the',
-                createAccount: 'CREATE ACCOUNT'
+                farmer: 'FARMER',
+                admin: 'ADMIN',
+                createAccount: 'CREATE ACCOUNT',
+                pin: '6-Digit PIN',
+                pinError: 'Please enter exactly 6 digits.',
+                backToHome: 'Back to Home',
+                logIn: 'Log in',
+                userIdLbl: 'User ID',
+                fullNameLbl: 'Full Name',
+                emailLbl: 'Email',
+                phoneLbl: 'Phone Number',
+                districtLbl: 'District',
+                cityLbl: 'City',
+                pincodeLbl: 'Pincode',
+                prefLangLbl: 'Preferred Language',
+                selectLang: '-- Select Language --',
+                langEn: 'English',
+                langGu: 'Gujarati',
+                langHi: 'Hindi'
             },
             gu: {
-                logo: 'એગ્રીસ્માર્ટ',
-                title: 'એગ્રીસ્માર્ટ જોડાઓ',
-                subtitle: 'લાઈવ મંડી ભાવ, પાક સલાહ મેળવો',
+                logo: 'એગ્રીકેર',
+                title: 'એગ્રીકેર સાથે જોડાઓ',
+                subtitle: 'પાક સલાહ અને વધુ મેળવવા ખાતું બનાવો',
                 haveAccount: 'ખાતું છે?',
                 farmer: 'ખેડૂત',
-                buyer: 'વેપારી',
-                terms: 'મંજૂર છે',
-                createAccount: 'ખાતું બનાવો'
+                admin: 'એડમિન',
+                createAccount: 'ખાતું બનાવો',
+                pin: '6-અંકનો પિન',
+                pinError: 'કૃપા કરીને બરાબર 6 અંકો દાખલ કરો.',
+                backToHome: 'હોમ પર પાછા જાઓ',
+                logIn: 'પ્રવેશ કરો',
+                userIdLbl: 'યુઝર આઈડી',
+                fullNameLbl: 'પૂરું નામ',
+                emailLbl: 'ઈમેલ',
+                phoneLbl: 'મોબાઈલ નંબર',
+                districtLbl: 'જિલ્લો',
+                cityLbl: 'શહેર',
+                pincodeLbl: 'પીનકોડ',
+                prefLangLbl: 'પસંદગીની ભાષા',
+                selectLang: '-- ભાષા પસંદ કરો --',
+                langEn: 'અંગ્રેજી',
+                langGu: 'ગુજરાતી',
+                langHi: 'હિન્દી'
             },
             hi: {
-                logo: 'एग्रीस्मार्ट',
-                title: 'एग्रीस्मार्ट जॉइन करें',
-                subtitle: 'लाइव मंडी दाम, फसल सलाह प्राप्त करें',
+                logo: 'एग्रीकेर',
+                title: 'एग्रीकेर जॉइन करें',
+                subtitle: 'फसल सलाह और बहुत कुछ प्राप्त करने के लिए अपना खाता बनाएं',
                 haveAccount: 'खाता है?',
                 farmer: 'किसान',
-                buyer: 'व्यापारी',
-                terms: 'सहमत हूं',
-                createAccount: 'खाता बनाएं'
+                admin: 'एडमिन',
+                createAccount: 'खाता बनाएं',
+                pin: '6-अंकों का पिन',
+                pinError: 'कृपया ठीक 6 अंक दर्ज करें।',
+                backToHome: 'होम पर वापस जाएं',
+                logIn: 'लॉग इन करें',
+                userIdLbl: 'यूज़र आईडी',
+                fullNameLbl: 'पूरा नाम',
+                emailLbl: 'ईमेल',
+                phoneLbl: 'फ़ोन नंबर',
+                districtLbl: 'ज़िला',
+                cityLbl: 'शहर',
+                pincodeLbl: 'पिनकोड',
+                prefLangLbl: 'पसंदीदा भाषा',
+                selectLang: '-- भाषा चुनें --',
+                langEn: 'अंग्रेज़ी',
+                langGu: 'गुजराती',
+                langHi: 'हिंदी'
             }
         };
 
         function changeLang(lang) {
             localStorage.setItem('agricare_lang', lang);
+
+            // Update language switcher buttons
             document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('bg-emerald-500', 'text-white');
-                btn.classList.add('hover:bg-emerald-100');
+                btn.classList.remove('bg-emerald-500', 'text-white', 'shadow-md');
+                btn.classList.add('text-gray-600', 'hover:bg-emerald-100');
             });
-            event.target.classList.add('bg-emerald-500', 'text-white');
-            event.target.classList.remove('hover:bg-emerald-100');
+            const activeBtn = document.querySelector(`[data-lang-key="${lang}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-emerald-500', 'text-white', 'shadow-md');
+                activeBtn.classList.remove('text-gray-600', 'hover:bg-emerald-100');
+            }
 
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
-                if (translations[lang][key]) el.textContent = translations[lang][key];
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
             });
             document.body.classList.remove('gu-text', 'hi-text');
             if (lang === 'gu') document.body.classList.add('gu-text');
             if (lang === 'hi') document.body.classList.add('hi-text');
         }
 
-        // City → Village map (major talukas/villages per Gujarat district)
-        const cityVillageMap = {
+        // District → City map (major talukas/villages per Gujarat district)
+        const districtCityMap = {
             'Ahmedabad': ['Ahmedabad City', 'Dholka', 'Dhandhuka', 'Sanand', 'Viramgam', 'Bavla', 'Mandal', 'Detroj-Rampura'],
             'Amreli': ['Amreli', 'Rajula', 'Savarkundla', 'Lathi', 'Bagasara', 'Jafrabad', 'Khambha', 'Dhari'],
             'Anand': ['Anand', 'Vallabh Vidyanagar', 'Nadiad', 'Petlad', 'Borsad', 'Khambhat', 'Sojitra', 'Umreth'],
+            'Arvalli': ['Modasa', 'Bhiloda', 'Bayad', 'Dhansura', 'Malpur', 'Meghraj'],
             'Banaskantha': ['Palanpur', 'Deesa', 'Dhanera', 'Tharad', 'Vav', 'Radhanpur', 'Vadgam', 'Danta'],
             'Bharuch': ['Bharuch', 'Ankleshwar', 'Jambusar', 'Amod', 'Jagadia', 'Valia', 'Jhagadia', 'Hansot'],
             'Bhavnagar': ['Bhavnagar', 'Palitana', 'Sihor', 'Mahuva', 'Talaja', 'Gariadhar', 'Ghogha', 'Vallabhipur'],
@@ -364,7 +423,7 @@
             'Patan': ['Patan', 'Sidhpur', 'Chanasma', 'Harij', 'Santalpur', 'Radhanpur'],
             'Porbandar': ['Porbandar', 'Ranavav', 'Kutiyana'],
             'Rajkot': ['Rajkot', 'Gondal', 'Jetpur', 'Jasdan', 'Wankaner', 'Paddhari', 'Lodhika'],
-            'Sabarkantha': ['Himmatnagar', 'Idar', 'Modasa', 'Bayad', 'Talod', 'Prantij', 'Khedbrahma'],
+            'Sabarkantha': ['Himmatnagar', 'Idar', 'Talod', 'Prantij', 'Khedbrahma', 'Vadali', 'Poshina'],
             'Surat': ['Surat City', 'Bardoli', 'Olpad', 'Mandvi', 'Mahuva', 'Kamrej', 'Mangrol', 'Palsana'],
             'Surendranagar': ['Surendranagar', 'Wadhwan', 'Chotila', 'Dhrangadhra', 'Halvad', 'Limbdi', 'Muli'],
             'Tapi': ['Vyara', 'Surat', 'Nizar', 'Ukai', 'Dolvan', 'Songadh', 'Valod'],
@@ -372,16 +431,16 @@
             'Valsad': ['Valsad', 'Vapi', 'Pardi', 'Umbergaon', 'Dharampur', 'Kaprada']
         };
 
-        function updateVillages() {
-            const city = document.getElementById('district').value;
-            const villageSelect = document.getElementById('village');
-            villageSelect.innerHTML = '<option value="">-- Select Village --</option>';
-            if (city && cityVillageMap[city]) {
-                cityVillageMap[city].forEach(v => {
+        function updateCities() {
+            const district = document.getElementById('district').value;
+            const citySelect = document.getElementById('city');
+            citySelect.innerHTML = '<option value="">-- Select City --</option>';
+            if (district && districtCityMap[district]) {
+                districtCityMap[district].forEach(c => {
                     const opt = document.createElement('option');
-                    opt.value = v;
-                    opt.textContent = v;
-                    villageSelect.appendChild(opt);
+                    opt.value = c;
+                    opt.textContent = c;
+                    citySelect.appendChild(opt);
                 });
             }
         }
@@ -391,7 +450,7 @@
             currentRole = role;
             document.getElementById('reg-role-input').value = role;
 
-            ['farmer', 'buyer'].forEach(r => {
+            ['farmer', 'admin'].forEach(r => {
                 const btn = document.getElementById(`reg-btn-${r}`);
                 if (r === role) {
                     btn.classList.add('bg-white', 'shadow-sm', 'text-emerald-700', 'border-emerald-200');
@@ -406,12 +465,12 @@
             document.getElementById(`${role}-fields`).classList.add('active');
         }
 
-        // Password Toggle
-        function togglePassword() {
-            const pwd = document.getElementById('password');
-            const icon = event.target.querySelector('i');
+        // PIN Toggle
+        function togglePin() {
+            const pin = document.getElementById('pin');
+            const icon = document.getElementById('pin-icon');
             passwordVisible = !passwordVisible;
-            pwd.type = passwordVisible ? 'text' : 'password';
+            pin.type = passwordVisible ? 'text' : 'password';
             icon.classList.toggle('fa-eye', !passwordVisible);
             icon.classList.toggle('fa-eye-slash', passwordVisible);
         }
@@ -420,18 +479,26 @@
         function handleRegister(e) {
             e.preventDefault();
 
+            if (currentRole === 'farmer') {
+                const pin = document.getElementById('pin').value;
+                if (!/^\d{6}$/.test(pin)) {
+                    document.getElementById('pin-error').classList.remove('hidden');
+                    return;
+                } else {
+                    document.getElementById('pin-error').classList.add('hidden');
+                }
+            }
+
             const formData = {
                 user_id: document.getElementById('user_id').value,
                 full_name: document.getElementById('full_name').value,
                 email: document.getElementById('email').value,
                 phone_no: document.getElementById('phone_no').value,
-                password: document.getElementById('password').value,
                 role: currentRole,
                 pincode: document.getElementById('pincode')?.value || '',
                 district: document.getElementById('district')?.value || '',
-                village: document.getElementById('village')?.value || '',
-                business_name: document.getElementById('business_name')?.value || '',
-                storage_capacity: document.getElementById('storage_capacity')?.value || ''
+                city: document.getElementById('city')?.value || '',
+                pin: document.getElementById('pin')?.value || ''
             };
 
             localStorage.setItem('userRegistered', JSON.stringify(formData));

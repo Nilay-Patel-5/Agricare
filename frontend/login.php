@@ -105,12 +105,12 @@
                         </div>
                         <div>
                             <label id="password-label" for="password"
-                                class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1" data-lang="password">Date of Birth</label>
+                                class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1" data-lang="password">6-Digit PIN</label>
                             <div class="relative">
-                                <input id="password" name="password" type="date" required disabled
+                                <input id="password" name="password" type="password" inputmode="numeric" required disabled maxlength="6" pattern="\d{6}"
                                     class="appearance-none rounded-2xl relative block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 pr-10"
-                                    placeholder="YYYY-MM-DD">
-                                <button type="button" id="toggle-pwd-btn" onclick="togglePasswordVisibility()" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-emerald-600 transition-colors focus:outline-none z-20">
+                                    placeholder="••••••">
+                                <button type="button" id="toggle-pwd-btn" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-emerald-600 transition-colors focus:outline-none z-20">
                                     <i id="pwd-icon" class="fa-solid fa-eye"></i>
                                 </button>
                             </div>
@@ -153,7 +153,7 @@
                 emailAddress: 'Email Address',
                 password: 'Password',
                 adminPasswordError: 'Password must be at least 7 chars, include 1 uppercase, 1 lowercase, 1 number, and 1 special char.',
-                dob: 'Date of Birth',
+                pin: '6-Digit PIN',
                 phoneError: 'Please enter a valid 10-digit mobile number.',
                 rememberMe: 'Remember me',
                 signIn: 'SIGN IN'
@@ -172,18 +172,18 @@
                 emailAddress: 'ઈમેલ એડ્રેસ',
                 password: 'પાસવર્ડ',
                 adminPasswordError: 'પાસવર્ડમાં ઓછામાં ઓછા 7 અક્ષરો, 1 અપરકેસ, 1 લોઅરકેસ, 1 નંબર અને 1 વિશિષ્ટ અક્ષર હોવા જોઈએ.',
-                dob: 'જન્મ તારીખ',
+                pin: '6-અંકનો પિન',
                 phoneError: 'કૃપા કરીને માન્ય 10-અંકનો મોબાઈલ નંબર દાખલ કરો.',
                 rememberMe: 'મને યાદ રાખો',
                 signIn: 'પ્રવેશ કરો'
             },
             hi: {
                 heroTitle: 'गुजरात के किसानों का सशक्तिकरण',
-                heroSubtitle: 'वास्तविक समय के बाजार मूल्य, मौसम अपडेट और विशेष रूप से आपके लिए तैयार विशेषज्ञ फसल सलाह प्राप्त करने के लिए एग्रीकेयर से जुड़ें।',
+                heroSubtitle: 'वास्तविक समय के बाजार मूल्य, मौसम अपडेट और विशेष रूप से आपके लिए तैयार विशेषज्ञ फसल सलाह प्राप्त करने के लिए एग्रीकेर से जुड़ें।',
                 backToHome: 'होम पर वापस जाएं',
-                logo: 'एग्रीकेयर',
+                logo: 'एग्रीकेर',
                 welcomeBack: 'वापसी पर स्वागत है',
-                newToAgricare: 'एग्रीकेयर में नए हैं?',
+                newToAgricare: 'एग्रीकेर में नए हैं?',
                 createAccount: 'खाता बनाएं',
                 farmer: 'किसान',
                 admin: 'एडमिन',
@@ -191,7 +191,7 @@
                 emailAddress: 'ईमेल पता',
                 password: 'पासवर्ड',
                 adminPasswordError: 'पासवर्ड कम से कम 7 अक्षरों का होना चाहिए, जिसमें 1 बड़ा अक्षर, 1 छोटा अक्षर, 1 नंबर और 1 विशेष अक्षर शामिल होना चाहिए।',
-                dob: 'जन्म तिथि',
+                pin: '6-अंकों का पिन',
                 phoneError: 'कृपया एक मान्य 10-अंकीय मोबाइल नंबर दर्ज करें।',
                 rememberMe: 'मुझे याद रखें',
                 signIn: 'साइन इन'
@@ -225,7 +225,7 @@
             const pwdLabel = document.getElementById('password-label');
             if (role === 'farmer') {
                 label.textContent = translations[lang].phoneNumber;
-                pwdLabel.textContent = translations[lang].dob;
+                pwdLabel.textContent = translations[lang].pin;
             } else {
                 label.textContent = translations[lang].emailAddress;
                 pwdLabel.textContent = translations[lang].password;
@@ -267,10 +267,15 @@
                 input.autocomplete = 'tel';
                 input.placeholder = 'e.g. 9876543210';
 
-                pwdLabel.textContent = translations[lang].dob;
-                pwdInput.type = 'date';
-                pwdInput.placeholder = 'YYYY-MM-DD';
-                pwdToggleBtn.classList.add('hidden'); // Hide eye icon for farmers
+                pwdLabel.textContent = translations[lang].pin;
+                pwdInput.type = 'password';
+                pwdInput.inputMode = 'numeric';
+                pwdInput.maxLength = 6;
+                pwdInput.pattern = '\\d{6}';
+                pwdInput.placeholder = '••••••';
+                pwdToggleBtn.classList.remove('hidden'); // Show eye icon for farmers
+                pwdIcon.classList.remove('fa-eye-slash');
+                pwdIcon.classList.add('fa-eye');
 
                 // Ensure it gets validated immediately when switched
                 validatePhoneInput();
@@ -283,6 +288,9 @@
 
                 pwdLabel.textContent = translations[lang].password;
                 pwdInput.type = 'password';
+                pwdInput.removeAttribute('inputMode');
+                pwdInput.removeAttribute('maxLength');
+                pwdInput.removeAttribute('pattern');
                 pwdInput.placeholder = '••••••••';
                 pwdToggleBtn.classList.remove('hidden'); // Show eye icon for admins
                 pwdIcon.classList.remove('fa-eye-slash');
@@ -323,14 +331,14 @@
             if (identifier.length > 0) {
                 if (phoneRegex.test(identifier)) {
                     errorElement.classList.add('hidden');
-                    pwdInput.disabled = false; // Unlock DOB
+                    pwdInput.disabled = false; // Unlock PIN
                 } else {
                     errorElement.classList.remove('hidden');
-                    pwdInput.disabled = true; // Lock DOB
-                    pwdInput.value = ''; // Clear DOB if they had one and changed the phone number
+                    pwdInput.disabled = true; // Lock PIN
+                    pwdInput.value = ''; // Clear PIN if they had one and changed the phone number
                 }
             } else {
-                // If empty, hide error but keep DOB locked
+                // If empty, hide error but keep PIN locked
                 errorElement.classList.add('hidden');
                 pwdInput.disabled = true;
                 pwdInput.value = '';
@@ -350,12 +358,11 @@
                     return; // Stop form submission
                 }
 
-                // Enforce 18+ policy for farmers
-                const dob = new Date(document.getElementById('password').value);
-                const today = new Date();
-                const minAgeDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-                if (dob > minAgeDate) {
-                    alert(lang === 'gu' ? 'તમે ખેડૂત તરીકે નોંધણી કરવા માટે ઓછામાં ઓછા 18 વર્ષના હોવા જોઈએ.' : (lang === 'hi' ? 'किसान के रूप में पंजीकरण करने के लिए आपकी आयु कम से कम 18 वर्ष होनी चाहिए।' : 'You must be at least 18 years old to login as a farmer.'));
+                // PIN validation
+                const pin = document.getElementById('password').value;
+                const pinRegex = /^\d{6}$/;
+                if (!pinRegex.test(pin)) {
+                    alert(lang === 'gu' ? 'કૃપા કરીને 6-અંકનો પિન દાખલ કરો.' : (lang === 'hi' ? 'कृपया 6-अंकीय पिन दर्ज करें।' : 'Please enter a 6-digit PIN.'));
                     return;
                 }
             } else {
@@ -388,16 +395,7 @@
             const initialLang = urlParams.get('lang') || localStorage.getItem('agricare_lang') || 'en';
             changeLang(initialLang);
 
-            // Set max date for Date of Birth (must be 18+ years old)
-            const today = new Date();
-            const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-            // YYYY-MM-DD format
-            const dd = String(maxDate.getDate()).padStart(2, '0');
-            const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
-            const yyyy = maxDate.getFullYear();
-            document.getElementById('password').max = `${yyyy}-${mm}-${dd}`;
-
-            // Run initial validation to lock DOB field by default
+            // Run initial validation to lock PIN field by default
             validatePhoneInput();
         });
     </script>

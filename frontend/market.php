@@ -1378,7 +1378,7 @@
                 "Dist": "જિલ્લો"
             },
             hi: {
-                logo: 'एग्रीकेयर',
+                logo: 'एग्रीकेर',
                 tagline: "गुजरात का स्मार्ट कृषि-मंच",
                 home: '🏠 होम',
                 features: '✨ विशेषताएँ',
@@ -1389,7 +1389,7 @@
                 registerBtn: 'रजिस्टर',
                 'footer-desc': 'किसानों को डेटा के साथ सशक्त बनाना और एक स्थायी भविष्य का निर्माण करना।',
                 solutions: 'समाधान',
-                copyright: '© 2026 एग्रीकेयर। किसानों के लिए ❤️ से बनाया गया।',
+                copyright: '© 2026 एग्रीकेर। किसानों के लिए ❤️ से बनाया गया।',
                 sol_advisory: 'फसल सलाह',
                 sol_disease: 'फसल रोग पहचान',
                 sol_market: 'बाज़ार संपर्क',
@@ -1937,11 +1937,13 @@
 
         const mobileMenu = document.getElementById('mobileMenu');
         const overlay = document.getElementById('mobileMenuOverlay');
-        setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if (loader) loader.classList.add('hidden');
+        }, 500);
 
         const urlParams = new URLSearchParams(window.location.search);
         const initialLang = urlParams.get('lang') || localStorage.getItem('agricare_lang') || 'en';
-        changeLang(initialLang);
 
         const menuBtn = document.getElementById('mobileMenuBtn');
 
@@ -2724,11 +2726,27 @@
             updateCommodityDisplay();
         }
 
+        function closeAllDropdownsExcept(except) {
+            if (except !== 'district' && !districtWrapper.classList.contains('hidden')) {
+                districtWrapper.classList.add('hidden');
+                districtArrow.classList.remove('rotate-180');
+            }
+            if (except !== 'market' && !marketWrapper.classList.contains('hidden')) {
+                marketWrapper.classList.add('hidden');
+                marketArrow.classList.remove('rotate-180');
+            }
+            if (except !== 'commodityGroup' && !commodityGroupWrapper.classList.contains('hidden')) {
+                commodityGroupWrapper.classList.add('hidden');
+                commodityGroupArrow.classList.remove('rotate-180');
+            }
+            if (except !== 'commodity' && !commodityWrapper.classList.contains('hidden')) {
+                commodityWrapper.classList.add('hidden');
+                commodityArrow.classList.remove('rotate-180');
+            }
+        }
+
         function toggleCommodityDropdown() {
-            // Close other dropdowns
-            if (!districtWrapper.classList.contains('hidden')) toggleDistrictDropdown();
-            if (!marketWrapper.classList.contains('hidden')) toggleMarketDropdown();
-            if (!commodityGroupWrapper.classList.contains('hidden')) toggleCommodityGroupDropdown();
+            closeAllDropdownsExcept('commodity');
 
             commodityWrapper.classList.toggle('hidden');
             commodityArrow.classList.toggle('rotate-180');
@@ -2771,12 +2789,7 @@
         }
 
         function toggleDistrictDropdown() {
-            // Close market if open
-            if (!marketWrapper.classList.contains('hidden')) toggleMarketDropdown();
-            // Close commodity group if open
-            if (!commodityGroupWrapper.classList.contains('hidden')) toggleCommodityGroupDropdown();
-            // Close commodity if open
-            if (!commodityWrapper.classList.contains('hidden')) toggleCommodityDropdown();
+            closeAllDropdownsExcept('district');
 
             districtWrapper.classList.toggle('hidden');
             districtArrow.classList.toggle('rotate-180');
@@ -2786,11 +2799,7 @@
         }
 
         function toggleMarketDropdown() {
-            // Close other dropdowns if open
-            if (!districtWrapper.classList.contains('hidden')) toggleDistrictDropdown();
-            if (!commodityGroupWrapper.classList.contains('hidden')) toggleCommodityGroupDropdown();
-            // Close commodity if open
-            if (!commodityWrapper.classList.contains('hidden')) toggleCommodityDropdown();
+            closeAllDropdownsExcept('market');
 
             if (selectedDistricts.length === districts.length) return; // Prevent opening if All Districts selected
 
@@ -2802,11 +2811,7 @@
         }
 
         function toggleCommodityGroupDropdown() {
-            // Close other dropdowns
-            if (!districtWrapper.classList.contains('hidden')) toggleDistrictDropdown();
-            if (!marketWrapper.classList.contains('hidden')) toggleMarketDropdown();
-            // Close commodity if open
-            if (!commodityWrapper.classList.contains('hidden')) toggleCommodityDropdown();
+            closeAllDropdownsExcept('commodityGroup');
 
             commodityGroupWrapper.classList.toggle('hidden');
             commodityGroupArrow.classList.toggle('rotate-180');
@@ -2847,16 +2852,15 @@
             }
         });
 
+        // Initialize proper state
+        updateMarketOptions();
+        updateCommodityOptions();
+
+        // This sets up the language and does the initial render of everything
+        changeLang(initialLang);
+
         // first page load
         document.getElementById("searchBtn").click();
-
-        // Initialize proper state
-        renderDistricts();
-        updateDistrictDisplay();
-        updateMarketOptions();
-        renderCommodityGroups();
-        updateCommodityGroupDisplay();
-        updateCommodityOptions();
 
         // Scroll Progress Bar
         window.onscroll = function() {
