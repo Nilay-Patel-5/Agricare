@@ -4,9 +4,9 @@
 class Database
 {
     private static $host = 'localhost';
-    private static $db = 'agricare';
+    private static $db = 'agricare_db';
     private static $user = 'postgres';
-    private static $pass = 'garvpatel@14'; // Set your PostgreSQL password here
+    private static $pass = 'nrp@postgres7';
     private static $port = '5432';
     private static $pdo = null;
 

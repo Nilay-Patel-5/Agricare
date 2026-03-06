@@ -343,7 +343,7 @@
         <!-- Arrival Date Display -->
         <div class="flex justify-end mb-4">
             <div id="arrivalDateDisplay" class="hidden inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 px-4 py-2 rounded-full text-sm font-bold border border-emerald-200 shadow-sm">
-                <i class="far fa-calendar-alt"></i> Data as of: <span id="arrivalDateText">--</span>
+                <i class="far fa-calendar-alt"></i> <span data-lang="data_as_of">Data as of:</span> <span id="arrivalDateText">--</span>
             </div>
         </div>
 
@@ -426,6 +426,7 @@
     </footer>
 
     <script>
+        let currentMarketData = null;
         document.getElementById("searchBtn").addEventListener("click", async function() {
             const btn = this;
             const originalContent = btn.innerHTML;
@@ -468,7 +469,7 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-bold text-red-800">Connection Failed</h3>
-                                <p class="text-red-600">Could not connect to the live market database. Please ensure the backend server and MongoDB are running.</p>
+                                <p class="text-red-600">Could not connect to the live market database. Please ensure the backend server and PostgreSQL Database are running.</p>
                             </div>
                         </div>
                     </div>`;
@@ -480,6 +481,7 @@
 
 
         function showResults(rows) {
+            currentMarketData = rows;
 
             const container = document.getElementById("tableContainer");
             const placeholder = document.getElementById("noDataPlaceholder");
@@ -514,9 +516,9 @@
             <th class="p-3" data-lang="district_label">${translations[currentLang]['district_label'] || 'District'}</th>
             <th class="p-3" data-lang="market_label">${translations[currentLang]['market_label'] || 'Market'}</th>
             <th class="p-3" data-lang="commodity_label">${translations[currentLang]['commodity_label'] || 'Commodity'}</th>
-            <th class="p-3" data-lang="min_price">${translations[currentLang]['min_price'] || 'Min Price'}</th>
-            <th class="p-3" data-lang="max_price">${translations[currentLang]['max_price'] || 'Max Price'}</th>
-            <th class="p-3" data-lang="modal_price">${translations[currentLang]['modal_price'] || 'Modal Price'}</th>
+            <th class="p-3" data-lang="min_price">${translations[currentLang]['min_price'] || 'Min Price (₹/Quintal)'}</th>
+            <th class="p-3" data-lang="max_price">${translations[currentLang]['max_price'] || 'Max Price (₹/Quintal)'}</th>
+            <th class="p-3" data-lang="modal_price">${translations[currentLang]['modal_price'] || 'Modal Price (₹/Quintal)'}</th>
         </tr>
     </thead>
     <tbody>`;
@@ -571,9 +573,10 @@
                 market_label: 'Market',
                 group_label: 'Commodity Group',
                 commodity_label: 'Commodity',
-                min_price: 'Min Price',
-                max_price: 'Max Price',
-                modal_price: 'Modal Price',
+                min_price: 'Min Price (₹/Quintal)',
+                max_price: 'Max Price (₹/Quintal)',
+                modal_price: 'Modal Price (₹/Quintal)',
+                data_as_of: 'Data as of:',
                 all_districts: 'All Districts',
                 all_markets: 'All Markets',
                 all_groups: 'All Groups',
@@ -601,6 +604,7 @@
                 "Oil Seeds": "Oil Seeds",
                 "Pulses": "Pulses",
                 "Vegetables": "Vegetables",
+                "Spices": "Spices",
                 "Others": "Others",
                 // Districts
                 "Ahmedabad": "Ahmedabad",
@@ -618,8 +622,8 @@
                 "Gandhinagar": "Gandhinagar",
                 "Gir Somnath": "Gir Somnath",
                 "Jamnagar": "Jamnagar",
-                "Junagarh": "Junagadh",
-                "Kachchh": "Kutch",
+                "Junagarh": "Junagarh",
+                "Kachchh": "Kachchh",
                 "Kheda": "Kheda",
                 "Mahisagar": "Mahisagar",
                 "Mehsana": "Mehsana",
@@ -637,6 +641,12 @@
                 "The Dangs": "The Dangs",
                 "Vadodara(Baroda)": "Vadodara",
                 "Valsad": "Valsad",
+                "Agra": "Agra",
+                "Auraiya": "Auraiya",
+                "Chhatarpur": "Chhatarpur",
+                "Indore": "Indore",
+                "Jhabua": "Jhabua",
+                "Mirzapur": "Mirzapur",
                 // Commodities
                 "Bajra(Pearl Millet/Cumbu)": "Bajra",
                 "Barley(Jau)": "Barley",
@@ -665,16 +675,76 @@
                 "Onion": "Onion",
                 "Potato": "Potato",
                 "Tomato": "Tomato",
+                "Lemon": "Lemon",
+                "Cauliflower": "Cauliflower",
+                "Cabbage": "Cabbage",
+                "Garlic": "Garlic",
+                "Green Chilli": "Green Chilli",
+                "Corriander seed": "Corriander seed",
                 "Sugarcane": "Sugarcane",
+                "Ajwan": "Ajwan",
+                "Banana": "Banana",
+                "Banana - Green": "Banana - Green",
+                "Beetroot": "Beetroot",
+                "Bhindi(Ladies Finger)": "Bhindi(Ladies Finger)",
+                "Big Gram": "Big Gram",
+                "Bitter gourd": "Bitter gourd",
+                "Bottle gourd": "Bottle gourd",
+                "Brinjal": "Brinjal",
+                "Capsicum": "Capsicum",
+                "Carrot": "Carrot",
+                "Castor Seed": "Castor Seed",
+                "Chikoos(Sapota)": "Chikoos(Sapota)",
+                "Cluster beans": "Cluster beans",
+                "Coriander(Leaves)": "Coriander(Leaves)",
+                "Cowpea(Vegetable)": "Cowpea(Vegetable)",
+                "Cucumbar(Kheera)": "Cucumbar(Kheera)",
+                "Cummin Seed(Jeera)": "Cummin Seed(Jeera)",
+                "Drumstick": "Drumstick",
+                "Dry Chillies": "Dry Chillies",
+                "Elephant Yam(Suran)/Amorphophallus": "Elephant Yam(Suran)/Amorphophallus",
+                "French Beans(Frasbean)": "French Beans(Frasbean)",
+                "Ginger(Green)": "Ginger(Green)",
+                "Groundnut(Split)": "Groundnut(Split)",
+                "Guar": "Guar",
+                "Guar Seed(Cluster Beans Seed)": "Guar Seed(Cluster Beans Seed)",
+                "Indian Beans(Seam)": "Indian Beans(Seam)",
+                "Isabgul(Psyllium)": "Isabgul(Psyllium)",
+                "Kabuli Chana(Chickpeas-White)": "Kabuli Chana(Chickpeas-White)",
+                "Kinnow": "Kinnow",
+                "Little gourd(Kundru)": "Little gourd(Kundru)",
+                "Long Melon(Kakri)": "Long Melon(Kakri)",
+                "Mango(Raw-Ripe)": "Mango(Raw-Ripe)",
+                "Methi Seeds": "Methi Seeds",
+                "Mint(Pudina)": "Mint(Pudina)",
+                "Onion Green": "Onion Green",
+                "Papaya": "Papaya",
+                "Papaya(Raw)": "Papaya(Raw)",
+                "Pea Pod/Pea Cod/हरी मटर": "Pea Pod/Pea Cod/हरी मटर",
+                "Pegeon Pea(Arhar Fali)": "Pegeon Pea(Arhar Fali)",
+                "Pointed gourd(Parval)": "Pointed gourd(Parval)",
+                "Pumpkin": "Pumpkin",
+                "Raddish": "Raddish",
+                "Rat Tail Radish(Mogari)": "Rat Tail Radish(Mogari)",
+                "Red Gram": "Red Gram",
+                "Ridgeguard(Tori)": "Ridgeguard(Tori)",
+                "Soanf": "Soanf",
+                "Spinach": "Spinach",
+                "Sponge gourd": "Sponge gourd",
+                "Surat Beans(Papadi)": "Surat Beans(Papadi)",
+                "Sweet Potato": "Sweet Potato",
+                "Tinda": "Tinda",
+                "Turmeric(raw)": "Turmeric(raw)",
+                "Yam(Ratalu)": "Yam(Ratalu)",
                 // Market Towns/Descriptions
                 "Abdasa": "Abdasa",
                 "Halvad": "Halvad",
                 "Khedbrahma": "Khedbrahma",
-                "Chimanbhai Patal Market Vasana": "Chimanbhai Patel Market Vasana",
-                "Flower Market Jamalpur": "Flower Market Jamalpur",
+                "Chimanbhai Patal Market, Vasana": "Chimanbhai Patel Market, Vasana",
+                "Flower Market, Jamalpur": "Flower Market, Jamalpur",
                 "Fruit Market, Naroda": "Fruit Market, Naroda",
                 "Manekchowk": "Manekchowk",
-                "Rajnagar sub yard": "Rajnagar Sub Yard",
+                "Rajnagar Sub Yard": "Rajnagar Sub Yard",
                 "Ahwa-Dang": "Ahwa-Dang",
                 "Amirgadh": "Amirgadh",
                 "Amod": "Amod",
@@ -769,7 +839,7 @@
                 "Jhagadiya": "Jhagadiya",
                 "Jhalod": "Jhalod",
                 "Jodiya": "Jodiya",
-                "K.Mandvi": "K.Mandvi",
+                "Mandvi": "Mandvi",
                 "Kadi": "Kadi",
                 "Kalawad": "Kalawad",
                 "Kalediya": "Kalediya",
@@ -949,12 +1019,12 @@
                 "Chalala": "Chalala",
                 "Limbasi": "Limbasi",
                 "APMC": "APMC",
-                "Sub yard": "Sub Yard",
+                "Sub Yard": "Sub Yard",
                 "Mehmadabad": "Mahemdavad",
                 "Meghraj": "Meghraj",
                 "District": "District",
-                "Veg,Yard": "Vegetable Yard",
-                "Veg,Sub": "Sub Yard",
+                "Vegetable Yard": "Vegetable Yard",
+                "Vegetable Sub": "Sub Yard",
                 "Station Road": "Station Road",
                 "Dist.": "District",
                 "Dist": "District"
@@ -987,9 +1057,10 @@
                 market_label: 'બજાર',
                 group_label: 'પાક જૂથ',
                 commodity_label: 'પાક',
-                min_price: 'લઘુત્તમ ભાવ',
-                max_price: 'મહત્તમ ભાવ',
-                modal_price: 'સામાન્ય ભાવ',
+                min_price: 'લઘુત્તમ ભાવ (₹/ક્વિન્ટલ)',
+                max_price: 'મહત્તમ ભાવ (₹/ક્વિન્ટલ)',
+                modal_price: 'સામાન્ય ભાવ (₹/ક્વિન્ટલ)',
+                data_as_of: 'તારીખ: ',
                 all_districts: 'બધા જિલ્લાઓ',
                 all_markets: 'બધા બજારો',
                 all_groups: 'બધા જૂથો',
@@ -1017,6 +1088,7 @@
                 "Oil Seeds": "તેલીબિયાં",
                 "Pulses": "કઠોળ",
                 "Vegetables": "શાકભાજી",
+                "Spices": "મસાલા",
                 "Others": "અન્ય",
                 // Districts
                 "Ahmedabad": "અમદાવાદ",
@@ -1053,6 +1125,12 @@
                 "The Dangs": "ડાંગ",
                 "Vadodara(Baroda)": "વડોદરા",
                 "Valsad": "વલસાડ",
+                "Agra": "આગ્રા",
+                "Auraiya": "ઔરૈયા",
+                "Chhatarpur": "છતરપુર",
+                "Indore": "ઇન્દોર",
+                "Jhabua": "ઝાબુઆ",
+                "Mirzapur": "મિર્ઝાપુર",
                 // Commodities
                 "Bajra(Pearl Millet/Cumbu)": "બાજરી",
                 "Barley(Jau)": "જવ",
@@ -1081,16 +1159,76 @@
                 "Onion": "ડુંગળી",
                 "Potato": "બટાકા",
                 "Tomato": "ટામેટા",
+                "Lemon": "લીંબુ",
+                "Cauliflower": "ફુલાવર",
+                "Cabbage": "કોબીજ",
+                "Garlic": "લસણ",
+                "Green Chilli": "લીલા મરચા",
+                "Corriander seed": "ધાણા",
                 "Sugarcane": "શેરડી",
+                "Ajwan": "અજમો",
+                "Banana": "કેળા",
+                "Banana - Green": "લીલા કેળા",
+                "Beetroot": "બીટ",
+                "Bhindi(Ladies Finger)": "ભીંડા",
+                "Big Gram": "મોટો ચણો",
+                "Bitter gourd": "કારેલા",
+                "Bottle gourd": "દૂધી",
+                "Brinjal": "રીંગણ",
+                "Capsicum": "કેપ્સિકમ",
+                "Carrot": "ગાજર",
+                "Castor Seed": "દિવેલા (એરંડા)",
+                "Chikoos(Sapota)": "ચીકુ",
+                "Cluster beans": "ગુવાર",
+                "Coriander(Leaves)": "કોથમીર",
+                "Cowpea(Vegetable)": "ચોળી",
+                "Cucumbar(Kheera)": "કાકડી",
+                "Cummin Seed(Jeera)": "જીરું",
+                "Drumstick": "સરગવો",
+                "Dry Chillies": "સૂકા મરચા",
+                "Elephant Yam(Suran)/Amorphophallus": "સુરણ",
+                "French Beans(Frasbean)": "ફણસી",
+                "Ginger(Green)": "આદુ",
+                "Groundnut(Split)": "મગફળી (ફોલેલી)",
+                "Guar": "ગુવાર",
+                "Guar Seed(Cluster Beans Seed)": "ગુવાર બીજ",
+                "Indian Beans(Seam)": "પાપડી",
+                "Isabgul(Psyllium)": "ઇસબગુલ",
+                "Kabuli Chana(Chickpeas-White)": "કાબુલી ચણા",
+                "Kinnow": "કિન્નો",
+                "Little gourd(Kundru)": "ટીંડોળા",
+                "Long Melon(Kakri)": "કાકડી",
+                "Mango(Raw-Ripe)": "કેરી",
+                "Methi Seeds": "મેથી દાણા",
+                "Mint(Pudina)": "ફુદીનો",
+                "Onion Green": "લીલી ડુંગળી",
+                "Papaya": "પપૈયું",
+                "Papaya(Raw)": "કાચું પપૈયું",
+                "Pea Pod/Pea Cod/हरी मटर": "વટાણા",
+                "Pegeon Pea(Arhar Fali)": "તુવેર ફળી",
+                "Pointed gourd(Parval)": "પરવળ",
+                "Pumpkin": "કોળું",
+                "Raddish": "મૂળો",
+                "Rat Tail Radish(Mogari)": "મોગરી",
+                "Red Gram": "તુવેર",
+                "Ridgeguard(Tori)": "તુરીયા",
+                "Soanf": "વરિયાળી",
+                "Spinach": "પાલક",
+                "Sponge gourd": "ગલકા",
+                "Surat Beans(Papadi)": "સુરતી પાપડી",
+                "Sweet Potato": "શક્કરિયા",
+                "Tinda": "ટીંડા",
+                "Turmeric(raw)": "કાચી હળદર",
+                "Yam(Ratalu)": "રતાળુ",
                 // Market Towns/Descriptions
                 "Abdasa": "અબડાસા",
                 "Halvad": "હળવદ",
                 "Khedbrahma": "ખેડબ્રહ્મા",
-                "Chimanbhai Patal Market Vasana": "ચિમનભાઈ પટેલ માર્કેટ વાસણા",
-                "Flower Market Jamalpur": "ફ્લાવર માર્કેટ જમાલપુર",
-                "Fruit Market, Naroda": "ફ્રૂટ માર્કેટ, નરોડા",
+                "Chimanbhai Patal Market, Vasana": "ચિમનભાઈ પટેલ માર્કેટ, વાસણા",
+                "Flower Market, Jamalpur": "ફૂલ માર્કેટ, જમાલપુર",
+                "Fruit Market, Naroda": "ફળ માર્કેટ, નરોડા",
                 "Manekchowk": "માણેક ચોક",
-                "Rajnagar sub yard": "રાજનગર પેટા યાર્ડ",
+                "Rajnagar Sub Yard": "રાજનગર પેટા યાર્ડ",
                 "Ahwa-Dang": "આહવા-ડાંગ",
                 "Amirgadh": "અમીરગઢ",
                 "Amod": "આમોદ",
@@ -1185,7 +1323,7 @@
                 "Jhagadiya": "ઝઘડિયા",
                 "Jhalod": "ઝાલોદ",
                 "Jodiya": "જોડિયા",
-                "K.Mandvi": "કે. માંડવી",
+                "Mandvi": "માંડવી",
                 "Kadi": "કડી",
                 "Kalawad": "કાલાવડ",
                 "Kalediya": "કલેડિયા",
@@ -1365,13 +1503,13 @@
                 "Chalala": "ચલાલા",
                 "Limbasi": "લીંબાસી",
                 "APMC": "એપીએમસી",
-                "Sub yard": "પેટા યાર્ડ",
+                "Sub Yard": "પેટા યાર્ડ",
                 "Mehmadabad": "મહેમદાવાદ",
                 "Meghraj": "મેઘરજ",
                 "District": "જિલ્લો",
-                "Veg,Yard": "શાકભાજી માર્કેટ",
-                "Veg,Sub": "પેટા યાર્ડ",
-                "Veg": "શાકભાજી",
+                "Vegetable Yard": "શાકભાજી માર્કેટ",
+                "Vegetable Sub": "પેટા યાર્ડ",
+                "Vegetable": "શાકભાજી",
                 "Market": "માર્કેટ",
                 "Station Road": "સ્ટેશન રોડ",
                 "Dist.": "જિલ્લો",
@@ -1405,9 +1543,10 @@
                 market_label: 'बाजार',
                 group_label: 'फसल समूह',
                 commodity_label: 'फसल',
-                min_price: 'न्यूनतम भाव',
-                max_price: 'अधिकतम भाव',
-                modal_price: 'मॉडल भाव',
+                min_price: 'न्यूनतम भाव (₹/क्विंटल)',
+                max_price: 'अधिकतम भाव (₹/क्विंटल)',
+                modal_price: 'मॉडल भाव (₹/क्विंटल)',
+                data_as_of: 'तारीख: ',
                 all_districts: 'सभी जिले',
                 all_markets: 'सभी बाजार',
                 all_groups: 'सभी समूह',
@@ -1431,10 +1570,11 @@
                 "no_data_available": "कोई डेटा उपलब्ध नहीं",
                 "no_data_subtitle": "मानदंड चुनें और भाव देखने के लिए खोजें पर क्लिक करें",
                 "Cereals": "अनाज",
-                "Fibre Crops": "रेशेदार फसलें",
+                "Fibre Crops": "रेशे वाली फसलें",
                 "Oil Seeds": "तिलहन",
                 "Pulses": "दलहन",
-                "Vegetables": "सब्जियाँ",
+                "Vegetables": "सब्जियां",
+                "Spices": "मसाले",
                 "Others": "अन्य",
                 // Districts
                 "Ahmedabad": "अहमदाबाद",
@@ -1471,6 +1611,12 @@
                 "The Dangs": "डांग",
                 "Vadodara(Baroda)": "वडोदरा",
                 "Valsad": "वलसाड",
+                "Agra": "आगरा",
+                "Auraiya": "औरैया",
+                "Chhatarpur": "छतरपुर",
+                "Indore": "इंदौर",
+                "Jhabua": "झाबुआ",
+                "Mirzapur": "मिर्ज़ापुर",
                 // Commodities
                 "Bajra(Pearl Millet/Cumbu)": "बाजरा",
                 "Barley(Jau)": "जौ",
@@ -1494,21 +1640,81 @@
                 "Arhar(Tur/Red Gram)(Whole)": "अरहर",
                 "Bengal Gram(Gram)(Whole)": "चना",
                 "Black Gram(Urd Beans)(Whole)": "उड़द",
-                "Green Gram(Moong)(Whole)": "मूँગ",
+                "Green Gram(Moong)(Whole)": "मूँग",
                 "Lentil(Masur)(Whole)": "मसूर",
                 "Onion": "प्याज",
                 "Potato": "आलू",
                 "Tomato": "टमाटर",
+                "Lemon": "नींबू",
+                "Cauliflower": "फूलगोभी",
+                "Cabbage": "पत्तागोभी",
+                "Garlic": "लहसुन",
+                "Green Chilli": "हरी मिर्च",
+                "Corriander seed": "धनिया",
                 "Sugarcane": "गन्ना",
+                "Ajwan": "अजवायन",
+                "Banana": "केला",
+                "Banana - Green": "कच्चा केला",
+                "Beetroot": "चुकंदर",
+                "Bhindi(Ladies Finger)": "भिंडी",
+                "Big Gram": "बड़ा चना",
+                "Bitter gourd": "करेला",
+                "Bottle gourd": "लौकी",
+                "Brinjal": "बैंगन",
+                "Capsicum": "शिमला मिर्च",
+                "Carrot": "गाजर",
+                "Castor Seed": "अरंडी के बीज",
+                "Chikoos(Sapota)": "चीकू",
+                "Cluster beans": "ग्वार फली",
+                "Coriander(Leaves)": "धनिया पत्ती",
+                "Cowpea(Vegetable)": "लोबिया",
+                "Cucumbar(Kheera)": "खीरा",
+                "Cummin Seed(Jeera)": "जीरा",
+                "Drumstick": "सहजन",
+                "Dry Chillies": "सूखी मिर्च",
+                "Elephant Yam(Suran)/Amorphophallus": "सूरन",
+                "French Beans(Frasbean)": "फ्रेंच बीन्स",
+                "Ginger(Green)": "अदरक",
+                "Groundnut(Split)": "मूंगफली (टूटी हुई)",
+                "Guar": "ग्वार",
+                "Guar Seed(Cluster Beans Seed)": "ग्वार बीज",
+                "Indian Beans(Seam)": "सेम",
+                "Isabgul(Psyllium)": "ईसबगोल",
+                "Kabuli Chana(Chickpeas-White)": "काबुली चना",
+                "Kinnow": "किन्नू",
+                "Little gourd(Kundru)": "कुंदरू",
+                "Long Melon(Kakri)": "ककड़ी",
+                "Mango(Raw-Ripe)": "आम",
+                "Methi Seeds": "मेथी दाना",
+                "Mint(Pudina)": "पुदीना",
+                "Onion Green": "हरा प्याज",
+                "Papaya": "पपीता",
+                "Papaya(Raw)": "कच्चा पपीता",
+                "Pea Pod/Pea Cod/हरी मटर": "मटर",
+                "Pegeon Pea(Arhar Fali)": "अरहर फली",
+                "Pointed gourd(Parval)": "परवल",
+                "Pumpkin": "कद्दू",
+                "Raddish": "मूली",
+                "Rat Tail Radish(Mogari)": "मोगरी",
+                "Red Gram": "लाल चना",
+                "Ridgeguard(Tori)": "तोरई",
+                "Soanf": "सौंफ",
+                "Spinach": "पालक",
+                "Sponge gourd": "नेनुआ",
+                "Surat Beans(Papadi)": "सुरती पापड़ी",
+                "Sweet Potato": "शकरकंद",
+                "Tinda": "टिंडा",
+                "Turmeric(raw)": "कच्ची हल्दी",
+                "Yam(Ratalu)": "रतालू",
                 // Market Towns/Descriptions
                 "Abdasa": "अबडासा",
                 "Halvad": "हलवद",
                 "Khedbrahma": "खेड़ब्रह्मा",
-                "Chimanbhai Patal Market Vasana": "चिमनभाई पटेल मार्केट वासणा",
-                "Flower Market Jamalpur": "फ्लावर मार्केट जमालपुर",
-                "Fruit Market, Naroda": "फ्रूट मार्केट, नरोडा",
+                "Chimanbhai Patal Market, Vasana": "चिमनभाई पटेल मार्केट, वासणा",
+                "Flower Market, Jamalpur": "फूल मार्केट, जमालपुर",
+                "Fruit Market, Naroda": "फल मार्केट, नरोडा",
                 "Manekchowk": "माणक चौक",
-                "Rajnagar sub yard": "राजनगर सब यार्ड",
+                "Rajnagar Sub Yard": "राजनगर सब यार्ड",
                 "Ahwa-Dang": "अहवा-डांग",
                 "Amirgadh": "अमीरगढ़",
                 "Amod": "आमोद",
@@ -1603,7 +1809,7 @@
                 "Jhagadiya": "झगड़िया",
                 "Jhalod": "झालोद",
                 "Jodiya": "जोडिया",
-                "K.Mandvi": "के. मांडवी",
+                "Mandvi": "मांडवी",
                 "Kadi": "कड़ी",
                 "Kalawad": "कालावड",
                 "Kalediya": "कलेड़िया",
@@ -1783,17 +1989,17 @@
                 "Chalala": "चलाला",
                 "Limbasi": "लिंबासी",
                 "APMC": "एपीएमसी",
-                "Sub yard": "उप मंडी",
+                "Sub Yard": "उप मंडी",
                 "Mehmadabad": "महमदाबाद",
                 "Meghraj": "मेघराज",
                 "District": "जिला",
-                "Veg,Yard": "सब्जी मंडी",
-                "Veg,Sub": "उप मंडी",
+                "Vegetable Yard": "सब्जी मंडी",
+                "Vegetable Sub": "उप मंडी",
                 "Market": "बाजार",
                 "Station Road": "स्टेशन रोड",
                 "Dist.": "जिला",
                 "Dist": "जिला",
-                "Veg": "सब्जी"
+                "Vegetable": "सब्जी"
             }
         };
 
@@ -1839,6 +2045,11 @@
             updateCommodityGroupDisplay();
             renderCommodities();
             updateCommodityDisplay();
+
+            // Re-render the market table instantly if data exists
+            if (currentMarketData) {
+                showResults(currentMarketData);
+            }
         }
 
         function getLocalizedMarketName(market, lang) {
@@ -1846,13 +2057,13 @@
             const suffixes = {
                 en: {
                     ' APMC': ' APMC',
-                    ' Veg.': ' Vegetable',
-                    ' veg.': ' vegetable',
+                    ' Vegetable': ' Vegetable',
+                    ' Vegetable': ' vegetable',
                     ' Veg Yard': ' Vegetable Yard',
-                    ' Veg.Market': ' Vegetable Market',
-                    ' Veg,Market': ' Vegetable Market',
-                    ' Veg,Yard': ' Vegetable Yard',
-                    ' Veg.market': ' Vegetable Market',
+                    ' VegetableMarket': ' Vegetable Market',
+                    ' VegetableMarket': ' Vegetable Market',
+                    ' VegetableYard': ' Vegetable Yard',
+                    ' Vegetablemarket': ' Vegetable Market',
                     ' Market': ' Market',
                     ' Dist.': ' District',
                     ' dist.': ' district',
@@ -1861,20 +2072,19 @@
                 },
                 gu: {
                     ' APMC': ' એપીએમસી',
-                    ' Veg.': ' શાકભાજી',
-                    ' veg.': ' શાકભાજી',
+                    ' Vegetable': ' શાકભાજી',
+                    ' Vegetable': ' શાકભાજી',
                     ' Veg Yard': ' શાકભાજી માર્કેટ',
-                    ' Veg.Market': ' શાકભાજી માર્કેટ',
-                    ' Veg,Market': ' શાકભાજી માર્કેટ',
-                    ' Veg,Yard': ' શાકભાજી માર્કેટ',
+                    ' Vegetable Market': ' શાકભાજી માર્કેટ',
+                    ' Vegetable Market': ' શાકભાજી માર્કેટ',
+                    ' VegetableYard': ' શાકભાજી માર્કેટ',
                     ' Veg': ' શાકભાજી',
                     ' veg': ' શાકભાજી',
                     ' Fruit Market': ' ફળ બજાર',
                     ' Grain Market': ' અનાજ બજાર',
                     ' Sub yard': ' પેટા યાર્ડ',
-                    ' sub yard': ' પેટા યાર્ડ',
                     ' Yard': ' યાર્ડ',
-                    ' Veg.market': ' શાકભાજી માર્કેટ',
+                    ' Vegetablemarket': ' શાકભાજી માર્કેટ',
                     ' Market': ' માર્કેટ',
                     ' Dist.': ' જિલ્લો',
                     ' dist.': ' જિલ્લો',
@@ -1883,23 +2093,17 @@
                 },
                 hi: {
                     ' APMC': ' एपीएमसी',
-                    ' Veg.': ' सब्जी मंडी',
-                    ' veg.': ' सब्जी मंडी',
-                    ' Veg Yard': ' सब्जी मंडी',
-                    ' Veg.Market': ' सब्जी मंडी',
-                    ' Veg,Market': ' सब्जी मंडी',
-                    ' Veg,Yard': ' सब्जी मंडी',
+                    ' Vegetable Market': ' सब्जी मंडी',
+                    ' Vegetable Yard': ' सब्जी मंडी',
                     ' Fruit Market': ' फल बाजार',
                     ' Grain Market': ' अनाज बाजार',
-                    ' Sub yard': ' उप मंडी',
-                    ' sub yard': ' उप मंडी',
+                    ' Sub Yard': ' उप मंडी',
                     ' Yard': ' मंडी',
-                    ' Veg.market': ' सब्जी मंडी',
                     ' Market': ' बाजार',
                     ' Dist.': ' जिला',
                     ' dist.': ' जिला',
                     ' station road': ' स्टेशन रोड',
-                    ' Station Road': ' स्टेशन रोड'
+                    ' station road': ' स्टेशन रोड'
                 }
             };
 
@@ -1988,41 +2192,41 @@
 
         const districtMarkets = {
             "Ahmedabad": [
-                "Ahmedabad APMC", "Ahmedabad(Chimanbhai Patal Market Vasana) APMC",
-                "Ahmedabad(Flower Market Jamalpur) APMC", "Ahmedabad(Fruit Market, Naroda) APMC",
-                "Ahmedabad(Manekchowk) APMC", "Ahmedabad(Rajnagar sub yard) APMC",
+                "Ahmedabad APMC", "Ahmedabad(Chimanbhai Patal Market, Vasana) APMC",
+                "Ahmedabad(Flower Market, Jamalpur) APMC", "Ahmedabad(Fruit Market, Naroda) APMC",
+                "Ahmedabad(Manekchowk) APMC", "Ahmedabad(Rajnagar Sub Yard) APMC",
                 "Balasinor APMC", "Barvala APMC", "Bavla APMC", "Becharaji APMC", "Dhandhuka APMC",
                 "Bavla APMC", "Becharaji APMC", "Dhandhuka APMC",
                 "Dhandkuka(Dholera) APMC", "Dholka APMC", "Dholka(Koth) APMC",
-                "Dholka(Market Yard Veg) APMC", "Kadi APMC", "Kadi(Kadi cotton Yard) APMC",
+                "Dholka(Market Yard) APMC", "Kadi APMC", "Kadi(Kadi Cotton Yard) APMC",
                 "Kapadanj(Moti Jaher) APMC", "Kapadvanj APMC", "Kathlal APMC",
                 "Kheda APMC", "Kheda(Nayaka) APMC", "Mandal APMC", "Matar APMC",
-                "Matar(Limbasi) APMC", "Mehmadabad APMC", "Mehmadabad(Veg ,market) APMC",
-                "Mehsana APMC", "Mehsana(Jornang) APMC", "Mehsana(Mehsana Veg) APMC",
+                "Matar(Limbasi) APMC", "Mehmadabad APMC", "Mehmadabad(Vegetable Market) APMC",
+                "Mehsana APMC", "Mehsana(Jornang) APMC", "Mehsana(Vegetable Market) APMC",
                 "Nadiad APMC", "Nadiyad(Chaklasi) APMC", "Nadiyad(Piplag) APMC",
                 "Rampura APMC", "Ranpur APMC", "Sanad APMC", "Thasara APMC",
                 "Thasara(Dokar) APMC", "Unava APMC", "Unjha APMC", "Vadnagar APMC",
                 "Vadnagar(Kheralu) APMC", "Vijapur APMC", "Vijapur(Gojjariya) APMC",
-                "Vijapur(Kukarvada) APMC", "Vijapur(Ladol) APMC", "Vijapur(veg) APMC",
+                "Vijapur(Kukarvada) APMC", "Vijapur(Ladol) APMC", "Vijapur(Vegetable Market) APMC",
                 "Viramgam APMC", "Virpur APMC", "Visnagar APMC"
             ],
             "Amreli": [
                 "Amreli APMC", "Babra APMC", "Bagasara APMC", "Damnagar APMC",
                 "Dhari APMC", "Dhari(Chalala) APMC", "Khambha APMC", "Lathi APMC",
-                "Rajula (Dungar) APMC", "Rajula APMC", "Savarkundla APMC", "Timbi APMC"
+                "Rajula(Dungar) APMC", "Rajula APMC", "Savarkundla APMC", "Timbi APMC"
             ],
             "Anand": [
-                "Anand APMC", "Anand(Veg,Yard,Anand) APMC", "Anklav APMC", "Borsad APMC",
-                "Borsad(Asodar) APMC", "Borsad(Veg Yard Barsad) APMC", "Khambhat APMC",
-                "Khambhat(Grain Market) APMC", "Khambhat(Veg Yard Khambhat) APMC",
-                "Petlad APMC", "Petlad(Veg Yard, Petlad) APMC", "Sojitra APMC",
+                "Anand APMC", "Anand(Vegetable Yard) APMC", "Anklav APMC", "Borsad APMC",
+                "Borsad(Asodar) APMC", "Borsad(Vegetable Yard) APMC", "Khambhat APMC",
+                "Khambhat(Grain Market) APMC", "Khambhat(Vegetable Yard) APMC",
+                "Petlad APMC", "Petlad(Vegetable Yard) APMC", "Sojitra APMC",
                 "Tarapur APMC", "Umreth APMC"
             ],
             "Banaskantha": [
                 "Amirgadh APMC", "Banaskantha APMC", "Bhabhar APMC", "Danta APMC",
-                "Deesa APMC", "Deesa(Bhildi) APMC", "Deesa(Deesa Veg Yard) APMC",
-                "Dhanera APMC", "Dhanera(Samarwada) APMC", "Dhanera(Veg,Yard Dhanera) APMC",
-                "Diyodar APMC", "Lakhani APMC", "Palanpur APMC", "Palanpur(Veg,Yard Palanpur) APMC",
+                "Deesa APMC", "Deesa(Bhildi) APMC", "Deesa(Vegetable Yard) APMC",
+                "Dhanera APMC", "Dhanera(Samarwada) APMC", "Dhanera(Vegetable Yard) APMC",
+                "Diyodar APMC", "Lakhani APMC", "Palanpur APMC", "Palanpur(Vegetable Yard) APMC",
                 "Panthawada APMC", "Thara APMC", "Thara(Shihori) APMC", "Tharad APMC",
                 "Tharad(Rah) APMC", "Vadgam APMC", "Vav APMC"
             ],
@@ -2046,9 +2250,9 @@
             ],
             "Dahod": [
                 "Dahod APMC", "Dahod(Garbada) APMC", "Dahod(Himalaya) APMC",
-                "Dahod(Jesavada) APMC", "Dahod(Veg. Market) APMC", "Davgadbaria(Piplod) APMC",
+                "Dahod(Jesavada) APMC", "Dahod(Vegetable Market) APMC", "Davgadbaria(Piplod) APMC",
                 "Devgadhbaria APMC", "Jhalod APMC", "Limkheda APMC", "Zalod(Sanjeli) APMC",
-                "Zalod(Zalod) APMC"
+                "Zalod APMC"
             ],
             "Dang": [
                 "Vaghai APMC"
@@ -2058,10 +2262,10 @@
             ],
             "Gandhinagar": [
                 "Dehgam APMC", "Dehgam(Rekhiyal) APMC",
-                "Kalol APMC", "Kalol(Veg,Market,Kalol) APMC",
-                "Mansa APMC", "Mansa(Manas Veg Yard) APMC",
+                "Kalol APMC", "Kalol(Vegetable Market) APMC",
+                "Mansa APMC", "Mansa(Vegetable Yard) APMC",
                 "Radheja APMC", "Randheja(Chiloda) APMC",
-                "Randheja(Veg.Market Gandhinagar) APMC"
+                "Randheja(Vegetable Market) APMC"
             ],
             "Gir Somnath": [
                 "Kodinar APMC", "Talalagir APMC", "Una APMC", "Veraval APMC"
@@ -2071,14 +2275,14 @@
                 "Jodiya APMC", "Kalawad APMC", "Lalpur APMC"
             ],
             "Junagarh": [
-                "Bhesan APMC", "Junagadh APMC", "Junagadh(Veg,Yard, Junagadh) APMC",
+                "Bhesan APMC", "Junagadh APMC", "Junagadh(Vegetable Yard) APMC",
                 "Keshod APMC", "Kodinar(Dollasa) APMC", "Malia Hatina APMC",
                 "Manavdar APMC", "Mangrol APMC", "Talala APMC", "Vanthli APMC",
                 "Visavadar APMC"
             ],
             "Kachchh": [
-                "Abdasa APMC", "Anjar APMC", "Anjar(Veg,Sub Yard) APMC",
-                "Bachau APMC", "Bhuj APMC", "K.Mandvi APMC", "Mundra APMC",
+                "Abdasa APMC", "Anjar APMC", "Anjar(Vegetable Yard) APMC",
+                "Bachau APMC", "Bhuj APMC", "Mandvi APMC", "Mundra APMC",
                 "Nakhatrana APMC", "Rapar APMC"
             ],
             "Kheda": [
@@ -2089,14 +2293,14 @@
                 "Thasara APMC", "Thasara(Dokar) APMC", "Virpur APMC"
             ],
             "Mehsana": [
-                "Becharaji APMC", "Kadi APMC", "Kadi(Kadi cotton Yard) APMC",
-                "Mehsana APMC", "Mehsana(Jornang) APMC", "Mehsana(Mehsana Veg) APMC",
+                "Becharaji APMC", "Kadi APMC", "Kadi(Kadi Cotton Yard) APMC",
+                "Mehsana APMC", "Mehsana(Jornang) APMC", "Mehsana( Vegetable Yard) APMC",
                 "Unava APMC", "Unjha APMC", "Vadnagar APMC", "Vadnagar(Kheralu) APMC",
                 "Vijapur APMC", "Vijapur(Gojjariya) APMC", "Vijapur(Kukarvada) APMC",
-                "Vijapur(Ladol) APMC", "Vijapur(veg) APMC", "Visnagar APMC"
+                "Vijapur(Ladol) APMC", "Vijapur(Vegetable Yard) APMC", "Visnagar APMC"
             ],
             "Morbi": [
-                "APMC HALVAD", "Morbi APMC", "Vankaner APMC", "Vankaner(Sub yard) APMC"
+                "Halvad APMC", "Morbi APMC", "Vankaner APMC", "Vankaner(Sub Yard) APMC"
             ],
             "Narmada": [
                 "Dediyapada APMC", "Garudeshwal APMC", "Rajpipla APMC", "Selemba APMC",
@@ -2114,23 +2318,23 @@
                 "Santrampur APMC", "Santrampur(Fathaepura) APMC", "Shehra APMC"
             ],
             "Patan": [
-                "Chansama APMC", "Harij APMC", "Patan APMC", "Patan(Veg,Yard Patan) APMC",
+                "Chansama APMC", "Harij APMC", "Patan APMC", "Patan(Vegetable Yard) APMC",
                 "Radhanpur APMC", "Sami APMC", "Siddhpur APMC", "Varahi APMC"
             ],
             "Porbandar": [
                 "Kutiyana APMC", "Porbandar APMC"
             ],
             "Rajkot": [
-                "Dhoraji APMC", "Gondal APMC", "Gondal(Veg.market Gondal) APMC",
+                "Dhoraji APMC", "Gondal APMC", "Gondal(Vegetable Market) APMC",
                 "Jamkandorna APMC", "Jasdan APMC", "Jasdan(Vichhiya) APMC",
-                "Jetpur(Dist.Rajkot) APMC", "Rajkot APMC", "Rajkot(Veg.Sub Yard) APMC",
+                "Jetpur APMC", "Rajkot APMC", "Rajkot(Sub Yard) APMC",
                 "Upleta APMC"
             ],
             "Sabarkantha": [
-                "APMC Khedbrahma", "Bayad APMC", "Bayad(Demai) APMC",
+                "Khedbrahma APMC", "Bayad APMC", "Bayad(Demai) APMC",
                 "Bayad(Sadamba) APMC", "Bhiloda APMC", "Dhansura APMC",
                 "Himatnagar APMC", "Himatnagar(Gambhoi) APMC",
-                "Himatnagar(Veg.Market Himatnagar) APMC", "Idar APMC", "Idar(Jadar) APMC",
+                "Himatnagar(Vegetable Market) APMC", "Idar APMC", "Idar(Jadar) APMC",
                 "Khedbrahma(Lambadia) APMC", "Khedbrahma(Posina) APMC", "Malpur APMC",
                 "Meghraj APMC", "Meghraj(Radlavada) APMC", "Modasa APMC",
                 "Modasa(Tintoi) APMC", "Prantij APMC", "Prantij(Salala) APMC",
@@ -2150,7 +2354,7 @@
                 "Valod APMC", "Valod(Buhari) APMC", "Vyara(Paati) APMC", "Vyara APMC"
             ],
             "Surendranagar": [
-                "Chotila(Veg,Yard) APMC", "Chotila APMC", "Chotila(Veg,Yard Chotila) APMC",
+                "Chotila(Vegetable Yard) APMC", "Chotila APMC",
                 "Dasada Patadi APMC", "Dhrangadhra APMC", "Lakhtar APMC",
                 "Limdi APMC", "Muli APMC", "Sayala APMC", "Vadhvan APMC"
             ],
@@ -2165,7 +2369,7 @@
                 "Vadodara(Sayajipura) APMC", "Vagodiya APMC"
             ],
             "Valsad": [
-                "Chikli(Khorgam) APMC", "Dharampur(veg) APMC", "Pardi APMC",
+                "Chikli(Khorgam) APMC", "Dharampur(Vegetable Yard) APMC", "Pardi APMC",
                 "Pardi(Motavagachiya) APMC", "Pardi(Rohinee) APMC", "Pardi(Ugvada) APMC",
                 "Pardi(Vapi) APMC", "Valsad APMC", "Valsad(Dungari) APMC"
             ]
@@ -2451,10 +2655,10 @@
         const commodityGroupOptionsContainer = document.getElementById('commodityGroupOptions');
         const commodityGroupDisplay = document.getElementById('commodityGroupDisplay');
         const commodityGroupArrow = document.getElementById('commodityGroupArrow');
-        let selectedCommodityGroups = ["Cereals", "Fibre Crops", "Oil Seeds", "Pulses", "Vegetables", "Others"];
+        let selectedCommodityGroups = ["Cereals", "Fibre Crops", "Oil Seeds", "Pulses", "Vegetables", "Spices", "Others"];
 
         const commodityGroups = [
-            "Cereals", "Fibre Crops", "Oil Seeds", "Pulses", "Vegetables", "Others"
+            "Cereals", "Fibre Crops", "Oil Seeds", "Pulses", "Vegetables", "Spices", "Others"
         ];
 
         function renderCommodityGroups(filterText = '') {
@@ -2558,8 +2762,23 @@
             "Arhar(Tur/Red Gram)(Whole)", "Bengal Gram(Gram)(Whole)",
             "Black Gram(Urd Beans)(Whole)", "Green Gram(Moong)(Whole)",
             "Lentil(Masur)(Whole)",
-            "Onion", "Potato", "Tomato",
-            "Sugarcane"
+            "Onion", "Potato", "Tomato", "Lemon", "Cauliflower", "Cabbage", "Garlic", "Green Chilli", "Corriander seed",
+            "Sugarcane", "Ajwan", "Banana", "Banana - Green", "Beetroot",
+            "Bhindi(Ladies Finger)", "Big Gram", "Bitter gourd", "Bottle gourd",
+            "Brinjal", "Capsicum", "Carrot", "Castor Seed", "Chikoos(Sapota)",
+            "Cluster beans", "Coriander(Leaves)", "Cowpea(Vegetable)", "Cucumbar(Kheera)",
+            "Cummin Seed(Jeera)", "Drumstick", "Dry Chillies",
+            "Elephant Yam(Suran)/Amorphophallus", "French Beans(Frasbean)",
+            "Ginger(Green)", "Groundnut", "Groundnut(Split)", "Guar",
+            "Guar Seed(Cluster Beans Seed)", "Indian Beans(Seam)", "Isabgul(Psyllium)",
+            "Kabuli Chana(Chickpeas-White)", "Kinnow", "Little gourd(Kundru)",
+            "Long Melon(Kakri)", "Mango(Raw-Ripe)", "Methi Seeds", "Mint(Pudina)",
+            "Mustard", "Niger Seed(Ramtil)", "Onion Green", "Papaya",
+            "Papaya(Raw)", "Pea Pod/Pea Cod/हरी मटर", "Pegeon Pea(Arhar Fali)",
+            "Pointed gourd(Parval)", "Pumpkin", "Raddish", "Rat Tail Radish(Mogari)",
+            "Red Gram", "Ridgeguard(Tori)", "Soanf", "Soyabean", "Spinach",
+            "Sponge gourd", "Sunflower", "Sunflower Seed", "Surat Beans(Papadi)",
+            "Sweet Potato", "Tinda", "Turmeric(raw)", "Yam(Ratalu)"
         ];
         let currentAvailableCommodities = [];
 
@@ -2569,18 +2788,26 @@
                 "Maize", "Paddy(Common)", "Ragi(Finger Millet)", "Wheat"
             ],
             "Fibre Crops": ["Cotton", "Jute"],
-            "Oil Seeds": [
-                "Copra", "Groundnut", "Mustard", "Niger Seed(Ramtil)",
-                "Safflower", "Sesamum(Sesame,Gingelly,Til)", "Soyabean",
-                "Sunflower", "Sunflower Seed", "Toria"
-            ],
+            "Oil Seeds": ["Castor Seed", "Groundnut", "Groundnut(Split)", "Mustard", "Niger Seed(Ramtil)", "Safflower", "Sesamum(Sesame,Gingelly,Til)", "Soyabean", "Sunflower", "Sunflower Seed", "Toria"],
             "Pulses": [
-                "Arhar(Tur/Red Gram)(Whole)", "Bengal Gram(Gram)(Whole)",
+                "Arhar(Tur/Red Gram)(Whole)", "Bengal Gram(Gram)(Whole)", "Big Gram",
                 "Black Gram(Urd Beans)(Whole)", "Green Gram(Moong)(Whole)",
-                "Lentil(Masur)(Whole)"
+                "Kabuli Chana(Chickpeas-White)", "Lentil(Masur)(Whole)", "Red Gram"
             ],
-            "Vegetables": ["Onion", "Potato", "Tomato"],
-            "Others": ["Sugarcane"]
+            "Vegetables": [
+                "Banana - Green", "Beetroot", "Bhindi(Ladies Finger)", "Bitter gourd",
+                "Bottle gourd", "Brinjal", "Cabbage", "Capsicum", "Carrot", "Cauliflower",
+                "Cluster beans", "Coriander(Leaves)", "Cowpea(Vegetable)", "Cucumbar(Kheera)",
+                "Drumstick", "Elephant Yam(Suran)/Amorphophallus", "French Beans(Frasbean)",
+                "Ginger(Green)", "Green Chilli", "Indian Beans(Seam)", "Lemon",
+                "Little gourd(Kundru)", "Long Melon(Kakri)", "Onion", "Onion Green",
+                "Pea Pod/Pea Cod", "Pegeon Pea(Arhar Fali)", "Pointed gourd(Parval)",
+                "Potato", "Pumpkin", "Raddish", "Rat Tail Radish(Mogari)", "Ridgeguard(Tori)",
+                "Spinach", "Sponge gourd", "Surat Beans(Papadi)", "Sweet Potato",
+                "Tinda", "Tomato", "Yam(Ratalu)"
+            ],
+            "Spices": ["Ajwan", "Corriander seed", "Cummin Seed(Jeera)", "Dry Chillies", "Garlic", "Methi Seeds", "Soanf", "Turmeric(raw)"],
+            "Others": ["Banana", "Chikoos(Sapota)", "Cotton", "Guar", "Guar Seed(Cluster Beans Seed)", "Isabgul(Psyllium)", "Kinnow", "Mango(Raw-Ripe)", "Papaya", "Papaya(Raw)", "Sugarcane"]
         };
 
         function renderCommodities(filterText = '') {

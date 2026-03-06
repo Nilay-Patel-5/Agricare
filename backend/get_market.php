@@ -17,6 +17,26 @@ try {
     $dateStmt = $pdo->prepare($dateQuery);
     $dateStmt->execute();
     $latestDateResult = $dateStmt->fetch();
+
+    date_default_timezone_set('Asia/Kolkata');
+    $today = date('Y-m-d');
+    $latestVal = $latestDateResult['latest_dt'] ? date('Y-m-d', strtotime($latestDateResult['latest_dt'])) : null;
+
+    // Auto-sync logic: Only try fetching from the Gov API once per day to prevent blocking loads.
+    $syncCacheFile = __DIR__ . '/last_sync.txt';
+    $lastSyncAttempt = file_exists($syncCacheFile) ? trim(file_get_contents($syncCacheFile)) : '';
+
+    if ($lastSyncAttempt !== $today && (!$latestVal || $latestVal < $today)) {
+        file_put_contents($syncCacheFile, $today);
+        ob_start();
+        require_once __DIR__ . '/sync_market.php';
+        ob_end_clean();
+
+        // Re-fetch the latest date to reflect the freshly synced DB entries
+        $dateStmt->execute();
+        $latestDateResult = $dateStmt->fetch();
+    }
+
     $latestDate = $latestDateResult['latest_dt'] ? date('d/m/Y', strtotime($latestDateResult['latest_dt'])) : null;
 
     // Query for latest date data only

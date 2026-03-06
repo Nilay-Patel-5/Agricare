@@ -1,0 +1,107 @@
+=== COMMODITIES ===
+Ajwan
+Arhar(Tur/Red Gram)(Whole)
+Bajra(Pearl Millet/Cumbu)
+Banana
+Banana - Green
+Beetroot
+Bengal Gram(Gram)(Whole)
+Bhindi(Ladies Finger)
+Big Gram
+Bitter gourd
+Black Gram(Urd Beans)(Whole)
+Bottle gourd
+Brinjal
+Cabbage
+Capsicum
+Carrot
+Castor Seed
+Cauliflower
+Chikoos(Sapota)
+Cluster beans
+Coriander(Leaves)
+Corriander seed
+Cotton
+Cowpea(Veg)
+Cucumbar(Kheera)
+Cummin Seed(Jeera)
+Drumstick
+Dry Chillies
+Elephant Yam(Suran)/Amorphophallus
+French Beans(Frasbean)
+Garlic
+Ginger(Green)
+Green Chilli
+Green Gram(Moong)(Whole)
+Groundnut
+Groundnut(Split)
+Guar
+Guar Seed(Cluster Beans Seed)
+Indian Beans(Seam)
+Isabgul(Psyllium)
+Jowar(Sorghum)
+Kabuli Chana(Chickpeas-White)
+Kinnow
+Lemon
+Little gourd(Kundru)
+Long Melon(Kakri)
+Mango(Raw-Ripe)
+Methi Seeds
+Mint(Pudina)
+Mustard
+Onion
+Onion Green
+Paddy(Common)
+Papaya
+Papaya(Raw)
+Pea Pod/Pea Cod/हरी मटर
+Pegeon Pea(Arhar Fali)
+Pointed gourd(Parval)
+Potato
+Pumpkin
+Raddish
+Rat Tail Radish(Mogari)
+Red Gram
+Ridgeguard(Tori)
+Sesamum(Sesame,Gingelly,Til)
+Soanf
+Soyabean
+Spinach
+Sponge gourd
+Surat Beans(Papadi)
+Sweet Potato
+Tinda
+Tomato
+Turmeric(raw)
+Wheat
+Yam(Ratalu)
+
+=== DISTRICTS ===
+Agra
+Ahmedabad
+Amreli
+Anand
+Auraiya
+Bharuch
+Bhavnagar
+Chhatarpur
+Chhota Udaipur
+Dahod
+Gandhinagar
+Indore
+Jamnagar
+Jhabua
+Kachchh
+Kheda
+Mehsana
+Mirzapur
+Morbi
+Narmada
+Navsari
+Panchmahals
+Rajkot
+Sabarkantha
+Surat
+Surendranagar
+Vadodara(Baroda)
+Valsad

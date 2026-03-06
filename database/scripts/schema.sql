@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS market_prices (
     min_price INT,
     max_price INT,
     modal_price INT,
-    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_market_price UNIQUE (state, district, market, commodity, variety, arrival_date)
 );
 
 -- 3. Users Table

@@ -54,9 +54,9 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-emerald-50 via-white to-teal-50 h-screen flex items-center justify-center p-4 overflow-hidden">
+<body class="bg-gradient-to-br from-emerald-50 via-white to-teal-50 h-screen flex items-center justify-center overflow-hidden">
 
-    <div class="flex max-w-5xl w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden min-h-[600px] border border-gray-100">
+    <div class="flex w-full h-screen bg-white overflow-hidden">
         <!-- Left Side: Image & Branding -->
         <div class="hidden lg:flex lg:w-1/2 relative bg-emerald-900 overflow-hidden items-end justify-start">
             <div class="absolute inset-0 bg-emerald-900/30 mix-blend-multiply z-10"></div>

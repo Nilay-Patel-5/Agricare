@@ -96,7 +96,7 @@
 
         @keyframes shimmer {
             0% {
-                transform: translateX(100%);
+                transform: translateX(100vw);
             }
 
             100% {
@@ -337,7 +337,7 @@
         </div>
 
         <div class="whitespace-nowrap overflow-hidden flex hover:[animation-play-state:paused]">
-            <div id="mandiTicker" style="animation-duration: 120s;"
+            <div id="mandiTicker" style="animation-duration: 240s;"
                 class="animate-[shimmer_60s_linear_infinite] flex gap-16 text-xl font-mono font-bold text-emerald-400 hover:[animation-play-state:paused]">
                 <span>Loading live market data...</span>
             </div>
@@ -690,16 +690,38 @@
                 if (data && data.length > 0) {
                     // Take top 15 results to scroll
                     const displayData = data.slice(0, 15);
-                    const emojis = ['🌾', '🍚', '🌽', '🥜', '🧅', '🥔', '🍅', '🥕', '🥬', '🥦'];
-
                     // Generate items
                     const content = displayData.map((r, i) => {
-                        const emoji = emojis[i % emojis.length];
+                        const getEmoji = (c) => {
+                            c = c.toLowerCase();
+                            if (c.includes('wheat')) return '🌾';
+                            if (c.includes('rice') || c.includes('paddy')) return '🍚';
+                            if (c.includes('maize') || c.includes('corn')) return '🌽';
+                            if (c.includes('onion')) return '🧅';
+                            if (c.includes('potato')) return '🥔';
+                            if (c.includes('tomato')) return '🍅';
+                            if (c.includes('cotton')) return '☁️';
+                            if (c.includes('peanut') || c.includes('groundnut')) return '🥜';
+                            if (c.includes('garlic')) return '🧄';
+                            if (c.includes('lemon')) return '🍋';
+                            if (c.includes('apple')) return '🍎';
+                            if (c.includes('banana')) return '🍌';
+                            if (c.includes('mango')) return '🥭';
+                            if (c.includes('chilli') || c.includes('chilly')) return '🌶️';
+                            if (c.includes('carrot')) return '🥕';
+                            if (c.includes('cabbage')) return '🥬';
+                            if (c.includes('brinjal') || c.includes('eggplant')) return '🍆';
+                            if (c.includes('gram') || c.includes('pulse') || c.includes('bean') || c.includes('moong') || c.includes('tuvar') || c.includes('urad')) return '🫘';
+                            if (c.includes('mustard') || c.includes('seed') || c.includes('castor') || c.includes('sesame')) return '🪴';
+                            if (c.includes('guar')) return '🎋';
+                            return '🌱';
+                        };
+                        const emoji = getEmoji(r.commodity);
                         return `<span>${emoji} ${r.commodity.toUpperCase()} (${r.district}): ₹${r.modal} <span class="text-green-400">● Live</span></span>`;
                     }).join('');
 
-                    // Single content string without duplication creates a blank gap between repetitions
-                    ticker.innerHTML = content;
+                    // Duplicate content to avoid gap during infinite scroll
+                    ticker.innerHTML = content.repeat(10);
                 } else {
                     ticker.innerHTML = '<span>No live market data available at the moment.</span>';
                 }
