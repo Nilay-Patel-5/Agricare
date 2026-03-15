@@ -447,131 +447,9 @@
         </div>
     </footer>
 
+    <!-- Load Multi-Language External Translations Script here instead of local definition -->
+    <script src="js/translations.js"></script>
     <script>
-        // 1. Language Data Dictionary
-        const translations = {
-            en: {
-                logo: 'AgriCare',
-                tagline: "Gujarat's Smart Farming Platform",
-                home: '🏠 Home',
-                features: '✨ Features',
-                market: '📈 Market',
-                weather: '🌤️ Weather',
-                contact: 'ℹ️ About',
-                loginBtn: 'Login',
-                registerBtn: 'Register',
-                heroTitle: 'Smart Farming',
-                heroSubtitle: 'Future Ready.',
-                heroDesc: 'Helping farmers make smarter decisions with real-time weather insights, market trends, and crop guidance',
-                location: '⚲ Location: Gujarat, India',
-                email: '✉ Contact: project@agricare.demo',
-                phone: '🕻 Phone: Available on request',
-                stat1_title: 'Digital Platform',
-                stat1_desc: 'For Farmers',
-                stat2_title: '100+ Crops',
-                stat2_desc: 'Covered',
-                stat3_title: 'Smart Insights',
-                stat3_desc: 'AI Assisted',
-                cta1: 'START NOW',
-                cta2: 'VIEW MARKETS',
-                tools: 'Powerful Tools',
-                'tools-desc': 'Technology designed specifically for the needs of Indian agriculture.',
-                prediction: 'Crop Disease Detector',
-                'prediction-desc': 'Identify crop diseases at an early stage using image-based analysis and smart pattern detection',
-                climate: 'Weather Alerts',
-                'climate-desc': 'Hyper-local weather forecasts with automatic irrigation advisory for your village.',
-                market_intel: 'Mandi Prices',
-                'market-desc': 'Direct APMC connection to find the best selling price for your crops near you.',
-                'footer-desc': 'Empowering farmers with data, connecting markets with transparency, and building a sustainable future.',
-                solutions: 'Solutions',
-                copyright: '© 2026 AgriCare. Made with ❤️ for Farmers.',
-                sol_advisory: 'Crop Advisory',
-                sol_disease: 'Crop Disease Identification',
-                sol_market: 'Market Connect',
-                sol_weather: 'Weather Station'
-            },
-            gu: {
-                logo: 'એગ્રીકેર',
-                tagline: "ગુજરાતનું સ્માર્ટ કૃષિ પ્લેટફોર્મ",
-                home: '🏠 મુખ્ય',
-                features: '✨ સુવિધાઓ',
-                market: '📈 બજાર',
-                weather: '🌤️ હવામાન',
-                contact: 'ℹ️ પરિચય',
-                loginBtn: 'લોગિન',
-                registerBtn: 'નોંધણી',
-                heroTitle: 'સ્માર્ટ ખેતી',
-                heroSubtitle: 'ઉજ્જવળ ભવિષ્ય.',
-                heroDesc: 'ખેડૂતોને હવામાન, બજાર ભાવ અને આધુનિક ખેતી પદ્ધતિઓ સમજવામાં મદદ કરતું એક સ્માર્ટ ડિજિટલ પ્લેટફોર્મ.',
-                location: '⚲ સ્થળ: ગુજરાત, ભારત',
-                email: '✉ સંપર્ક: project@agricare.demo',
-                phone: '🕻 ફોન: વિનંતી પર ઉપલબ્ધ',
-                stat1_title: 'ડિજિટલ પ્લેટફોર્મ',
-                stat1_desc: 'ખેડૂતો માટે',
-                stat2_title: '100+ પાક',
-                stat2_desc: 'આવરી લેવાયેલ',
-                stat3_title: 'સ્માર્ટ તારણો',
-                stat3_desc: 'AI સહાયિત',
-                cta1: 'શરૂ કરો',
-                cta2: 'બજાર જુઓ',
-                tools: 'મજબૂત સાધનો',
-                'tools-desc': 'ભારતીય કૃષિની જરૂરિયાતો માટે ખાસ તૈયાર કરેલ ટેકનોલોજી.',
-                prediction: 'પાક રોગ ઓળખ',
-                'prediction-desc': 'ઇમેજ-આધારિત વિશ્લેષણ અને સ્માર્ટ પેટર્ન ઓળખનો ઉપયોગ કરીને પ્રારંભિક તબક્કે પાક રોગોને ઓળખો.',
-                climate: 'હવામાન ચેતવણી',
-                'climate-desc': 'તમારા ગામ માટે આપમેળે સિંચાઈ સલાહ સાથે સચોટ હવામાન આગાહી.',
-                market_intel: 'મંડી ભાવ',
-                'market-desc': 'તમારા પાક માટે શ્રેષ્ઠ વેચાણ કિંમત શોધવા માટે સીધું APMC કનેક્શન.',
-                'footer-desc': 'ખેડૂતોને સશક્તિકરણ, પારદર્શિતા સાથે બજારોને જોડવું અને ટકાઉ ભવિષ્યનું નિર્માણ.',
-                solutions: 'ઉકેલો',
-                copyright: '© 2026 એગ્રીકેર. ખેડૂતો માટે ❤️ થી બનાવેલ.',
-                sol_advisory: 'પાક સલાહ',
-                sol_disease: 'પાક રોગ ઓળખ',
-                sol_market: 'બજાર જોડાણ',
-                sol_weather: 'હવામાન સ્ટેશન'
-            },
-            hi: {
-                logo: 'एग्रीकेर',
-                tagline: "गुजरात का स्मार्ट कृषि-मंच",
-                home: '🏠 होम',
-                features: '✨ विशेषताएँ',
-                market: '📈 बाज़ार',
-                weather: '🌤️ मौसम',
-                contact: 'ℹ️ परिचय',
-                loginBtn: 'लॉगिन',
-                registerBtn: 'रजिस्टर',
-                heroTitle: 'स्मार्ट खेती',
-                heroSubtitle: 'भविष्य तैयार।',
-                heroDesc: 'किसानों को मौसम, बाजार भाव और आधुनिक खेती की जानकारी समझने में मदद करने वाला एक स्मार्ट डिजिटल प्लेटफॉर्म।',
-                location: '⚲ स्थान: गुजरात, भारत',
-                email: '✉ संपर्क: project@agricare.demo',
-                phone: '🕻 फोन: अनुरोध पर उपलब्ध',
-                stat1_title: 'डिजिटल प्लेटफॉर्म',
-                stat1_desc: 'किसानों के लिए',
-                stat2_title: '100+ फसलें',
-                stat2_desc: 'कवर की गई',
-                stat3_title: 'स्मार्ट इनसाइट्स',
-                stat3_desc: 'AI समर्थित',
-                cta1: 'शुरू करें',
-                cta2: 'बाजार देखें',
-                tools: 'शक्तिशाली उपकरण',
-                'tools-desc': 'भारतीय कृषि की आवश्यकताओं के लिए विशेष रूप से डिजाइन की गई तकनीक।',
-                prediction: 'फसल रोग डिटेक्टर',
-                'prediction-desc': 'छवि-आधारित विश्लेषण और स्मार्ट पैटर्न पहचान का उपयोग करके शुरुआती चरण में फसल रोगों की पहचान करें।',
-                climate: 'मौसम अलर्ट',
-                'climate-desc': 'आपके गाँव के लिए स्वचालित सिंचाई सलाह के साथ सटीक मौसम पूर्वानुमान।',
-                market_intel: 'मंडी भाव',
-                'market-desc': 'अपने पास की सबसे अच्छी बिक्री मूल्य खोजने के लिए सीधा APMC कनेक्शन।',
-                'footer-desc': 'किसानों को डेटा के साथ सशक्त बनाना और एक स्थायी भविष्य का निर्माण करना।',
-                solutions: 'समाधान',
-                copyright: '© 2026 एग्रीकेर। किसानों के लिए ❤️ से बनाया गया।',
-                sol_advisory: 'फसल सलाह',
-                sol_disease: 'फसल रोग पहचान',
-                sol_market: 'बाज़ार संपर्क',
-                sol_weather: 'मौसम स्टेशन'
-            }
-        };
-
         // 2. Language Switcher Logic
         function changeLang(lang) {
             localStorage.setItem('agricare_lang', lang);
@@ -600,6 +478,11 @@
             body.classList.remove('gu-text', 'hi-text');
             if (lang === 'gu') body.classList.add('gu-text');
             if (lang === 'hi') body.classList.add('hi-text');
+
+            // Re-render the Live Mandi Ticker so crop/district translations switch immediately
+            if (document.getElementById('mandiTicker')) {
+                fetchMandiTicker();
+            }
         }
 
         // 3. Mobile Menu Logic
@@ -690,6 +573,8 @@
                 if (data && data.length > 0) {
                     // Take top 15 results to scroll
                     const displayData = data.slice(0, 15);
+                    const lang = localStorage.getItem('agricare_lang') || 'en';
+
                     // Generate items
                     const content = displayData.map((r, i) => {
                         const getEmoji = (c) => {
@@ -717,18 +602,31 @@
                             return '🌱';
                         };
                         const emoji = getEmoji(r.commodity);
-                        return `<span>${emoji} ${r.commodity.toUpperCase()} (${r.district}): ₹${r.modal} <span class="text-green-400">● Live</span></span>`;
+
+                        // Apply translations if available
+                        let commodityName = getLocalizedMarketName(r.commodity, lang);
+                        let districtName = getLocalizedMarketName(r.district, lang);
+
+                        return `<span>${emoji} ${commodityName} (${districtName}): ₹${r.modal} <span class="text-green-400">● ${lang === 'gu' ? 'લાઇવ' : (lang === 'hi' ? 'लाइव' : 'Live')}</span></span>`;
                     }).join('');
 
                     // Duplicate content to avoid gap during infinite scroll
                     ticker.innerHTML = content.repeat(10);
                 } else {
-                    ticker.innerHTML = '<span>No live market data available at the moment.</span>';
+                    const lang = localStorage.getItem('agricare_lang') || 'en';
+                    let noDataMsg = 'No live market data available at the moment.';
+                    if (lang === 'gu') noDataMsg = 'હાલમાં કોઈ લાઇવ બજાર ડેટા ઉપલબ્ધ નથી.';
+                    if (lang === 'hi') noDataMsg = 'फिलहाल कोई लाइव मार्केट डेटा उपलब्ध नहीं है।';
+                    ticker.innerHTML = `<span>${noDataMsg}</span>`;
                 }
             } catch (err) {
                 console.error("Mandi ticker error:", err);
                 const ticker = document.getElementById('mandiTicker');
-                if (ticker) ticker.innerHTML = '<span>System offline. Could not fetch live prices.</span>';
+                const lang = localStorage.getItem('agricare_lang') || 'en';
+                let errorMsg = 'System offline. Could not fetch live prices.';
+                if (lang === 'gu') errorMsg = 'સિસ્ટમ ઑફલાઇન છે. લાઇવ કિંમતો લાવી શકાઈ નથી.';
+                if (lang === 'hi') errorMsg = 'सिस्टम ऑफ़लाइन है. लाइव कीमतें प्राप्त नहीं की जा सकीं।';
+                if (ticker) ticker.innerHTML = `<span>${errorMsg}</span>`;
             }
         }
 

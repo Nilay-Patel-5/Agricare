@@ -22,7 +22,7 @@ Cluster beans
 Coriander(Leaves)
 Corriander seed
 Cotton
-Cowpea(Veg)
+Cowpea(Vegetable)
 Cucumbar(Kheera)
 Cummin Seed(Jeera)
 Drumstick

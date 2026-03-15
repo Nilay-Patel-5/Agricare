@@ -51,7 +51,7 @@ try {
     if (!empty($districts)) {
         $placeholders = [];
         foreach ($districts as $i => $d) {
-            $clean = trim(preg_replace('/\(.+\)/', '', $d));
+            $clean = trim($d); // Retain brackets, e.g. "Vadodara(Baroda)"
             $key = "dist$i";
             $placeholders[] = ":$key";
             $params[$key] = "%$clean%";
@@ -73,7 +73,7 @@ try {
     if (!empty($commodities)) {
         $placeholders = [];
         foreach ($commodities as $i => $c) {
-            $clean = trim(preg_replace('/\(.+\)/', '', $c));
+            $clean = trim($c); // Do not strip brackets, exact matching is required for AGMARKNET variations
             $key = "cmd$i";
             $placeholders[] = ":$key";
             $params[$key] = "%$clean%";

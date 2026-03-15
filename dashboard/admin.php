@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard | AgriCare</title>
+    <title>Executive Command Center | AgriCare</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../frontend/output.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,284 +13,266 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f8fafc;
+        }
+
+        .premium-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .premium-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
         }
 
         .sidebar-link {
-            transition: all 0.3s;
+            transition: all 0.2s ease-in-out;
+            border-radius: 1rem;
+            margin: 4px 12px;
         }
 
         .sidebar-link.active {
-            background-color: #ecfdf5;
-            color: #047857;
-            border-right: 4px solid #10b981;
-            font-weight: bold;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2);
         }
 
-        .sidebar-link:hover:not(.active) {
-            background-color: #e5e7eb;
+        .sidebar-link:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+
+        @keyframes pulse-emerald {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .status-pulse {
+            animation: pulse-emerald 2s infinite;
         }
     </style>
 </head>
 
-<body class="flex h-screen overflow-hidden text-gray-800">
+<body class="flex h-screen overflow-hidden text-slate-700 bg-slate-50">
 
-    <!-- Admin Sidebar -->
-    <aside class="w-72 bg-gray-900 border-r border-gray-800 flex flex-col hidden lg:flex text-gray-300">
-        <div class="p-6 border-b border-gray-800 bg-gray-950">
-            <a href="../frontend/index.php" class="flex items-center gap-3">
-                <div
-                    class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg">
-                    <i class="fas fa-shield-alt"></i>
+    <!-- Premium Admin Sidebar -->
+    <aside class="w-72 bg-slate-950 flex flex-col hidden lg:flex text-slate-400 shrink-0">
+        <div class="px-8 py-10">
+            <a href="../frontend/index.php" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white text-xl shadow-xl shadow-emerald-900/40 group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-leaf"></i>
                 </div>
                 <div>
-                    <span class="text-xl font-black text-white tracking-tight block">AgriCare</span>
-                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Admin Control</span>
+                    <span class="text-2xl font-black text-white tracking-tighter block leading-tight">AgriCare</span>
+                    <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest pl-0.5">Admin Elite</span>
                 </div>
             </a>
         </div>
 
-        <nav class="flex-1 overflow-y-auto py-6">
-            <p class="px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Core Modules</p>
+        <nav class="flex-1 overflow-y-auto custom-scrollbar space-y-1">
+            <p class="px-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 mt-2">Management</p>
 
-            <a href="admin.php" class="sidebar-link active flex items-center gap-4 px-6 py-3 border-transparent"
-                style="background-color: #064e3b; color: #34d399; border-right: 4px solid #10b981;">
-                <i class="fas fa-chart-pie w-5 text-center"></i>
-                <span>Overview</span>
+            <a href="admin.php" class="sidebar-link active flex items-center gap-4 px-5 py-3.5">
+                <i class="fas fa-chart-line w-5"></i>
+                <span class="font-bold text-sm tracking-tight">Executive Summary</span>
             </a>
-            <a href="admin_users.php"
-                class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-users w-5 text-center"></i>
-                <span>User Management</span>
+
+            <a href="admin_users.php" class="sidebar-link flex items-center gap-4 px-5 py-3.5">
+                <i class="fas fa-users-viewfinder w-5"></i>
+                <span class="font-bold text-sm tracking-tight">Farmer Registry</span>
             </a>
-            <a href="admin_subsidies.php"
-                class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-hand-holding-dollar w-5 text-center"></i>
-                <span>Manage Subsidies</span>
+
+            <a href="admin_subsidies.php" class="sidebar-link flex items-center gap-4 px-5 py-3.5">
+                <i class="fas fa-hand-holding-heart w-5"></i>
+                <span class="font-bold text-sm tracking-tight">Subsidy Programs</span>
             </a>
-            <a href="admin_market.php"
-                class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-store w-5 text-center"></i>
-                <span>Market Control</span>
+
+            <a href="admin_market.php" class="sidebar-link flex items-center gap-4 px-5 py-3.5">
+                <i class="fas fa-arrow-trend-up w-5"></i>
+                <span class="font-bold text-sm tracking-tight">Mandi Intelligence</span>
             </a>
-            <a href="admin_analytics.php"
-                class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-robot w-5 text-center"></i>
-                <span>AI Analytics</span>
+
+            <p class="px-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 mt-8">System</p>
+
+            <a href="admin_analytics.php" class="sidebar-link flex items-center gap-4 px-5 py-3.5">
+                <i class="fas fa-brain w-5"></i>
+                <span class="font-bold text-sm tracking-tight">AI Diagnostics</span>
+            </a>
+
+            <a href="admin_settings.php" class="sidebar-link flex items-center gap-4 px-5 py-3.5">
+                <i class="fas fa-sliders w-5"></i>
+                <span class="font-bold text-sm tracking-tight">System Settings</span>
             </a>
         </nav>
 
-        <div class="p-6 border-t border-gray-800 bg-gray-950">
-            <a href="#" onclick="logout()"
-                class="flex items-center gap-3 text-gray-500 hover:text-red-500 transition-colors font-bold text-sm">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Secure Logout</span>
+        <div class="p-8 border-t border-slate-900">
+            <div class="bg-slate-900/50 rounded-2xl p-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                        <i class="fas fa-circle-dot animate-pulse"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black text-white uppercase tracking-tight">Node: MH-01</p>
+                        <p class="text-[10px] text-slate-500 font-bold">Latency: 24ms</p>
+                    </div>
+                </div>
+            </div>
+
+            <a href="#" onclick="logout()" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-slate-900 hover:border-red-500/50 hover:text-red-500 transition-all font-black text-[10px] uppercase tracking-widest bg-transparent">
+                <i class="fas fa-power-off"></i>
+                <span>Secure Termination</span>
             </a>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
         <!-- Topbar -->
-        <header
-            class="bg-white border-b border-gray-200 py-4 px-6 lg:px-10 flex justify-between items-center shrink-0 shadow-sm z-10">
-            <div class="flex items-center gap-4">
-                <button class="lg:hidden text-gray-500 hover:text-emerald-600">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <h2 class="text-2xl font-black text-gray-800 hidden sm:block">Command Center</h2>
+        <header class="bg-white/80 backdrop-blur-md border-b border-slate-100 py-6 px-10 flex justify-between items-center shrink-0 z-30">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                    <span class="w-2 h-8 bg-emerald-500 rounded-full block"></span>
+                    Executive Command Center
+                </h2>
             </div>
 
-            <div class="flex items-center gap-6">
-                <div class="relative">
-                    <i
-                        class="fas fa-bell text-gray-400 text-xl hover:text-emerald-600 cursor-pointer transition-colors"></i>
-                    <span class="absolute -top-1 -right-1 flex h-3 w-3">
-                        <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
-                    </span>
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-full border border-slate-100">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse"></span>
+                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Network Secure</span>
                 </div>
 
-                <div class="flex items-center gap-3 pl-6 border-l border-gray-200">
+                <div class="flex items-center gap-4 pl-8 border-l border-slate-100">
                     <div class="text-right hidden md:block">
-                        <p id="adminNameDisplay" class="text-sm font-bold text-gray-800 leading-tight">System Admin</p>
-                        <p class="text-[10px] text-emerald-600 font-black uppercase tracking-widest">Master Access</p>
+                        <p id="adminNameDisplay" class="text-sm font-black text-slate-900 tracking-tight leading-none mb-1">Elite Operator</p>
+                        <p class="text-[10px] text-emerald-600 font-black uppercase tracking-[0.1em]">Root Privileges</p>
                     </div>
-                    <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center text-white shadow-md">
-                        <i class="fas fa-user-shield"></i>
+                    <div class="w-12 h-12 bg-slate-950 rounded-2xl p-0.5 group cursor-pointer overflow-hidden shadow-lg shadow-slate-200">
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=0f172a&color=fff" class="w-full h-full rounded-[14px] object-cover group-hover:scale-110 transition-transform" alt="Admin">
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Dashboard Widgets -->
-        <div class="flex-1 overflow-y-auto px-6 lg:px-10 py-8">
-            <div class="mb-8">
-                <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mb-1">Today's Briefing</p>
-                <h2 class="text-3xl font-black text-gray-900">Platform Overview</h2>
+        <div class="flex-1 overflow-y-auto px-10 py-10 custom-scrollbar">
+            <div class="mb-12 flex justify-between items-end">
+                <div>
+                    <h2 class="text-4xl font-black text-slate-900 tracking-tight mb-2">Platform Pulse</h2>
+                    <p class="text-slate-500 font-medium">Real-time performance metrics and farmer engagement statistics.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="window.location.reload()" class="w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center text-slate-400 hover:text-emerald-500 transition-colors">
+                        <i class="fas fa-rotate"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Stats Grid -->
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                <div
-                    class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full border-b-4 border-b-blue-500 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 opacity-5 text-9xl text-blue-500"><i class="fas fa-users"></i>
-                    </div>
-                    <div
-                        class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-4 z-10">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <!-- Farmers -->
+                <div class="premium-card p-8 rounded-[2.5rem] relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 text-[10rem] text-slate-50 rotate-12 opacity-50"><i class="fas fa-users-rectangle"></i></div>
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-xl shadow-blue-200">
                         <i class="fas fa-users text-xl"></i>
                     </div>
-                    <h3 class="font-bold text-gray-500 uppercase tracking-widest text-xs z-10">Total Farmers</h3>
-                    <div class="flex items-baseline gap-2 z-10">
-                        <p class="text-3xl font-black text-gray-900 mt-1">15,234</p>
-                        <span class="text-xs font-bold text-green-500"><i class="fas fa-arrow-up"></i> 12%</span>
+                    <h3 class="font-black text-slate-400 uppercase tracking-[0.15em] text-[10px] mb-2">Total Registrations</h3>
+                    <div class="flex items-baseline gap-3">
+                        <p id="stat-farmers" class="text-4xl font-black text-slate-900 tracking-tight">0</p>
+                        <span class="text-[10px] px-2 py-1 bg-blue-50 text-blue-600 font-black rounded-lg">+12%</span>
                     </div>
                 </div>
 
-                <div
-                    class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full border-b-4 border-b-emerald-500 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 opacity-5 text-9xl text-emerald-500"><i
-                            class="fas fa-hand-holding-dollar"></i></div>
-                    <div
-                        class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mb-4 z-10">
+                <!-- Subsidies -->
+                <div class="premium-card p-8 rounded-[2.5rem] relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 text-[10rem] text-slate-50 rotate-12 opacity-50"><i class="fas fa-handshake-angle"></i></div>
+                    <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-xl shadow-emerald-200">
                         <i class="fas fa-hand-holding-dollar text-xl"></i>
                     </div>
-                    <h3 class="font-bold text-gray-500 uppercase tracking-widest text-xs z-10">Active Subsidies</h3>
-                    <div class="flex items-baseline gap-2 z-10">
-                        <p class="text-3xl font-black text-gray-900 mt-1">12</p>
-                        <span class="text-xs font-bold text-gray-400">Live programs</span>
+                    <h3 class="font-black text-slate-400 uppercase tracking-[0.15em] text-[10px] mb-2">Active Programs</h3>
+                    <div class="flex items-baseline gap-3">
+                        <p id="stat-subsidies" class="text-4xl font-black text-slate-900 tracking-tight">0</p>
+                        <span class="text-[10px] px-2 py-1 bg-emerald-50 text-emerald-600 font-black rounded-lg">LIVE</span>
                     </div>
                 </div>
 
-                <div
-                    class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full border-b-4 border-b-orange-500 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 opacity-5 text-9xl text-orange-500"><i
-                            class="fas fa-store"></i></div>
-                    <div
-                        class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 mb-4 z-10">
+                <!-- Markets -->
+                <div class="premium-card p-8 rounded-[2.5rem] relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 text-[10rem] text-slate-50 rotate-12 opacity-50"><i class="fas fa-building-wheat"></i></div>
+                    <div class="w-14 h-14 bg-orange-500 rounded-2xl flex items-center justify-center text-white mb-6 shadow-xl shadow-orange-200">
                         <i class="fas fa-store text-xl"></i>
                     </div>
-                    <h3 class="font-bold text-gray-500 uppercase tracking-widest text-xs z-10">Market Checkpoints</h3>
-                    <div class="flex items-baseline gap-2 z-10">
-                        <p class="text-3xl font-black text-gray-900 mt-1">923</p>
-                        <span class="text-xs font-bold text-gray-400">Gujarat APMCs</span>
+                    <h3 class="font-black text-slate-400 uppercase tracking-[0.15em] text-[10px] mb-2">Mandi Sync Nodes</h3>
+                    <div class="flex items-baseline gap-3">
+                        <p id="stat-markets" class="text-4xl font-black text-slate-900 tracking-tight">0</p>
+                        <span class="text-[10px] px-2 py-1 bg-orange-50 text-orange-600 font-black rounded-lg">ON-AIR</span>
                     </div>
                 </div>
 
-                <div
-                    class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full border-b-4 border-b-purple-500 relative overflow-hidden">
-                    <div class="absolute -right-4 -top-4 opacity-5 text-9xl text-purple-500"><i
-                            class="fas fa-microscope"></i></div>
-                    <div
-                        class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 mb-4 z-10">
-                        <i class="fas fa-microscope text-xl"></i>
+                <!-- AI Scans -->
+                <div class="premium-card p-8 rounded-[2.5rem] relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 text-[10rem] text-slate-50 rotate-12 opacity-50"><i class="fas fa-microscope"></i></div>
+                    <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white mb-6 shadow-xl shadow-indigo-200">
+                        <i class="fas fa-robot text-xl"></i>
                     </div>
-                    <h3 class="font-bold text-gray-500 uppercase tracking-widest text-xs z-10">AI Scans Run</h3>
-                    <div class="flex items-baseline gap-2 z-10">
-                        <p class="text-3xl font-black text-gray-900 mt-1">45,892</p>
-                        <span class="text-xs font-bold text-green-500"><i class="fas fa-arrow-up"></i> 8%</span>
+                    <h3 class="font-black text-slate-400 uppercase tracking-[0.15em] text-[10px] mb-2">Neural Load Scans</h3>
+                    <div class="flex items-baseline gap-3">
+                        <p id="stat-scans" class="text-4xl font-black text-slate-900 tracking-tight">0</p>
+                        <span class="text-[10px] px-2 py-1 bg-indigo-50 text-indigo-600 font-black rounded-lg">GPT-4o</span>
                     </div>
                 </div>
             </div>
 
             <!-- Recent Activity Table -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <div class="premium-card rounded-[2.5rem] overflow-hidden">
+                <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-white">
                     <div>
-                        <h3 class="text-lg font-black text-gray-800">Recent User Registrations</h3>
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Last 24 hours</p>
+                        <h3 class="text-xl font-black text-slate-900 tracking-tight">Farmer Activity Log</h3>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Real-time Stream</p>
                     </div>
-                    <button
-                        class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors shadow-sm">View
-                        All Users</button>
+                    <a href="admin_users.php" class="px-6 py-2.5 bg-slate-100 rounded-xl text-xs font-black text-slate-600 hover:bg-emerald-600 hover:text-white transition-all tracking-tight uppercase">Registry Full View</a>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left">
                         <thead>
-                            <tr class="bg-white">
-                                <th
-                                    class="py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                                    Farmer ID</th>
-                                <th
-                                    class="py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                                    Name / Phone</th>
-                                <th
-                                    class="py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                                    District</th>
-                                <th
-                                    class="py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
-                                    Verified</th>
-                                <th
-                                    class="py-4 px-6 text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 text-right">
-                                    Action</th>
+                            <tr class="bg-slate-50/50">
+                                <th class="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Deployment ID</th>
+                                <th class="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Farmer Profile</th>
+                                <th class="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Operational Zone</th>
+                                <th class="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">System Role</th>
+                                <th class="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Registered</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr class="hover:bg-gray-50 transition-colors group">
-                                <td class="py-4 px-6 border-b border-gray-50 text-sm font-bold text-gray-600">FRM-9942
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50">
-                                    <p
-                                        class="text-sm font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
-                                        Rajesh Patel</p>
-                                    <p class="text-xs text-gray-500 font-medium">+91 98765 43210</p>
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50 text-sm font-medium text-gray-600">
-                                    Ahmedabad</td>
-                                <td class="py-4 px-6 border-b border-gray-50">
-                                    <span
-                                        class="bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md flex items-center w-max gap-1">
-                                        <i class="fas fa-check-circle"></i> YES
-                                    </span>
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50 text-right">
-                                    <button class="text-gray-400 hover:text-emerald-600 transition-colors"><i
-                                            class="fas fa-ellipsis-v px-2"></i></button>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50 transition-colors group">
-                                <td class="py-4 px-6 border-b border-gray-50 text-sm font-bold text-gray-600">FRM-9943
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50">
-                                    <p
-                                        class="text-sm font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
-                                        Amit Shah</p>
-                                    <p class="text-xs text-gray-500 font-medium">+91 91234 56789</p>
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50 text-sm font-medium text-gray-600">Surat
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50">
-                                    <span
-                                        class="bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md flex items-center w-max gap-1">
-                                        <i class="fas fa-check-circle"></i> YES
-                                    </span>
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50 text-right">
-                                    <button class="text-gray-400 hover:text-emerald-600 transition-colors"><i
-                                            class="fas fa-ellipsis-v px-2"></i></button>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50 transition-colors group">
-                                <td class="py-4 px-6 border-b border-gray-50 text-sm font-bold text-gray-600">FRM-9944
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50">
-                                    <p
-                                        class="text-sm font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
-                                        Bhavin Desai</p>
-                                    <p class="text-xs text-gray-500 font-medium">+91 99887 76655</p>
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50 text-sm font-medium text-gray-600">Rajkot
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50">
-                                    <span
-                                        class="bg-orange-100 text-orange-700 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md flex items-center w-max gap-1">
-                                        <i class="fas fa-clock"></i> PENDING
-                                    </span>
-                                </td>
-                                <td class="py-4 px-6 border-b border-gray-50 text-right">
-                                    <button class="text-gray-400 hover:text-emerald-600 transition-colors"><i
-                                            class="fas fa-ellipsis-v px-2"></i></button>
+                        <tbody id="recentUsersTable" class="divide-y divide-slate-50">
+                            <!-- Injected by JS -->
+                            <tr>
+                                <td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-3xl text-emerald-500 mb-4 block mx-auto"></i>
+                                    <p class="font-black text-slate-400 uppercase text-[10px] tracking-widest">Accessing Secure Records...</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -299,11 +281,68 @@
             </div>
         </div>
     </main>
+
     <script>
+        async function fetchStats() {
+            try {
+                const res = await fetch('../backend/admin_stats_api.php');
+                const data = await res.json();
+
+                document.getElementById('stat-farmers').innerText = data.farmers.toLocaleString();
+                document.getElementById('stat-subsidies').innerText = data.subsidies;
+                document.getElementById('stat-markets').innerText = data.markets;
+                document.getElementById('stat-scans').innerText = data.scans.toLocaleString();
+
+                const tbody = document.getElementById('recentUsersTable');
+                if (data.recentUsers.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center text-slate-300 font-black italic">DATABASE_EMPTY: No recent records found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.recentUsers.map(u => `
+                    <tr class="hover:bg-slate-50 group transition-all duration-300">
+                        <td class="py-6 px-8 text-sm font-black text-slate-400">
+                            <span class="bg-slate-100 px-3 py-1 rounded-lg">#${u.id.toString().padStart(4, '0')}</span>
+                        </td>
+                        <td class="py-6 px-8">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden shrink-0 border-2 border-white shadow-sm">
+                                    <img src="https://ui-avatars.com/api/?name=${u.name}&background=f1f5f9&color=64748b" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <p class="text-sm font-black text-slate-900 group-hover:text-emerald-600 transition-colors">${u.name}</p>
+                                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">${u.phone || 'NO_COMMS'}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-6 px-8">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-location-dot text-emerald-500/50 text-xs"></i>
+                                <span class="text-sm font-bold text-slate-600">${u.district || 'GLOBAL'}</span>
+                            </div>
+                        </td>
+                        <td class="py-6 px-8">
+                            <span class="bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border border-emerald-100 inline-flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                ${u.role.toUpperCase()}
+                            </span>
+                        </td>
+                        <td class="py-6 px-8 text-right">
+                            <p class="text-xs font-black text-slate-400">${new Date(u.created_at).toLocaleDateString([], {day:'2-digit', month:'short', year:'numeric'})}</p>
+                            <p class="text-[10px] text-slate-300 font-bold">${new Date(u.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                console.error("Critical System Error:", err);
+            }
+        }
+
         function updateAdminInfo() {
             const userData = JSON.parse(sessionStorage.getItem('agricare_user'));
             if (userData && userData.role === 'admin') {
-                document.getElementById('adminNameDisplay').innerText = userData.name || 'Admin User';
+                document.getElementById('adminNameDisplay').innerText = userData.name || 'System Operator';
             } else if (!userData) {
                 window.location.href = '../frontend/login.php';
             }
@@ -314,7 +353,11 @@
             window.location.href = '../frontend/login.php';
         }
 
-        document.addEventListener('DOMContentLoaded', updateAdminInfo);
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAdminInfo();
+            fetchStats();
+        });
     </script>
 </body>
-</html>
+
+</html>

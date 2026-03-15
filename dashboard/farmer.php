@@ -346,12 +346,21 @@
             </div>
 
             <!-- Filters -->
-            <div class="flex flex-col md:flex-row gap-4 mb-8">
-                <div class="flex-1 relative">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="subsidySearch" onkeyup="filterSubsidies(this.value)"
-                        placeholder="Search schemes..."
-                        class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none">
+            <div class="space-y-6 mb-8">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterSubsidies('All')" data-cat="All" class="subsidy-tab bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-95">All Schemes</button>
+                    <button onclick="filterSubsidies('Income Support')" data-cat="Income Support" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100">Income Support</button>
+                    <button onclick="filterSubsidies('Irrigation')" data-cat="Irrigation" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100">Irrigation</button>
+                    <button onclick="filterSubsidies('Equipment')" data-cat="Equipment" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100">Equipment</button>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1 relative">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="subsidySearch" onkeyup="searchSubsidies(this.value)"
+                            placeholder="Search schemes..."
+                            class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none">
+                    </div>
                 </div>
             </div>
 
@@ -370,32 +379,183 @@
             wheat: {
                 id: 'wheat',
                 icon: '🌾',
-                season: { en: 'Rabi (Winter)', gu: 'રવિ (શિયાળુ)', hi: 'रबी (सर्दियों)' },
-                name: { en: 'Wheat', gu: 'ઘઉં', hi: 'गेहूँ' },
+                season: {
+                    en: 'Rabi (Winter)',
+                    gu: 'રવિ (શિયાળુ)',
+                    hi: 'रबी (सर्दियों)'
+                },
+                name: {
+                    en: 'Wheat',
+                    gu: 'ઘઉં',
+                    hi: 'गेहूँ'
+                },
                 schedule: {
-                    10: { type: 'prepare', icon: 'tractor', color: 'orange', text: { en: 'Field Preparation & Sowing', gu: 'ખેતરની તૈયારી અને વાવણી', hi: 'खेत की तैयारी एवं बुवाई' } },
-                    11: { type: 'water', icon: 'tint', color: 'blue', text: { en: 'First Irrigation (CRI Stage)', gu: 'પ્રથમ પિયત (CRI તબક્કો)', hi: 'पहली सिंचाई (CRI अवस्था)' } },
-                    12: { type: 'fertilizer', icon: 'leaf', color: 'emerald', text: { en: 'Top Dressing Nitrogen', gu: 'નાઈટ્રોજન ખાતર આપવું', hi: 'यूरिया का छिड़काव' } },
-                    0: { type: 'care', icon: 'bug', color: 'purple', text: { en: 'Weed & Pest Control', gu: 'નીંદણ અને જીવાત નિયંત્રણ', hi: 'खरपतवार एवं कीट नियंत्रण' } },
-                    1: { type: 'water', icon: 'tint', color: 'blue', text: { en: 'Flowering Stage Irrigation', gu: 'ફૂલ અવસ્થાએ પિયત', hi: 'फूल आने पर सिंचाई' } },
-                    2: { type: 'harvest', icon: 'sun', color: 'amber', text: { en: 'Grain Filling', gu: 'દાણા ભરવાનો સમય', hi: 'दाना भरने का समय' } },
-                    3: { type: 'harvest', icon: 'scythe', color: 'red', text: { en: 'Harvesting', gu: 'લણણી', hi: 'कटाई' } }
+                    10: {
+                        type: 'prepare',
+                        icon: 'tractor',
+                        color: 'orange',
+                        text: {
+                            en: 'Field Preparation & Sowing',
+                            gu: 'ખેતરની તૈયારી અને વાવણી',
+                            hi: 'खेत की तैयारी एवं बुवाई'
+                        }
+                    },
+                    11: {
+                        type: 'water',
+                        icon: 'tint',
+                        color: 'blue',
+                        text: {
+                            en: 'First Irrigation (CRI Stage)',
+                            gu: 'પ્રથમ પિયત (CRI તબક્કો)',
+                            hi: 'पहली सिंचाई (CRI अवस्था)'
+                        }
+                    },
+                    12: {
+                        type: 'fertilizer',
+                        icon: 'leaf',
+                        color: 'emerald',
+                        text: {
+                            en: 'Top Dressing Nitrogen',
+                            gu: 'નાઈટ્રોજન ખાતર આપવું',
+                            hi: 'यूरिया का छिड़काव'
+                        }
+                    },
+                    0: {
+                        type: 'care',
+                        icon: 'bug',
+                        color: 'purple',
+                        text: {
+                            en: 'Weed & Pest Control',
+                            gu: 'નીંદણ અને જીવાત નિયંત્રણ',
+                            hi: 'खरपतवार एवं कीट नियंत्रण'
+                        }
+                    },
+                    1: {
+                        type: 'water',
+                        icon: 'tint',
+                        color: 'blue',
+                        text: {
+                            en: 'Flowering Stage Irrigation',
+                            gu: 'ફૂલ અવસ્થાએ પિયત',
+                            hi: 'फूल आने पर सिंचाई'
+                        }
+                    },
+                    2: {
+                        type: 'harvest',
+                        icon: 'sun',
+                        color: 'amber',
+                        text: {
+                            en: 'Grain Filling',
+                            gu: 'દાણા ભરવાનો સમય',
+                            hi: 'दाना भरने का समय'
+                        }
+                    },
+                    3: {
+                        type: 'harvest',
+                        icon: 'scythe',
+                        color: 'red',
+                        text: {
+                            en: 'Harvesting',
+                            gu: 'લણણી',
+                            hi: 'कटाई'
+                        }
+                    }
                 }
             },
             cotton: {
                 id: 'cotton',
                 icon: '☁️',
-                season: { en: 'Kharif (Monsoon)', gu: 'ખરીફ (ચોમાસુ)', hi: 'खरीफ (मानसून)' },
-                name: { en: 'Cotton', gu: 'કપાસ', hi: 'कपास' },
+                season: {
+                    en: 'Kharif (Monsoon)',
+                    gu: 'ખરીફ (ચોમાસુ)',
+                    hi: 'खरीफ (मानसून)'
+                },
+                name: {
+                    en: 'Cotton',
+                    gu: 'કપાસ',
+                    hi: 'कपास'
+                },
                 schedule: {
-                    4: { type: 'prepare', icon: 'tractor', color: 'orange', text: { en: 'Deep Ploughing & Prep', gu: 'ઊંડી ખેડ અને તૈયારી', hi: 'गहरी जुताई और तैयारी' } },
-                    5: { type: 'prepare', icon: 'seedling', color: 'emerald', text: { en: 'Pre-monsoon Sowing', gu: 'ચોમાસા પહેલા વાવણી', hi: 'मानसून पूर्व बुवाई' } },
-                    6: { type: 'care', icon: 'leaf', color: 'emerald', text: { en: 'Weeding & Thinning', gu: 'નીંદણ અને પારવણી', hi: 'खरपतवार नियंत्रण' } },
-                    7: { type: 'fertilizer', icon: 'flask', color: 'purple', text: { en: 'Fertilizer Application', gu: 'ખાતરનો ઉપયોગ', hi: 'उर्वरक का प्रयोग' } },
-                    8: { type: 'care', icon: 'bug', color: 'red', text: { en: 'Pest Scouting (Bollworm)', gu: 'જીવાત નિરીક્ષણ (ઇયળ)', hi: 'कीट निरीक्षण (इल्ली)' } },
-                    9: { type: 'water', icon: 'tint', color: 'blue', text: { en: 'Square & Boll Formation', gu: 'ઝીંડવા બેસવાનો સમય', hi: 'टिंडे बनने का समय' } },
-                    10: { type: 'harvest', icon: 'box', color: 'amber', text: { en: 'First Picking', gu: 'પ્રથમ વીણી', hi: 'पहली चुनाई' } },
-                    11: { type: 'harvest', icon: 'box', color: 'amber', text: { en: 'Second Picking', gu: 'બીજી વીણી', hi: 'दूसरी चुनाई' } }
+                    4: {
+                        type: 'prepare',
+                        icon: 'tractor',
+                        color: 'orange',
+                        text: {
+                            en: 'Deep Ploughing & Prep',
+                            gu: 'ઊંડી ખેડ અને તૈયારી',
+                            hi: 'गहरी जुताई और तैयारी'
+                        }
+                    },
+                    5: {
+                        type: 'prepare',
+                        icon: 'seedling',
+                        color: 'emerald',
+                        text: {
+                            en: 'Pre-monsoon Sowing',
+                            gu: 'ચોમાસા પહેલા વાવણી',
+                            hi: 'मानसून पूर्व बुवाई'
+                        }
+                    },
+                    6: {
+                        type: 'care',
+                        icon: 'leaf',
+                        color: 'emerald',
+                        text: {
+                            en: 'Weeding & Thinning',
+                            gu: 'નીંદણ અને પારવણી',
+                            hi: 'खरपतवार नियंत्रण'
+                        }
+                    },
+                    7: {
+                        type: 'fertilizer',
+                        icon: 'flask',
+                        color: 'purple',
+                        text: {
+                            en: 'Fertilizer Application',
+                            gu: 'ખાતરનો ઉપયોગ',
+                            hi: 'उर्वरक का प्रयोग'
+                        }
+                    },
+                    8: {
+                        type: 'care',
+                        icon: 'bug',
+                        color: 'red',
+                        text: {
+                            en: 'Pest Scouting (Bollworm)',
+                            gu: 'જીવાત નિરીક્ષણ (ઇયળ)',
+                            hi: 'कीट निरीक्षण (इल्ली)'
+                        }
+                    },
+                    9: {
+                        type: 'water',
+                        icon: 'tint',
+                        color: 'blue',
+                        text: {
+                            en: 'Square & Boll Formation',
+                            gu: 'ઝીંડવા બેસવાનો સમય',
+                            hi: 'टिंडे बनने का समय'
+                        }
+                    },
+                    10: {
+                        type: 'harvest',
+                        icon: 'box',
+                        color: 'amber',
+                        text: {
+                            en: 'First Picking',
+                            gu: 'પ્રથમ વીણી',
+                            hi: 'पहली चुनाई'
+                        }
+                    },
+                    11: {
+                        type: 'harvest',
+                        icon: 'box',
+                        color: 'amber',
+                        text: {
+                            en: 'Second Picking',
+                            gu: 'બીજી વીણી',
+                            hi: 'दूसरी चुनाई'
+                        }
+                    }
                 }
             }
         };
@@ -681,44 +841,83 @@
         // --- Subsidies Logic ---
         let allSubsidies = [];
         async function fetchSubsidies() {
+            const container = document.getElementById('subsidiesList');
+            container.innerHTML = `<div class="col-span-full py-20 text-center"><i class="fas fa-spinner fa-spin text-3xl text-emerald-500 mb-4"></i><p class="text-gray-500 font-bold">Fetching latest schemes...</p></div>`;
+
             try {
                 const res = await fetch('../backend/get_subsidies.php');
                 allSubsidies = await res.json();
                 renderSubsidies(allSubsidies);
             } catch (err) {
                 console.error("Failed to load subsidies", err);
+                container.innerHTML = `<div class="col-span-full py-10 text-center text-red-500">Failed to connect to subsidy database.</div>`;
             }
         }
 
-        function filterSubsidies(q) {
+        function filterSubsidies(category) {
+            const tabs = document.querySelectorAll('.subsidy-tab');
+            tabs.forEach(t => {
+                if (t.dataset.cat === category) {
+                    t.classList.add('bg-emerald-600', 'text-white');
+                    t.classList.remove('bg-white', 'text-gray-600');
+                } else {
+                    t.classList.remove('bg-emerald-600', 'text-white');
+                    t.classList.add('bg-white', 'text-gray-600');
+                }
+            });
+
+            if (category === 'All') {
+                renderSubsidies(allSubsidies);
+            } else {
+                const filtered = allSubsidies.filter(s => s.category === category);
+                renderSubsidies(filtered);
+            }
+        }
+
+        function searchSubsidies(q) {
             const filtered = allSubsidies.filter(s =>
                 s.name.toLowerCase().includes(q.toLowerCase()) ||
-                (s.name_gu && s.name_gu.includes(q)) ||
-                (s.name_hi && s.name_hi.includes(q))
+                (s.name_gu && s.name_gu.toLowerCase().includes(q.toLowerCase())) ||
+                (s.name_hi && s.name_hi.toLowerCase().includes(q.toLowerCase()))
             );
             renderSubsidies(filtered);
         }
 
         function renderSubsidies(list) {
             const container = document.getElementById('subsidiesList');
-            if (list.length === 0) {
-                container.innerHTML = `<div class="col-span-full py-10 text-center text-gray-400">No matching schemes found.</div>`;
+            if (!list || list.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-20 text-center bg-gray-50 rounded-[2.5rem] border-2 border-dashed border-gray-100"><p class="text-gray-400 font-bold">No schemes found matching your criteria.</p></div>`;
                 return;
             }
+
             container.innerHTML = list.map(s => `
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition-all">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full">${s.category}</span>
-                        <span class="text-emerald-500 font-bold text-xs"><i class="fas fa-circle status-live mr-1 text-[8px]"></i> LIVE</span>
+                <div class="group bg-white p-7 rounded-[2.5rem] shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-16 -mt-16 opacity-50 transition-transform group-hover:scale-110"></div>
+                    
+                    <div class="flex justify-between items-start mb-6 relative z-10">
+                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">${s.category}</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-emerald-500 font-black text-[10px] tracking-tight uppercase">${s.status || 'Active'}</span>
+                        </div>
                     </div>
-                    <h4 class="text-xl font-bold text-gray-900 mb-2">${s[`name_${currentLang}`] || s.name}</h4>
-                    <p class="text-sm text-gray-600 line-clamp-2 mb-6">${s[`description_${currentLang}`] || s.description}</p>
-                    <div class="flex items-center justify-between pt-4 border-t border-gray-50">
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">${translations[currentLang].benefit_label || 'Benefit:'}</span>
-                        <span class="text-sm font-black text-emerald-600">${s[`benefits_${currentLang}`] || s.benefits}</span>
+
+                    <h4 class="text-xl font-black text-gray-900 mb-3 leading-tight group-hover:text-emerald-700 transition-colors">${s[`name_${currentLang}`] || s.name}</h4>
+                    <p class="text-sm text-gray-500 font-medium line-clamp-2 mb-6 leading-relaxed">${s[`description_${currentLang}`] || s.description}</p>
+                    
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
+                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Key Benefit</span>
+                            <span class="text-xs font-bold text-gray-700">${s[`benefits_${currentLang}`] || s.benefits || '--'}</span>
+                        </div>
                     </div>
-                    <a href="${s.apply_link}" target="_blank" class="block w-full text-center mt-6 bg-gray-900 text-white py-3 rounded-2xl font-bold hover:bg-emerald-600 transition-colors">
-                        ${translations[currentLang].apply_now}
+
+                    <a href="${s.apply_link}" target="_blank" class="flex items-center justify-center gap-2 w-full bg-gray-900 text-white py-4 rounded-2xl font-black hover:bg-emerald-600 shadow-lg hover:shadow-emerald-200 transition-all active:scale-95 relative z-10">
+                        <span>${translations[currentLang].apply_now}</span>
+                        <i class="fas fa-external-link-alt text-xs opacity-50"></i>
                     </a>
                 </div>
             `).join('');
@@ -734,9 +933,15 @@
         if (dropZone) {
             dropZone.onclick = () => fileInput.click();
             fileInput.onchange = (e) => handleFiles(e.target.files);
-            dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('bg-emerald-50'); };
+            dropZone.ondragover = (e) => {
+                e.preventDefault();
+                dropZone.classList.add('bg-emerald-50');
+            };
             dropZone.ondragleave = () => dropZone.classList.remove('bg-emerald-50');
-            dropZone.ondrop = (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); };
+            dropZone.ondrop = (e) => {
+                e.preventDefault();
+                handleFiles(e.dataTransfer.files);
+            };
         }
 
         function handleFiles(files) {
@@ -773,7 +978,10 @@
                 try {
                     const fd = new FormData();
                     fd.append('image', file);
-                    const res = await fetch(`${API_BASE}/predict`, { method: 'POST', body: fd });
+                    const res = await fetch(`${API_BASE}/predict`, {
+                        method: 'POST',
+                        body: fd
+                    });
                     if (!res.ok) throw new Error("API Connection Error");
                     const data = await res.json();
                     showResults(data);
@@ -808,7 +1016,9 @@
         // Health Checker
         async function checkApi() {
             try {
-                const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(2000) });
+                const res = await fetch(`${API_BASE}/health`, {
+                    signal: AbortSignal.timeout(2000)
+                });
                 const label = document.getElementById('status-label');
                 const pulse = document.getElementById('status-pulse');
                 if (res.ok) {

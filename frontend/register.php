@@ -160,7 +160,8 @@
                                 </label>
                                 <input id="phone_no" name="phone_no" type="tel" required
                                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
-                                    placeholder="9876543210">
+                                    placeholder="9876543210" oninput="validatePhone()">
+                                <p id="phone-reg-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="phoneRegError">Please enter a valid 10-digit mobile number.</p>
                             </div>
                         </div>
 
@@ -215,7 +216,7 @@
                                 <!-- City -->
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                        <i class="fas fa-city text-emerald-500"></i><span data-lang="cityLbl">City</span> <span class="text-red-500">*</span>
+                                        <i class="fas fa-city text-emerald-500"></i><span data-lang="cityLbl">City/Area</span> <span class="text-red-500">*</span>
                                     </label>
                                     <select id="city" name="city" required
                                         class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm bg-white">
@@ -255,7 +256,7 @@
                                     <div class="relative">
                                         <input id="pin" name="pin" type="password" required maxlength="6" pattern="\d{6}" inputmode="numeric"
                                             class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm pr-10"
-                                            placeholder="••••••">
+                                            placeholder="••••••" oninput="validatePin()">
                                         <button type="button" onclick="togglePin()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-emerald-600 transition-colors focus:outline-none">
                                             <i id="pin-icon" class="fa-solid fa-eye"></i>
                                         </button>
@@ -268,7 +269,50 @@
 
                         <!-- ADMIN SPECIFIC FIELDS -->
                         <div id="admin-fields" class="role-specific mb-5">
-                            <!-- Admin specific fields can be added here if needed -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                <!-- Admin Email (mandatory) -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                        <i class="fas fa-envelope text-emerald-500"></i><span data-lang="adminEmailLbl">Email Address</span> <span class="text-red-500">*</span>
+                                    </label>
+                                    <input id="admin_email" name="admin_email" type="email"
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
+                                        placeholder="admin@agricare.in" oninput="validateAdminEmail()">
+                                    <p id="admin-email-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="emailError">Please enter a valid email address.</p>
+                                </div>
+
+                                <!-- Admin Preferred Language -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                        <i class="fas fa-language text-emerald-500"></i><span data-lang="prefLangLbl">Preferred Language</span> <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="admin_pref_lang" name="admin_pref_lang" required
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm bg-white">
+                                        <option value="" data-lang="selectLang">-- Select Language --</option>
+                                        <option value="en" data-lang="langEn">English</option>
+                                        <option value="gu" data-lang="langGu">Gujarati</option>
+                                        <option value="hi" data-lang="langHi">Hindi</option>
+                                    </select>
+                                </div>
+
+                                <!-- Admin Password -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
+                                        <i class="fas fa-lock text-emerald-500"></i><span data-lang="adminPwdLbl">Password</span> <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input id="admin_password" name="admin_password" type="password"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm pr-10"
+                                            placeholder="••••••••" oninput="validateAdminPassword()">
+                                        <button type="button" onclick="toggleAdminPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-emerald-600 transition-colors focus:outline-none">
+                                            <i id="admin-pwd-icon" class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <p id="admin-pwd-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="adminPwdError">Password must be at least 7 chars, include 1 uppercase, 1 lowercase, 1 number, and 1 special character.</p>
+                                </div>
+
+                            </div>
                         </div>
 
                     </div> <!-- End Scrollable Content -->
@@ -309,13 +353,18 @@
                 emailLbl: 'Email',
                 phoneLbl: 'Phone Number',
                 districtLbl: 'District',
-                cityLbl: 'City',
+                cityLbl: 'City/Area',
                 pincodeLbl: 'Pincode',
                 prefLangLbl: 'Preferred Language',
                 selectLang: '-- Select Language --',
                 langEn: 'English',
                 langGu: 'Gujarati',
-                langHi: 'Hindi'
+                langHi: 'Hindi',
+                phoneRegError: 'Please enter a valid 10-digit mobile number.',
+                adminEmailLbl: 'Email Address',
+                emailError: 'Please enter a valid email address.',
+                adminPwdLbl: 'Password',
+                adminPwdError: 'Password must be at least 7 chars, include 1 uppercase, 1 lowercase, 1 number, and 1 special character.'
             },
             gu: {
                 logo: 'એગ્રીકેર',
@@ -334,13 +383,18 @@
                 emailLbl: 'ઈમેલ',
                 phoneLbl: 'મોબાઈલ નંબર',
                 districtLbl: 'જિલ્લો',
-                cityLbl: 'શહેર',
+                cityLbl: 'શહેર/વિસ્તાર',
                 pincodeLbl: 'પીનકોડ',
                 prefLangLbl: 'પસંદગીની ભાષા',
                 selectLang: '-- ભાષા પસંદ કરો --',
                 langEn: 'અંગ્રેજી',
                 langGu: 'ગુજરાતી',
-                langHi: 'હિન્દી'
+                langHi: 'હિન્દી',
+                phoneRegError: 'કૃપા કરીને માન્ય 10-અંકનો મોબાઈલ નંબર દાખલ કરો.',
+                adminEmailLbl: 'ઈમેલ એડ્રેસ',
+                emailError: 'કૃપા કરીને માન્ય ઈમેઈલ સરનામું દાખલ કરો.',
+                adminPwdLbl: 'પાસવર્ડ',
+                adminPwdError: 'પાસવર્ડમાં ઓછામાં ઓછા 7 અક્ષરો, 1 અપરકેસ, 1 લોઅરકેસ, 1 નંબર અને 1 વિશિષ્ટ અક્ષર હોવા જોઈએ.'
             },
             hi: {
                 logo: 'एग्रीकेर',
@@ -359,13 +413,18 @@
                 emailLbl: 'ईमेल',
                 phoneLbl: 'फ़ोन नंबर',
                 districtLbl: 'ज़िला',
-                cityLbl: 'शहर',
+                cityLbl: 'शहर/क्षेत्र',
                 pincodeLbl: 'पिनकोड',
                 prefLangLbl: 'पसंदीदा भाषा',
                 selectLang: '-- भाषा चुनें --',
                 langEn: 'अंग्रेज़ी',
                 langGu: 'गुजराती',
-                langHi: 'हिंदी'
+                langHi: 'हिंदी',
+                phoneRegError: 'कृपया एक मान्य 10-अंकीय मोबाइल नंबर दर्ज करें।',
+                adminEmailLbl: 'ईमेल पता',
+                emailError: 'कृपया एक मान्य ईमेल पता दर्ज करें।',
+                adminPwdLbl: 'पासवर्ड',
+                adminPwdError: 'पासवर्ड कम से कम 7 अक्षरों का होना चाहिए, जिसमें 1 बड़ा अक्षर, 1 छोटा अक्षर, 1 नंबर और 1 विशेष अक्षर शामिल हो।'
             }
         };
 
@@ -434,7 +493,7 @@
         function updateCities() {
             const district = document.getElementById('district').value;
             const citySelect = document.getElementById('city');
-            citySelect.innerHTML = '<option value="">-- Select City --</option>';
+            citySelect.innerHTML = '<option value="">-- Select City/Area --</option>';
             if (district && districtCityMap[district]) {
                 districtCityMap[district].forEach(c => {
                     const opt = document.createElement('option');
@@ -465,6 +524,52 @@
             document.getElementById(`${role}-fields`).classList.add('active');
         }
 
+        // Farmer phone validation
+        function validatePhone() {
+            const phone = document.getElementById('phone_no').value;
+            const error = document.getElementById('phone-reg-error');
+            if (phone.length > 0 && !/^[0-9]{10}$/.test(phone)) {
+                error.classList.remove('hidden');
+            } else {
+                error.classList.add('hidden');
+            }
+        }
+
+        // Farmer PIN validation
+        function validatePin() {
+            const pin = document.getElementById('pin').value;
+            const error = document.getElementById('pin-error');
+            if (pin.length > 0 && !/^\d{6}$/.test(pin)) {
+                error.classList.remove('hidden');
+            } else {
+                error.classList.add('hidden');
+            }
+        }
+
+        // Admin Email validation
+        function validateAdminEmail() {
+            const email = document.getElementById('admin_email').value;
+            const error = document.getElementById('admin-email-error');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email.length > 0 && !emailRegex.test(email)) {
+                error.classList.remove('hidden');
+            } else {
+                error.classList.add('hidden');
+            }
+        }
+
+        // Admin Password validation
+        function validateAdminPassword() {
+            const pwd = document.getElementById('admin_password').value;
+            const error = document.getElementById('admin-pwd-error');
+            const adminRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{7,}$/;
+            if (pwd.length > 0 && !adminRegex.test(pwd)) {
+                error.classList.remove('hidden');
+            } else {
+                error.classList.add('hidden');
+            }
+        }
+
         // PIN Toggle
         function togglePin() {
             const pin = document.getElementById('pin');
@@ -475,36 +580,83 @@
             icon.classList.toggle('fa-eye-slash', passwordVisible);
         }
 
+        // Admin Password Toggle
+        function toggleAdminPassword() {
+            const pwd = document.getElementById('admin_password');
+            const icon = document.getElementById('admin-pwd-icon');
+            const isVisible = pwd.type === 'text';
+            pwd.type = isVisible ? 'password' : 'text';
+            icon.classList.toggle('fa-eye', isVisible);
+            icon.classList.toggle('fa-eye-slash', !isVisible);
+        }
+
         // Form Submit
         function handleRegister(e) {
             e.preventDefault();
+            let hasError = false;
 
             if (currentRole === 'farmer') {
+                // Phone validation
+                const phone = document.getElementById('phone_no').value;
+                if (!/^[0-9]{10}$/.test(phone)) {
+                    document.getElementById('phone-reg-error').classList.remove('hidden');
+                    hasError = true;
+                } else {
+                    document.getElementById('phone-reg-error').classList.add('hidden');
+                }
+
+                // PIN validation
                 const pin = document.getElementById('pin').value;
                 if (!/^\d{6}$/.test(pin)) {
                     document.getElementById('pin-error').classList.remove('hidden');
-                    return;
+                    hasError = true;
                 } else {
                     document.getElementById('pin-error').classList.add('hidden');
                 }
+
+                if (hasError) return;
+
+            } else {
+                // Admin email validation
+                const email = document.getElementById('admin_email').value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    document.getElementById('admin-email-error').classList.remove('hidden');
+                    hasError = true;
+                } else {
+                    document.getElementById('admin-email-error').classList.add('hidden');
+                }
+
+                // Admin password validation
+                const pwd = document.getElementById('admin_password').value;
+                const adminRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{7,}$/;
+                if (!adminRegex.test(pwd)) {
+                    document.getElementById('admin-pwd-error').classList.remove('hidden');
+                    hasError = true;
+                } else {
+                    document.getElementById('admin-pwd-error').classList.add('hidden');
+                }
+
+                if (hasError) return;
             }
 
             const formData = {
                 user_id: document.getElementById('user_id').value,
                 full_name: document.getElementById('full_name').value,
-                email: document.getElementById('email').value,
-                phone_no: document.getElementById('phone_no').value,
+                email: currentRole === 'admin' ? document.getElementById('admin_email').value : document.getElementById('email').value,
+                phone_no: currentRole === 'farmer' ? document.getElementById('phone_no').value : '',
                 role: currentRole,
                 pincode: document.getElementById('pincode')?.value || '',
                 district: document.getElementById('district')?.value || '',
                 city: document.getElementById('city')?.value || '',
-                pin: document.getElementById('pin')?.value || ''
+                pin: document.getElementById('pin')?.value || '',
+                pref_lang: currentRole === 'farmer' ? (document.getElementById('pref_lang')?.value || '') : (document.getElementById('admin_pref_lang')?.value || ''),
+                password: currentRole === 'admin' ? document.getElementById('admin_password').value : ''
             };
 
             localStorage.setItem('userRegistered', JSON.stringify(formData));
 
             const btn = document.getElementById('submit-btn');
-            const original = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Account...';
             btn.disabled = true;
 
