@@ -9,7 +9,7 @@ Run this AFTER training the model:
   python predict_api.py
 
 API Endpoint:
-  POST http://localhost:5000/predict
+  POST http://localhost:5050/predict
   Body: multipart/form-data  { image: <file> }
 
 Response:
@@ -45,7 +45,7 @@ MODEL_PATH = os.path.join(os.path.dirname(__file__), 'plant_disease_model.keras'
 
 print(f"[AI] Loading model from: {MODEL_PATH}")
 model = tf.keras.models.load_model(MODEL_PATH)
-print("[AI] Model loaded successfully ✅")
+print("[AI] Model loaded successfully")
 
 # ============================================================
 # 38 CLASS NAMES  (New Plant Diseases Dataset – Kaggle)
@@ -317,9 +317,10 @@ def predict():
 
 
 if __name__ == '__main__':
-    print("\n🌱 AgriCare Disease Detection API")
-    print("   Dataset : New Plant Diseases Dataset (Kaggle – vipoooool)")
+    port = int(os.environ.get('PORT', '5050'))
+    print("\nAgriCare Disease Detection API")
+    print("   Dataset : New Plant Diseases Dataset (Kaggle - vipoooool)")
     print("   Classes : 38")
-    print("   Model   : Custom CNN (128×128 input, 1500-neuron dense, softmax)")
-    print("   Running : http://localhost:5000\n")
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    print("   Model   : Custom CNN (128x128 input, 1500-neuron dense, softmax)")
+    print(f"   Running : http://localhost:{port}\n")
+    app.run(host='0.0.0.0', port=port, debug=False)

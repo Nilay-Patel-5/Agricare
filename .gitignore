@@ -24,6 +24,7 @@ composer.phar
 # Environment files
 # =========================
 .env
+backend/db.local.php
 
 # =========================
 # Logs

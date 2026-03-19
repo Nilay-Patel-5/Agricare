@@ -2,8 +2,10 @@
 header('Content-Type: application/json');
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/sync_market.php';
 
 try {
+    date_default_timezone_set('Asia/Kolkata');
     $pdo = Database::getConnection();
 
     /* Read filters from frontend */
@@ -18,19 +20,23 @@ try {
     $dateStmt->execute();
     $latestDateResult = $dateStmt->fetch();
 
-    date_default_timezone_set('Asia/Kolkata');
     $today = date('Y-m-d');
     $latestVal = $latestDateResult['latest_dt'] ? date('Y-m-d', strtotime($latestDateResult['latest_dt'])) : null;
 
-    // Auto-sync logic: Only try fetching from the Gov API once per day to prevent blocking loads.
+    // Auto-sync logic: retry every 30 minutes so new same-day data can appear without manual action.
     $syncCacheFile = __DIR__ . '/last_sync.txt';
-    $lastSyncAttempt = file_exists($syncCacheFile) ? trim(file_get_contents($syncCacheFile)) : '';
+    $lastSyncRaw = file_exists($syncCacheFile) ? trim((string) file_get_contents($syncCacheFile)) : '';
+    $lastSyncTs = $lastSyncRaw !== '' ? strtotime($lastSyncRaw) : false;
+    if ($lastSyncTs === false && preg_match('/^\d{4}-\d{2}-\d{2}$/', $lastSyncRaw)) {
+        $lastSyncTs = strtotime($lastSyncRaw . ' 00:00:00');
+    }
 
-    if ($lastSyncAttempt !== $today && (!$latestVal || $latestVal < $today)) {
-        file_put_contents($syncCacheFile, $today);
-        ob_start();
-        require_once __DIR__ . '/sync_market.php';
-        ob_end_clean();
+    $syncCooldownSeconds = 30 * 60;
+    $shouldSync = !$lastSyncTs || (time() - $lastSyncTs) >= $syncCooldownSeconds || !$latestVal || $latestVal < $today;
+
+    if ($shouldSync) {
+        file_put_contents($syncCacheFile, date(DATE_ATOM));
+        syncLatestMarketData();
 
         // Re-fetch the latest date to reflect the freshly synced DB entries
         $dateStmt->execute();

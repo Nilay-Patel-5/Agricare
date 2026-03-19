@@ -375,7 +375,7 @@
 
     <script>
         // Data Configuration
-        const cropsData = {
+        const cropLibrary = {
             wheat: {
                 id: 'wheat',
                 icon: '🌾',
@@ -660,7 +660,7 @@
 
         let currentLang = localStorage.getItem('agricare_lang') || 'en';
         let activeCropIndex = 0;
-        // cropsData is already defined above as an object
+        let cropsData = [];
 
         function updateUserInfo() {
             const userData = JSON.parse(sessionStorage.getItem('agricare_user'));
@@ -674,11 +674,14 @@
             try {
                 const response = await fetch('../backend/get_crops.php');
                 const data = await response.json();
-                cropsData = data;
+                cropsData = Array.isArray(data) ? data : [];
+                activeCropIndex = 0;
                 renderSidebar();
                 renderCalendar();
             } catch (err) {
                 console.error("Failed to fetch crops:", err);
+                cropsData = [];
+                renderSidebar();
             }
         }
 
@@ -686,8 +689,8 @@
             const container = document.getElementById('cropSelector');
             container.innerHTML = '';
 
-            if (cropsData.length === 0) {
-                container.innerHTML = '<div class="p-4 text-gray-400 text-sm font-bold">Loading crops...</div>';
+            if (!Array.isArray(cropsData) || cropsData.length === 0) {
+                container.innerHTML = '<div class="p-4 text-gray-400 text-sm font-bold">Crop data unavailable.</div>';
                 return;
             }
 
@@ -706,7 +709,7 @@
         }
 
         function renderCalendar() {
-            if (cropsData.length === 0) return;
+            if (!Array.isArray(cropsData) || cropsData.length === 0) return;
 
             const crop = cropsData[activeCropIndex];
             document.getElementById('activeCropName').innerText = crop[`name_${currentLang}`];
@@ -794,7 +797,8 @@
             window.location.href = '../frontend/login.php';
         }
 
-        const API_BASE = 'http://localhost:5000';
+        const AI_HEALTH_ENDPOINT = '../backend/ai_health.php';
+        const AI_PREDICT_ENDPOINT = '../backend/ai_predict.php';
 
         function switchModule(modId, el = null) {
             // Find sidebar element if not provided
@@ -978,7 +982,7 @@
                 try {
                     const fd = new FormData();
                     fd.append('image', file);
-                    const res = await fetch(`${API_BASE}/predict`, {
+                    const res = await fetch(AI_PREDICT_ENDPOINT, {
                         method: 'POST',
                         body: fd
                     });
@@ -986,7 +990,7 @@
                     const data = await res.json();
                     showResults(data);
                 } catch (err) {
-                    alert("AI Engine is offline. Start predict_api.py on port 5000.");
+                    alert("AI Engine is offline. Start predict_api.py on port 5050.");
                     analyzeBtn.disabled = false;
                     document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
                 }
@@ -999,7 +1003,8 @@
 
             document.getElementById('result-image-preview').src = previewImg.src;
             document.getElementById('disease-name').textContent = data.label;
-            document.getElementById('plant-type').textContent = data.plant_type + " SPECIES";
+            const plantName = data.plant || data.plant_type || 'Plant';
+            document.getElementById('plant-type').textContent = plantName + " SPECIES";
             document.getElementById('disease-desc').textContent = data.info.desc;
             document.getElementById('irrigation-text').textContent = data.info.irrigation;
             document.getElementById('treatment-text').textContent = data.info.treatment;
@@ -1016,11 +1021,11 @@
         // Health Checker
         async function checkApi() {
             try {
-                const res = await fetch(`${API_BASE}/health`, {
-                    signal: AbortSignal.timeout(2000)
-                });
                 const label = document.getElementById('status-label');
                 const pulse = document.getElementById('status-pulse');
+                const res = await fetch(AI_HEALTH_ENDPOINT, {
+                    signal: AbortSignal.timeout(6000)
+                });
                 if (res.ok) {
                     label.innerText = translations[currentLang].status_online;
                     label.className = "text-[10px] font-black uppercase tracking-widest text-emerald-600";
@@ -1049,3 +1054,6 @@
 </body>
 
 </html>
+
+
+

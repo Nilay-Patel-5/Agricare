@@ -9,34 +9,67 @@ if (!$data) {
     exit;
 }
 
-$pdo = Database::getConnection();
-
 try {
-    $name = $data['name'] ?? '';
-    $phone = $data['phone'] ?? '';
-    $dob = $data['dob'] ?? '';
+    $pdo = Database::getConnection();
+
+    // Basic Info
+    $user_id = $data['user_id'] ?? '';
+    $name = $data['full_name'] ?? $data['name'] ?? '';
+    $email = $data['email'] ?? '';
+    $phone = $data['phone_no'] ?? $data['phone'] ?? '';
+    $role = $data['role'] ?? 'farmer';
+    $dob = $data['dob'] ?? null;
+    $pref_lang = $data['pref_lang'] ?? 'en';
+
+    // Farmer-Specific
     $district = $data['district'] ?? '';
-    $role = 'farmer'; // Registration is ONLY allowed for farmers. 
+    $city = $data['city'] ?? '';
+    $pincode = $data['pincode'] ?? '';
+    $pin = $data['pin'] ?? '';
 
-    if (!$name || !$phone || !$dob) {
-        echo json_encode(['success' => false, 'message' => 'Name, Phone, and Date of Birth are mandatory.']);
+    // Admin-Specific
+    $password = $data['password'] ?? '';
+
+    // Basic Validation
+    if (!$name || !$user_id || ($role === 'farmer' && (!$phone || !$pin)) || ($role === 'admin' && (!$email || !$password))) {
+        echo json_encode(['success' => false, 'message' => 'Mandatory fields are missing.']);
         exit;
     }
 
-    // Check if phone already registered
-    $check = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
-    $check->execute([$phone]);
+    // Check if user_id or unique contact exists
+    $check = $pdo->prepare("SELECT id FROM users WHERE user_id = ? OR (phone != '' AND phone = ?) OR (email != '' AND email = ?)");
+    $check->execute([$user_id, $phone, $email]);
     if ($check->fetch()) {
-        echo json_encode(['success' => false, 'message' => 'This phone number is already registered.']);
+        echo json_encode(['success' => false, 'message' => 'User ID, phone or email already registered.']);
         exit;
     }
 
-    // Insert new Farmer
-    $stmt = $pdo->prepare("INSERT INTO users (name, phone, dob, role, district) VALUES (?, ?, ?, ?, ?)");
-    if ($stmt->execute([$name, $phone, $dob, $role, $district])) {
+    // For admins, hash the password. For farmers, keep the PIN (or hash it if preferred, but usually keep simple for farmers)
+    $hashed_password = $role === 'admin' ? password_hash($password, PASSWORD_DEFAULT) : null;
+
+    // Insert New User
+    $sql = "INSERT INTO users (user_id, name, email, phone, dob, role, district, city, pincode, pin, password, pref_lang) 
+            VALUES (:uid, :name, :email, :phone, :dob, :role, :district, :city, :pincode, :pin, :pwd, :lang)";
+    
+    $stmt = $pdo->prepare($sql);
+    $result = $stmt->execute([
+        ':uid' => $user_id,
+        ':name' => $name,
+        ':email' => $email,
+        ':phone' => $phone,
+        ':dob' => $dob,
+        ':role' => $role,
+        ':district' => $district,
+        ':city' => $city,
+        ':pincode' => $pincode,
+        ':pin' => $pin,
+        ':pwd' => $hashed_password,
+        ':lang' => $pref_lang
+    ]);
+
+    if ($result) {
         $newId = $pdo->lastInsertId();
-        // fetch the new user row (excluding sensitive fields)
-        $ustmt = $pdo->prepare("SELECT id,name,phone,district,role FROM users WHERE id = ?");
+        $ustmt = $pdo->prepare("SELECT id, user_id, name, role, pref_lang FROM users WHERE id = ?");
         $ustmt->execute([$newId]);
         $userRow = $ustmt->fetch();
         echo json_encode(['success' => true, 'message' => 'Registration successful!', 'user' => $userRow]);

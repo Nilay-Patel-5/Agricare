@@ -522,6 +522,21 @@
 
             document.querySelectorAll('.role-specific').forEach(field => field.classList.remove('active'));
             document.getElementById(`${role}-fields`).classList.add('active');
+
+            // --- FIX: Dynamic Required attributes to prevent "not focusable" errors ---
+            // Farmer-specific required fields
+            const farmerInputs = ['district', 'city', 'pincode', 'pref_lang', 'pin'];
+            farmerInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.required = (role === 'farmer');
+            });
+
+            // Admin-specific required fields
+            const adminInputs = ['admin_email', 'admin_pref_lang', 'admin_password'];
+            adminInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.required = (role === 'admin');
+            });
         }
 
         // Farmer phone validation
@@ -654,16 +669,43 @@
                 password: currentRole === 'admin' ? document.getElementById('admin_password').value : ''
             };
 
-            localStorage.setItem('userRegistered', JSON.stringify(formData));
-
             const btn = document.getElementById('submit-btn');
+            const originalContent = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Account...';
             btn.disabled = true;
 
-            setTimeout(() => {
-                alert(`✅ Account created successfully!\nWelcome ${formData.full_name} (${formData.role.toUpperCase()})`);
-                window.location.href = 'login.php';
-            }, 1500);
+            fetch("../backend/register_api.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(async res => {
+                const text = await res.text();
+                try {
+                    return JSON.parse(text);
+                } catch(e) {
+                    console.error("Server raw response:", text);
+                    throw new Error("Invalid server response format.");
+                }
+            })
+            .then(data => {
+                if (data.success) {
+                    alert(`✅ Account created successfully!\nWelcome ${data.user.name}`);
+                    window.location.href = 'login.php';
+                } else {
+                    alert(`❌ Error: ${data.message || 'Unknown error'}`);
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error("Registration error:", err);
+                alert(`❌ Connection Failed: ${err.message || "Server offline"}`);
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            });
         }
 
         const urlParams = new URLSearchParams(window.location.search);
