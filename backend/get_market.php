@@ -14,36 +14,15 @@ try {
     $markets = $input['markets'] ?? [];
     $commodities = $input['commodities'] ?? [];
 
-    // Get the latest arrival date first, interpreting the stored string as dd/mm/YYYY
-    $dateQuery = "SELECT MAX(to_date(arrival_date,'DD/MM/YYYY')) as latest_dt FROM market_prices WHERE state ILIKE 'gujarat'";
+    // Get the latest arrival date first. 
+    // Optimization: Sort by ID desc and take the arrival_date from the most recent record.
+    // This is much faster than MAX(to_date(...)) on all rows.
+    $dateQuery = "SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY id DESC LIMIT 1";
     $dateStmt = $pdo->prepare($dateQuery);
     $dateStmt->execute();
     $latestDateResult = $dateStmt->fetch();
 
-    $today = date('Y-m-d');
-    $latestVal = $latestDateResult['latest_dt'] ? date('Y-m-d', strtotime($latestDateResult['latest_dt'])) : null;
-
-    // Auto-sync logic: retry every 30 minutes so new same-day data can appear without manual action.
-    $syncCacheFile = __DIR__ . '/last_sync.txt';
-    $lastSyncRaw = file_exists($syncCacheFile) ? trim((string) file_get_contents($syncCacheFile)) : '';
-    $lastSyncTs = $lastSyncRaw !== '' ? strtotime($lastSyncRaw) : false;
-    if ($lastSyncTs === false && preg_match('/^\d{4}-\d{2}-\d{2}$/', $lastSyncRaw)) {
-        $lastSyncTs = strtotime($lastSyncRaw . ' 00:00:00');
-    }
-
-    $syncCooldownSeconds = 30 * 60;
-    $shouldSync = !$lastSyncTs || (time() - $lastSyncTs) >= $syncCooldownSeconds || !$latestVal || $latestVal < $today;
-
-    if ($shouldSync) {
-        file_put_contents($syncCacheFile, date(DATE_ATOM));
-        syncLatestMarketData();
-
-        // Re-fetch the latest date to reflect the freshly synced DB entries
-        $dateStmt->execute();
-        $latestDateResult = $dateStmt->fetch();
-    }
-
-    $latestDate = $latestDateResult['latest_dt'] ? date('d/m/Y', strtotime($latestDateResult['latest_dt'])) : null;
+    $latestDate = $latestDateResult['arrival_date'] ?? null;
 
     // Query for latest date data only
     $query = "SELECT * FROM market_prices WHERE state ILIKE 'gujarat'";
@@ -57,7 +36,7 @@ try {
     if (!empty($districts)) {
         $placeholders = [];
         foreach ($districts as $i => $d) {
-            $clean = trim($d); // Retain brackets, e.g. "Vadodara(Baroda)"
+            $clean = trim($d); 
             $key = "dist$i";
             $placeholders[] = ":$key";
             $params[$key] = "%$clean%";
@@ -79,7 +58,7 @@ try {
     if (!empty($commodities)) {
         $placeholders = [];
         foreach ($commodities as $i => $c) {
-            $clean = trim($c); // Do not strip brackets, exact matching is required for AGMARKNET variations
+            $clean = trim($c);
             $key = "cmd$i";
             $placeholders[] = ":$key";
             $params[$key] = "%$clean%";
@@ -87,8 +66,8 @@ try {
         $query .= " AND (" . implode(" OR ", array_map(fn($p) => "commodity ILIKE $p", $placeholders)) . ")";
     }
 
-    // order using parsed date as well to keep latest first
-    $query .= " ORDER BY to_date(arrival_date,'DD/MM/YYYY') DESC LIMIT 500";
+    // Optimization: Sort by id DESC instead of converting strings to dates.
+    $query .= " ORDER BY id DESC LIMIT 500";
 
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);

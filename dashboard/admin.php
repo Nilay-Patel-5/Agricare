@@ -6,7 +6,7 @@
     <title>Executive Command Center | AgriCare</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../frontend/output.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -115,6 +115,11 @@
             <a href="admin_market.php" class="sidebar-link flex items-center gap-4 px-5 py-3.5">
                 <i class="fas fa-arrow-trend-up w-5"></i>
                 <span class="font-bold text-sm tracking-tight">Mandi Intelligence</span>
+            </a>
+
+            <a href="admin_pesticides.php" class="sidebar-link flex items-center gap-4 px-5 py-3.5">
+                <i class="fas fa-vial-virus w-5"></i>
+                <span class="font-bold text-sm tracking-tight">Pesticide Registry</span>
             </a>
 
             <p class="px-8 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 mt-8">System</p>

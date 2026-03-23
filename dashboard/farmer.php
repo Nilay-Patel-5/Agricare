@@ -6,7 +6,7 @@
     <title>Farmer Dashboard | AgriCare</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../frontend/output.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -102,6 +102,10 @@
                 class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
                 <i class="fas fa-hand-holding-dollar w-5 text-center"></i>
                 <span data-lang="subsidies">Government Subsidies</span>
+            </a>
+            <a href="../frontend/chatbot.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
+                <i class="fas fa-comments w-5 text-center"></i>
+                <span>AI Chat Assistant</span>
             </a>
             <a href="../frontend/market.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
                 <i class="fas fa-store w-5 text-center"></i>
@@ -951,6 +955,7 @@
         function handleFiles(files) {
             if (!files[0]) return;
             const file = files[0];
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 previewImg.src = e.target.result;
@@ -978,19 +983,31 @@
 
                 analyzeBtn.disabled = true;
                 document.getElementById('btn-text').textContent = "Neural Mapping...";
-
                 try {
+                    const userData = JSON.parse(sessionStorage.getItem('agricare_user'));
                     const fd = new FormData();
                     fd.append('image', file);
+                    if (userData && userData.id) fd.append('user_id', userData.id);
+
                     const res = await fetch(AI_PREDICT_ENDPOINT, {
                         method: 'POST',
                         body: fd
                     });
+
                     if (!res.ok) throw new Error("API Connection Error");
                     const data = await res.json();
+                    
+                    if (data.error) {
+                        alert("AI Message: " + data.error);
+                        analyzeBtn.disabled = false;
+                        document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
+                        return;
+                    }
+
                     showResults(data);
                 } catch (err) {
-                    alert("AI Engine is offline. Start predict_api.py on port 5050.");
+                    console.error("AI Analysis Error:", err);
+                    alert("Neural engine is taking longer than expected. Please check your internet connection.");
                     analyzeBtn.disabled = false;
                     document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
                 }
@@ -1027,11 +1044,11 @@
                     signal: AbortSignal.timeout(6000)
                 });
                 if (res.ok) {
-                    label.innerText = translations[currentLang].status_online;
+                    label.innerText = translations[currentLang].status_online || 'AI ONLINE';
                     label.className = "text-[10px] font-black uppercase tracking-widest text-emerald-600";
                     pulse.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
                 } else {
-                    label.innerText = translations[currentLang].status_offline;
+                    label.innerText = translations[currentLang].status_offline || 'AI OFFLINE';
                     label.className = "text-[10px] font-black uppercase tracking-widest text-orange-500";
                     pulse.className = "w-3 h-3 rounded-full bg-orange-400";
                 }
@@ -1051,7 +1068,16 @@
             fetchCrops();
         });
     </script>
+    <!-- Floating AI Chat Button -->
+    <a href="../frontend/chatbot.php" 
+       class="fixed bottom-8 right-8 w-16 h-16 bg-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-emerald-700 hover:scale-110 transition-all z-50 group">
+        <i class="fas fa-robot text-2xl"></i>
+        <span class="absolute right-20 bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl">
+            Ask AgriCare AI
+        </span>
+    </a>
 </body>
+
 
 </html>
 

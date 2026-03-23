@@ -117,8 +117,10 @@ class Database
                 self::$pdo = new PDO($dsn, $config['user'], $config['pass'], [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_EMULATE_PREPARES => true,
                 ]);
+                // Removed ensureUsersTableSchema(self::$pdo) to speed up performance.
+                // Run update_db.php manually if schema changes are needed.
             } catch (PDOException $e) {
                 throw $e;
             }

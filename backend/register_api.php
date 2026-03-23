@@ -15,10 +15,10 @@ try {
     // Basic Info
     $user_id = $data['user_id'] ?? '';
     $name = $data['full_name'] ?? $data['name'] ?? '';
-    $email = $data['email'] ?? '';
-    $phone = $data['phone_no'] ?? $data['phone'] ?? '';
+    $email = !empty($data['email']) ? $data['email'] : null;
+    $phone = !empty($data['phone_no']) ? $data['phone_no'] : (!empty($data['phone']) ? $data['phone'] : null);
     $role = $data['role'] ?? 'farmer';
-    $dob = $data['dob'] ?? null;
+    $dob = !empty($data['dob']) ? $data['dob'] : null;
     $pref_lang = $data['pref_lang'] ?? 'en';
 
     // Farmer-Specific
@@ -37,7 +37,7 @@ try {
     }
 
     // Check if user_id or unique contact exists
-    $check = $pdo->prepare("SELECT id FROM users WHERE user_id = ? OR (phone != '' AND phone = ?) OR (email != '' AND email = ?)");
+    $check = $pdo->prepare("SELECT id FROM users WHERE user_id = ? OR (phone IS NOT NULL AND phone = ?) OR (email IS NOT NULL AND email = ?)");
     $check->execute([$user_id, $phone, $email]);
     if ($check->fetch()) {
         echo json_encode(['success' => false, 'message' => 'User ID, phone or email already registered.']);
