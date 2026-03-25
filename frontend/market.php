@@ -542,18 +542,21 @@
     <tbody>`;
 
             rows.forEach(r => {
-                const trDistrict = getLocalizedMarketName(r.district, currentLang);
-                const trMarket = getLocalizedMarketName(r.market, currentLang);
-                const trCommodity = getLocalizedMarketName(r.commodity, currentLang);
+                const trDistrict = escapeHtml(getLocalizedMarketName(r.district, currentLang));
+                const trMarket = escapeHtml(getLocalizedMarketName(r.market, currentLang));
+                const trCommodity = escapeHtml(getLocalizedMarketName(r.commodity, currentLang));
+                const trMin = escapeHtml(String(r.min));
+                const trMax = escapeHtml(String(r.max));
+                const trModal = escapeHtml(String(r.modal));
 
                 html += `
         <tr class="border-b hover:bg-gray-50">
             <td class="p-3">${trDistrict}</td>
             <td class="p-3">${trMarket}</td>
             <td class="p-3">${trCommodity}</td>
-            <td class="p-3">₹${r.min}</td>
-            <td class="p-3">₹${r.max}</td>
-            <td class="p-3 font-bold text-emerald-700">₹${r.modal}</td>
+            <td class="p-3">₹${trMin}</td>
+            <td class="p-3">₹${trMax}</td>
+            <td class="p-3 font-bold text-emerald-700">₹${trModal}</td>
         </tr>`;
             });
 

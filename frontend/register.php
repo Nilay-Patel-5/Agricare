@@ -22,307 +22,187 @@
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.82);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.5);
         }
-
-        .fade-in {
-            animation: fadeInUp 0.6s ease-out forwards;
+        .slider-dropdown { position: relative; }
+        .slider-dropdown .sd-panel {
+            position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: white; border: 1px solid #d1fae5; border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(16,185,129,0.12);
+            z-index: 50; max-height: 0; overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s;
+            opacity: 0;
         }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .slider-dropdown.open .sd-panel { max-height: 220px; opacity: 1; }
+        .sd-panel .sd-search {
+            width: 100%; padding: 8px 14px; border: none; border-bottom: 1px solid #d1fae5;
+            outline: none; font-size: 0.8rem; border-radius: 1rem 1rem 0 0; background: #f0fdf4;
         }
-
-        .role-specific {
-            display: none;
+        .sd-panel .sd-list { overflow-y: auto; max-height: 170px; }
+        .sd-panel .sd-item {
+            padding: 9px 14px; font-size: 0.85rem; cursor: pointer; color: #1f2937;
+            transition: background 0.15s;
         }
-
-        .role-specific.active {
-            display: block;
-            animation: fadeInUp 0.4s ease-out;
+        .sd-item:hover, .sd-item.active { background: #ecfdf5; color: #059669; font-weight: 600; }
+        .sd-trigger {
+            appearance: none; border-radius: 1rem; width: 100%; padding: 12px 40px 12px 16px;
+            border: 1px solid #e5e7eb; color: #1f2937; background: white;
+            font-size: 0.875rem; cursor: pointer; text-align: left;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            display: flex; align-items: center; justify-content: space-between;
         }
+        .sd-trigger:focus, .slider-dropdown.open .sd-trigger {
+            outline: none; border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+        }
+        .sd-trigger .sd-arrow { transition: transform 0.3s; color: #6b7280; font-size: 0.75rem; }
+        .slider-dropdown.open .sd-trigger .sd-arrow { transform: rotate(180deg); }
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-emerald-50 via-white to-teal-50 h-screen flex items-center justify-center overflow-hidden">
-
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
     <div class="flex w-full h-screen bg-white overflow-hidden">
-        <!-- Left Side: Image & Branding -->
         <div class="hidden lg:flex lg:w-1/2 relative bg-emerald-900 overflow-hidden items-end justify-start">
             <div class="absolute inset-0 bg-emerald-900/30 mix-blend-multiply z-10"></div>
             <img src="assets/images/Crop.jpg" alt="Crop" class="absolute inset-0 w-full h-full object-cover object-top z-0">
-
             <div class="relative z-20 text-white p-12 w-full bg-gradient-to-t from-emerald-900 via-emerald-900/80 to-transparent pt-32">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-white text-xl shadow-lg border border-white/30">
-                        <i class="fas fa-wheat-awn"></i>
-                    </div>
-                    <span class="text-2xl font-black text-white tracking-tight" data-lang="logo">AgriCare</span>
-                </div>
-                <h1 class="text-4xl font-black mb-3 tracking-tight drop-shadow-lg" data-lang="title">Join AgriCare</h1>
-                <p class="text-lg text-emerald-50 max-w-lg font-medium drop-shadow-md leading-relaxed" data-lang="subtitle">Create your account to access crop recommendations & more</p>
+                <h1 class="text-4xl font-black mb-3 tracking-tight drop-shadow-lg" data-lang="heroTitle">Join AgriCare</h1>
+                <p class="text-lg text-emerald-50 max-w-lg font-medium drop-shadow-md leading-relaxed" data-lang="heroSubtitle">Create your farmer account to access weather updates, market prices, and crop guidance.</p>
             </div>
         </div>
 
-        <!-- Right Side: Register Form -->
-        <div class="w-full lg:w-1/2 flex flex-col p-8 sm:p-12 relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-teal-50">
-            <!-- Decoration -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-teal-50">
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-200 rounded-full blur-3xl opacity-50 z-0"></div>
             <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-emerald-200 rounded-full blur-3xl opacity-50 z-0"></div>
 
-            <div class="relative z-10 flex flex-col h-full h-[80vh] min-h-[500px]">
+            <div class="max-w-xl w-full space-y-6 relative z-10 glass-card p-6 sm:p-8 rounded-[2rem] border border-white/60 shadow-xl">
+                <div class="text-center relative z-10">
+                    <div class="flex justify-start mb-2">
+                        <a href="index.php" class="inline-flex items-center gap-2 text-gray-500 hover:text-emerald-600 transition-colors font-semibold text-sm">
+                            <i class="fas fa-arrow-left"></i>
+                            <span data-lang="backToHome">Back to Home</span>
+                        </a>
+                    </div>
 
-                <!-- Top Navigation (Back & Lang) -->
-                <div class="flex justify-between items-center mb-6">
-                    <a href="index.php" class="inline-flex items-center gap-2 text-gray-500 hover:text-emerald-600 transition-colors font-semibold text-sm">
-                        <i class="fas fa-arrow-left"></i>
-                        <span data-lang="backToHome">Back to Home</span>
+                    <a href="index.php" class="inline-flex items-center gap-3 group mb-2">
+                        <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition-transform">
+                            <i class="fas fa-wheat-awn"></i>
+                        </div>
+                        <span class="text-2xl font-black text-gray-800 tracking-tight" data-lang="logo">AgriCare</span>
                     </a>
+                    <h2 class="text-2xl font-black text-gray-900 tracking-tight" data-lang="createAccount">Create Account</h2>
+                    <p class="mt-1 text-sm text-gray-500 font-medium">
+                        <span data-lang="alreadyHaveAccount">Already have an account?</span>
+                        <a href="login.php" class="text-emerald-600 hover:text-emerald-700 font-bold underline decoration-2 underline-offset-4" data-lang="logIn">Log in</a>
+                    </p>
+                </div>
 
+                <div class="flex justify-center mb-4 relative z-10">
                     <div class="flex bg-gray-100/70 p-1 rounded-full shadow-sm">
-                        <button onclick="changeLang('en')" class="lang-btn px-4 py-2 text-sm font-bold rounded-full mx-0.5 transition-all text-gray-600 hover:bg-emerald-100" data-lang-key="en">EN</button>
-                        <button onclick="changeLang('gu')" class="lang-btn px-4 py-2 text-sm font-bold rounded-full mx-0.5 transition-all text-gray-600 hover:bg-emerald-100" data-lang-key="gu">ગુ</button>
-                        <button onclick="changeLang('hi')" class="lang-btn px-4 py-2 text-sm font-bold rounded-full mx-0.5 transition-all text-gray-600 hover:bg-emerald-100" data-lang-key="hi">हिं</button>
+                        <button type="button" onclick="changeLang('en')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 transition-all active:bg-emerald-500 active:text-white active:shadow-md" data-lang-key="en">EN</button>
+                        <button type="button" onclick="changeLang('gu')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="gu">&#2711;&#2753;</button>
+                        <button type="button" onclick="changeLang('hi')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="hi">&#2361;&#2367;&#2306;</button>
                     </div>
                 </div>
 
-                <p class="text-sm text-center text-gray-500 font-medium mb-6">
-                    <span data-lang="haveAccount">Already have an account?</span>
-                    <a href="login.php" class="text-emerald-600 hover:text-emerald-700 font-bold underline decoration-2 underline-offset-4 transition-all" data-lang="logIn">Log in</a>
-                </p>
+                <form id="registerForm" class="mt-4 space-y-4 relative z-10" onsubmit="handleRegister(event)">
+                    <input type="hidden" id="reg-role-input" value="farmer">
 
-                <!-- Role Toggle -->
-                <div class="flex justify-center mb-6">
-                    <div class="bg-gray-100/50 p-1.5 rounded-2xl inline-flex w-full max-w-sm">
-                        <button onclick="toggleRole('farmer')" id="reg-btn-farmer"
-                            class="flex-1 py-3 px-3 text-sm font-black rounded-xl bg-white shadow-sm text-emerald-700 transition-all border-2 border-emerald-200 flex items-center justify-center gap-2">
-                            <i class="fas fa-tractor text-emerald-500"></i><span data-lang="farmer">FARMER</span>
-                        </button>
-                        <button onclick="toggleRole('admin')" id="reg-btn-admin"
-                            class="flex-1 py-3 px-3 text-sm font-black rounded-xl text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-all border-2 border-transparent flex items-center justify-center gap-2">
-                            <i class="fas fa-user-shield text-gray-400"></i><span data-lang="admin">ADMIN</span>
-                        </button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1" data-label="labelFullName"><span data-lang="labelFullName">Full Name</span> <span class="text-red-500">*</span></label>
+                            <input id="full_name" type="text" required
+                                class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                                placeholder="Garv Patel" oninput="validateFullName()">
+                            <p id="full-name-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1">Enter full name in Indian format using only letters and spaces, like Garv Patel.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1"><span data-lang="labelEmail">Email</span></label>
+                            <input id="email" type="email"
+                                class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                                placeholder="name@example.com">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1"><span data-lang="labelPhone">Phone Number</span> <span class="text-red-500">*</span></label>
+                            <input id="phone_no" type="tel" required
+                                class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                                placeholder="9876543210" oninput="validatePhone()">
+                            <p id="phone-reg-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="phoneError">Please enter a valid 10-digit mobile number.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1"><span data-lang="labelDistrict">District</span> <span class="text-red-500">*</span></label>
+                            <input type="hidden" id="district" required>
+                            <div class="slider-dropdown" id="dd-district">
+                                <button type="button" class="sd-trigger" onclick="toggleDropdown('dd-district')">
+                                    <span id="dd-district-label" class="text-gray-400">Select District</span>
+                                    <i class="sd-arrow fas fa-chevron-down"></i>
+                                </button>
+                                <div class="sd-panel">
+                                    <input type="text" class="sd-search" placeholder="Search district..." oninput="filterList('dd-district', this.value)">
+                                    <div class="sd-list" id="dd-district-list"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1"><span data-lang="labelCity">City/Area</span> <span class="text-red-500">*</span></label>
+                            <input type="hidden" id="city" required>
+                            <div class="slider-dropdown" id="dd-city">
+                                <button type="button" class="sd-trigger" onclick="toggleDropdown('dd-city')">
+                                    <span id="dd-city-label" class="text-gray-400">Select District First</span>
+                                    <i class="sd-arrow fas fa-chevron-down"></i>
+                                </button>
+                                <div class="sd-panel">
+                                    <input type="text" class="sd-search" placeholder="Search city..." oninput="filterList('dd-city', this.value)">
+                                    <div class="sd-list" id="dd-city-list"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1"><span data-lang="labelPincode">Pincode</span> <span class="text-red-500">*</span></label>
+                            <input id="pincode" type="text" required maxlength="6"
+                                class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                                placeholder="392001">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1"><span data-lang="labelPrefLang">Preferred Language</span> <span class="text-red-500">*</span></label>
+                            <input type="hidden" id="pref_lang" required>
+                            <div class="slider-dropdown" id="dd-lang">
+                                <button type="button" class="sd-trigger" onclick="toggleDropdown('dd-lang')">
+                                    <span id="dd-lang-label" class="text-gray-400">Select Language</span>
+                                    <i class="sd-arrow fas fa-chevron-down"></i>
+                                </button>
+                                <div class="sd-panel">
+                                    <div class="sd-list" id="dd-lang-list"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1"><span data-lang="labelPin">6-Digit PIN</span> <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input id="pin" type="password" inputmode="numeric" required maxlength="6"
+                                    class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm pr-10"
+                                    placeholder="******" oninput="validatePin()">
+                                <button type="button" onclick="togglePin()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-emerald-600 transition-colors focus:outline-none">
+                                    <i id="pin-icon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                            <p id="pin-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="pinError">Please enter exactly 6 digits.</p>
+                        </div>
                     </div>
-                </div>
 
-                <form class="flex-1 flex flex-col min-h-0 relative z-10" action="#" method="POST" id="registerForm" onsubmit="handleRegister(event)">
-                    <input type="hidden" name="role" id="reg-role-input" value="farmer">
-
-                    <!-- Scrollable Content Area -->
-                    <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-
-                        <!-- COMMON FIELDS (Always visible) -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                            <!-- 1. User ID -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                    <i class="fas fa-id-badge text-emerald-500"></i><span data-lang="userIdLbl">User ID</span> <span class="text-red-500">*</span>
-                                </label>
-                                <input id="user_id" name="user_id" type="text" required maxlength="12"
-                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
-                                    placeholder="JAY001 (Unique ID)">
-                            </div>
-
-                            <!-- 2. Full Name -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                    <i class="fas fa-user text-emerald-500"></i><span data-lang="fullNameLbl">Full Name</span> <span class="text-red-500">*</span>
-                                </label>
-                                <input id="full_name" name="full_name" type="text" required
-                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
-                                    placeholder="Jaykumar Ramanbhai Patel">
-                            </div>
-
-                            <!-- 3. Email -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                    <i class="fas fa-envelope text-emerald-500"></i><span data-lang="emailLbl">Email</span>
-                                </label>
-                                <input id="email" name="email" type="email"
-                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
-                                    placeholder="jay.patel@agricare.in">
-                            </div>
-
-                            <!-- 4. Phone Number -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                    <i class="fas fa-phone text-emerald-500"></i><span data-lang="phoneLbl">Phone Number</span> <span class="text-red-500">*</span>
-                                </label>
-                                <input id="phone_no" name="phone_no" type="tel" required
-                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
-                                    placeholder="9876543210" oninput="validatePhone()">
-                                <p id="phone-reg-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="phoneRegError">Please enter a valid 10-digit mobile number.</p>
-                            </div>
-                        </div>
-
-                        <!-- FARMER SPECIFIC FIELDS -->
-                        <div id="farmer-fields" class="role-specific active mb-5">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                                <!-- District -->
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                        <i class="fas fa-map text-emerald-500"></i><span data-lang="districtLbl">District</span> <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="district" name="district" required onchange="updateCities()"
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm bg-white">
-                                        <option value="">-- Select District --</option>
-                                        <option>Ahmedabad</option>
-                                        <option>Amreli</option>
-                                        <option>Anand</option>
-                                        <option>Arvalli</option>
-                                        <option>Banaskantha</option>
-                                        <option>Bharuch</option>
-                                        <option>Bhavnagar</option>
-                                        <option>Botad</option>
-                                        <option>Chhota Udaipur</option>
-                                        <option>Dahod</option>
-                                        <option>Dang</option>
-                                        <option>Devbhoomi Dwarka</option>
-                                        <option>Gandhinagar</option>
-                                        <option>Gir Somnath</option>
-                                        <option>Jamnagar</option>
-                                        <option>Junagadh</option>
-                                        <option>Kheda</option>
-                                        <option>Kutch</option>
-                                        <option>Mahisagar</option>
-                                        <option>Mehsana</option>
-                                        <option>Morbi</option>
-                                        <option>Narmada</option>
-                                        <option>Navsari</option>
-                                        <option>Panchmahal</option>
-                                        <option>Patan</option>
-                                        <option>Porbandar</option>
-                                        <option>Rajkot</option>
-                                        <option>Sabarkantha</option>
-                                        <option>Surat</option>
-                                        <option>Surendranagar</option>
-                                        <option>Tapi</option>
-                                        <option>Vadodara</option>
-                                        <option>Valsad</option>
-                                    </select>
-                                </div>
-
-                                <!-- City -->
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                        <i class="fas fa-city text-emerald-500"></i><span data-lang="cityLbl">City/Area</span> <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="city" name="city" required
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm bg-white">
-                                        <option value="">-- Select District First --</option>
-                                    </select>
-                                </div>
-
-                                <!-- Pincode -->
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                        <i class="fas fa-map-pin text-emerald-500"></i><span data-lang="pincodeLbl">Pincode</span> <span class="text-red-500">*</span>
-                                    </label>
-                                    <input id="pincode" name="pincode" type="text" required maxlength="6"
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
-                                        placeholder="392001">
-                                </div>
-
-                                <!-- Preferred Language -->
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                        <i class="fas fa-language text-emerald-500"></i><span data-lang="prefLangLbl">Preferred Language</span> <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="pref_lang" name="pref_lang" required
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm bg-white">
-                                        <option value="" data-lang="selectLang">-- Select Language --</option>
-                                        <option value="en" data-lang="langEn">English</option>
-                                        <option value="gu" data-lang="langGu">Gujarati</option>
-                                        <option value="hi" data-lang="langHi">Hindi</option>
-                                    </select>
-                                </div>
-
-                                <!-- PIN -->
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                        <i class="fas fa-lock text-emerald-500"></i><span data-lang="pin">6-Digit PIN</span> <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <input id="pin" name="pin" type="password" required maxlength="6" pattern="\d{6}" inputmode="numeric"
-                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm pr-10"
-                                            placeholder="••••••" oninput="validatePin()">
-                                        <button type="button" onclick="togglePin()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-emerald-600 transition-colors focus:outline-none">
-                                            <i id="pin-icon" class="fa-solid fa-eye"></i>
-                                        </button>
-                                    </div>
-                                    <p id="pin-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="pinError">Please enter exactly 6 digits.</p>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <!-- ADMIN SPECIFIC FIELDS -->
-                        <div id="admin-fields" class="role-specific mb-5">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                                <!-- Admin Email (mandatory) -->
-                                <div class="md:col-span-2">
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                        <i class="fas fa-envelope text-emerald-500"></i><span data-lang="adminEmailLbl">Email Address</span> <span class="text-red-500">*</span>
-                                    </label>
-                                    <input id="admin_email" name="admin_email" type="email"
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm"
-                                        placeholder="admin@agricare.in" oninput="validateAdminEmail()">
-                                    <p id="admin-email-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="emailError">Please enter a valid email address.</p>
-                                </div>
-
-                                <!-- Admin Preferred Language -->
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                        <i class="fas fa-language text-emerald-500"></i><span data-lang="prefLangLbl">Preferred Language</span> <span class="text-red-500">*</span>
-                                    </label>
-                                    <select id="admin_pref_lang" name="admin_pref_lang" required
-                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm bg-white">
-                                        <option value="" data-lang="selectLang">-- Select Language --</option>
-                                        <option value="en" data-lang="langEn">English</option>
-                                        <option value="gu" data-lang="langGu">Gujarati</option>
-                                        <option value="hi" data-lang="langHi">Hindi</option>
-                                    </select>
-                                </div>
-
-                                <!-- Admin Password -->
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1 flex items-center gap-1">
-                                        <i class="fas fa-lock text-emerald-500"></i><span data-lang="adminPwdLbl">Password</span> <span class="text-red-500">*</span>
-                                    </label>
-                                    <div class="relative">
-                                        <input id="admin_password" name="admin_password" type="password"
-                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all text-sm shadow-sm pr-10"
-                                            placeholder="••••••••" oninput="validateAdminPassword()">
-                                        <button type="button" onclick="toggleAdminPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-emerald-600 transition-colors focus:outline-none">
-                                            <i id="admin-pwd-icon" class="fa-solid fa-eye"></i>
-                                        </button>
-                                    </div>
-                                    <p id="admin-pwd-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="adminPwdError">Password must be at least 7 chars, include 1 uppercase, 1 lowercase, 1 number, and 1 special character.</p>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div> <!-- End Scrollable Content -->
-
-                    <!-- Submit Button (Sticky at bottom) -->
-                    <div class="pt-4 mt-auto border-t border-gray-100">
-                        <button type="submit" id="submit-btn"
-                            class="group relative w-full flex items-center justify-center gap-3 py-3.5 px-6 border border-transparent text-base font-black rounded-xl text-white bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-xl hover:shadow-emerald-500/50 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden">
-                            <i class="fas fa-user-plus"></i>
-                            <span data-lang="createAccount">CREATE ACCOUNT</span>
+                    <div>
+                        <button id="submit-btn" type="submit"
+                            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all">
+                            <span data-lang="submitBtn">Create Account</span>
                         </button>
                     </div>
                 </form>
@@ -331,386 +211,312 @@
     </div>
 
     <script>
-        let currentRole = 'farmer';
-        let passwordVisible = false;
+        let pinVisible = false;
 
-        // Language
         const translations = {
             en: {
-                logo: 'AgriCare',
-                title: 'Join AgriCare',
-                subtitle: 'Create your account to access crop recommendations & more',
-                haveAccount: 'Already have an account?',
-                farmer: 'FARMER',
-                admin: 'ADMIN',
-                createAccount: 'CREATE ACCOUNT',
-                pin: '6-Digit PIN',
-                pinError: 'Please enter exactly 6 digits.',
                 backToHome: 'Back to Home',
+                logo: 'AgriCare',
+                createAccount: 'Create Account',
+                alreadyHaveAccount: 'Already have an account?',
                 logIn: 'Log in',
-                userIdLbl: 'User ID',
-                fullNameLbl: 'Full Name',
-                emailLbl: 'Email',
-                phoneLbl: 'Phone Number',
-                districtLbl: 'District',
-                cityLbl: 'City/Area',
-                pincodeLbl: 'Pincode',
-                prefLangLbl: 'Preferred Language',
-                selectLang: '-- Select Language --',
-                langEn: 'English',
-                langGu: 'Gujarati',
-                langHi: 'Hindi',
-                phoneRegError: 'Please enter a valid 10-digit mobile number.',
-                adminEmailLbl: 'Email Address',
-                emailError: 'Please enter a valid email address.',
-                adminPwdLbl: 'Password',
-                adminPwdError: 'Password must be at least 7 chars, include 1 uppercase, 1 lowercase, 1 number, and 1 special character.'
+                labelFullName: 'Full Name',
+                labelEmail: 'Email',
+                labelPhone: 'Phone Number',
+                labelDistrict: 'District',
+                labelCity: 'City/Area',
+                labelPincode: 'Pincode',
+                labelPrefLang: 'Preferred Language',
+                labelPin: '6-Digit PIN',
+                placeholderDistrict: 'Select District',
+                placeholderCity: 'Select District First',
+                placeholderLang: 'Select Language',
+                phoneError: 'Please enter a valid 10-digit mobile number.',
+                pinError: 'Please enter exactly 6 digits.',
+                submitBtn: 'Create Account',
+                heroTitle: 'Join AgriCare',
+                heroSubtitle: 'Create your farmer account to access weather updates, market prices, and crop guidance.'
             },
             gu: {
-                logo: 'એગ્રીકેર',
-                title: 'એગ્રીકેર સાથે જોડાઓ',
-                subtitle: 'પાક સલાહ અને વધુ મેળવવા ખાતું બનાવો',
-                haveAccount: 'ખાતું છે?',
-                farmer: 'ખેડૂત',
-                admin: 'એડમિન',
-                createAccount: 'ખાતું બનાવો',
-                pin: '6-અંકનો પિન',
-                pinError: 'કૃપા કરીને બરાબર 6 અંકો દાખલ કરો.',
                 backToHome: 'હોમ પર પાછા જાઓ',
-                logIn: 'પ્રવેશ કરો',
-                userIdLbl: 'યુઝર આઈડી',
-                fullNameLbl: 'પૂરું નામ',
-                emailLbl: 'ઈમેલ',
-                phoneLbl: 'મોબાઈલ નંબર',
-                districtLbl: 'જિલ્લો',
-                cityLbl: 'શહેર/વિસ્તાર',
-                pincodeLbl: 'પીનકોડ',
-                prefLangLbl: 'પસંદગીની ભાષા',
-                selectLang: '-- ભાષા પસંદ કરો --',
-                langEn: 'અંગ્રેજી',
-                langGu: 'ગુજરાતી',
-                langHi: 'હિન્દી',
-                phoneRegError: 'કૃપા કરીને માન્ય 10-અંકનો મોબાઈલ નંબર દાખલ કરો.',
-                adminEmailLbl: 'ઈમેલ એડ્રેસ',
-                emailError: 'કૃપા કરીને માન્ય ઈમેઈલ સરનામું દાખલ કરો.',
-                adminPwdLbl: 'પાસવર્ડ',
-                adminPwdError: 'પાસવર્ડમાં ઓછામાં ઓછા 7 અક્ષરો, 1 અપરકેસ, 1 લોઅરકેસ, 1 નંબર અને 1 વિશિષ્ટ અક્ષર હોવા જોઈએ.'
+                logo: 'એગ્રીકેર',
+                createAccount: 'ખાતું બનાવો',
+                alreadyHaveAccount: 'પહેલેથી ખાતું છે?',
+                logIn: 'લૉગ ઇન કરો',
+                labelFullName: 'પૂરું નામ',
+                labelEmail: 'ઈમેલ',
+                labelPhone: 'મોબાઈલ નંબર',
+                labelDistrict: 'જિલ્લો',
+                labelCity: 'શહેર/વિસ્તાર',
+                labelPincode: 'પિનકોડ',
+                labelPrefLang: 'પ્રિય ભાષા',
+                labelPin: '6-અંકનો પિન',
+                placeholderDistrict: 'જિલ્લો પસંદ કરો',
+                placeholderCity: 'પહેલા જિલ્લો પસંદ કરો',
+                placeholderLang: 'ભાષા પસંદ કરો',
+                phoneError: 'કૃપા કરીને માન્ય 10-અંકનો મોબાઈલ નંબર દાખલ કરો.',
+                pinError: 'કૃપા કરીને બરાબર 6 અંક દાખલ કરો.',
+                submitBtn: 'ખાતું બનાવો',
+                heroTitle: 'એગ્રીકેરમાં જોડાઓ',
+                heroSubtitle: 'હવામાન અપડેટ, બજારના ભાવ અને પાક માર્ગદર્શન મેળવવા માટે તમારું ખેડૂત ખાતું બનાવો.'
             },
             hi: {
-                logo: 'एग्रीकेर',
-                title: 'एग्रीकेर जॉइन करें',
-                subtitle: 'फसल सलाह और बहुत कुछ प्राप्त करने के लिए अपना खाता बनाएं',
-                haveAccount: 'खाता है?',
-                farmer: 'किसान',
-                admin: 'एडमिन',
-                createAccount: 'खाता बनाएं',
-                pin: '6-अंकों का पिन',
-                pinError: 'कृपया ठीक 6 अंक दर्ज करें।',
                 backToHome: 'होम पर वापस जाएं',
+                logo: 'एग्रीकेर',
+                createAccount: 'खाता बनाएं',
+                alreadyHaveAccount: 'पहले से खाता है?',
                 logIn: 'लॉग इन करें',
-                userIdLbl: 'यूज़र आईडी',
-                fullNameLbl: 'पूरा नाम',
-                emailLbl: 'ईमेल',
-                phoneLbl: 'फ़ोन नंबर',
-                districtLbl: 'ज़िला',
-                cityLbl: 'शहर/क्षेत्र',
-                pincodeLbl: 'पिनकोड',
-                prefLangLbl: 'पसंदीदा भाषा',
-                selectLang: '-- भाषा चुनें --',
-                langEn: 'अंग्रेज़ी',
-                langGu: 'गुजराती',
-                langHi: 'हिंदी',
-                phoneRegError: 'कृपया एक मान्य 10-अंकीय मोबाइल नंबर दर्ज करें।',
-                adminEmailLbl: 'ईमेल पता',
-                emailError: 'कृपया एक मान्य ईमेल पता दर्ज करें।',
-                adminPwdLbl: 'पासवर्ड',
-                adminPwdError: 'पासवर्ड कम से कम 7 अक्षरों का होना चाहिए, जिसमें 1 बड़ा अक्षर, 1 छोटा अक्षर, 1 नंबर और 1 विशेष अक्षर शामिल हो।'
+                labelFullName: 'पूरा नाम',
+                labelEmail: 'ईमेल',
+                labelPhone: 'फ़ोन नंबर',
+                labelDistrict: 'जिला',
+                labelCity: 'शहर/क्षेत्र',
+                labelPincode: 'पिनकोड',
+                labelPrefLang: 'पसंदीदा भाषा',
+                labelPin: '6-अंकों का पिन',
+                placeholderDistrict: 'जिला चुनें',
+                placeholderCity: 'पहले जिला चुनें',
+                placeholderLang: 'भाषा चुनें',
+                phoneError: 'कृपया एक मान्य 10-अंकीय मोबाइल नंबर दर्ज करें।',
+                pinError: 'कृपया ठीक 6 अंक दर्ज करें।',
+                submitBtn: 'खाता बनाएं',
+                heroTitle: 'एग्रीकेर से जुड़ें',
+                heroSubtitle: 'मौसम अपडेट, बाजार मूल्य और फसल मार्गदर्शन प्राप्त करने के लिए अपना किसान खाता बनाएं।'
             }
         };
 
         function changeLang(lang) {
             localStorage.setItem('agricare_lang', lang);
-
-            // Update language switcher buttons
             document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('bg-emerald-500', 'text-white', 'shadow-md');
-                btn.classList.add('text-gray-600', 'hover:bg-emerald-100');
+                btn.classList.remove('bg-emerald-500', 'text-white');
+                btn.classList.add('hover:bg-emerald-100');
             });
+
             const activeBtn = document.querySelector(`[data-lang-key="${lang}"]`);
             if (activeBtn) {
-                activeBtn.classList.add('bg-emerald-500', 'text-white', 'shadow-md');
-                activeBtn.classList.remove('text-gray-600', 'hover:bg-emerald-100');
+                activeBtn.classList.add('bg-emerald-500', 'text-white');
+                activeBtn.classList.remove('hover:bg-emerald-100');
             }
 
+            const t = translations[lang];
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
-                if (translations[lang] && translations[lang][key]) {
-                    el.textContent = translations[lang][key];
-                }
+                if (t[key]) el.textContent = t[key];
             });
+
+            // Update labels
+            document.querySelectorAll('[data-label]').forEach(el => {
+                const key = el.getAttribute('data-label');
+                if (t[key]) el.childNodes[0].textContent = t[key] + ' ';
+            });
+
+            // Update placeholders
+            const districtLabel = document.getElementById('dd-district-label');
+            if (districtLabel.textContent === translations['en'].placeholderDistrict ||
+                districtLabel.textContent === translations['gu'].placeholderDistrict ||
+                districtLabel.textContent === translations['hi'].placeholderDistrict) {
+                districtLabel.textContent = t.placeholderDistrict;
+            }
+            const cityLabel = document.getElementById('dd-city-label');
+            if (cityLabel.textContent === translations['en'].placeholderCity ||
+                cityLabel.textContent === translations['gu'].placeholderCity ||
+                cityLabel.textContent === translations['hi'].placeholderCity) {
+                cityLabel.textContent = t.placeholderCity;
+            }
+            const langLabel = document.getElementById('dd-lang-label');
+            if (langLabel.textContent === translations['en'].placeholderLang ||
+                langLabel.textContent === translations['gu'].placeholderLang ||
+                langLabel.textContent === translations['hi'].placeholderLang) {
+                langLabel.textContent = t.placeholderLang;
+            }
+
             document.body.classList.remove('gu-text', 'hi-text');
             if (lang === 'gu') document.body.classList.add('gu-text');
             if (lang === 'hi') document.body.classList.add('hi-text');
         }
 
-        // District → City map (major talukas/villages per Gujarat district)
         const districtCityMap = {
-            'Ahmedabad': ['Ahmedabad City', 'Dholka', 'Dhandhuka', 'Sanand', 'Viramgam', 'Bavla', 'Mandal', 'Detroj-Rampura'],
-            'Amreli': ['Amreli', 'Rajula', 'Savarkundla', 'Lathi', 'Bagasara', 'Jafrabad', 'Khambha', 'Dhari'],
-            'Anand': ['Anand', 'Vallabh Vidyanagar', 'Nadiad', 'Petlad', 'Borsad', 'Khambhat', 'Sojitra', 'Umreth'],
-            'Arvalli': ['Modasa', 'Bhiloda', 'Bayad', 'Dhansura', 'Malpur', 'Meghraj'],
-            'Banaskantha': ['Palanpur', 'Deesa', 'Dhanera', 'Tharad', 'Vav', 'Radhanpur', 'Vadgam', 'Danta'],
-            'Bharuch': ['Bharuch', 'Ankleshwar', 'Jambusar', 'Amod', 'Jagadia', 'Valia', 'Jhagadia', 'Hansot'],
-            'Bhavnagar': ['Bhavnagar', 'Palitana', 'Sihor', 'Mahuva', 'Talaja', 'Gariadhar', 'Ghogha', 'Vallabhipur'],
-            'Botad': ['Botad', 'Gadhada', 'Barwala', 'Ranpur'],
-            'Chhota Udaipur': ['Chhota Udaipur', 'Kawant', 'Naswadi', 'Pavi Jetpur', 'Sankheda', 'Bodeli'],
-            'Dahod': ['Dahod', 'Godhra', 'Devgadh Baria', 'Limkheda', 'Fatepura', 'Jhalod', 'Garbada'],
-            'Dang': ['Ahwa', 'Waghai', 'Subir', 'Ahwa Bazaar'],
-            'Devbhoomi Dwarka': ['Khambhalia', 'Dwarka', 'Kalyanpur', 'Bhanvad'],
-            'Gandhinagar': ['Gandhinagar', 'Mansa', 'Kalol', 'Dehgam'],
-            'Gir Somnath': ['Veraval', 'Somnath', 'Una', 'Kodinar', 'Sutrapada', 'Talala'],
-            'Jamnagar': ['Jamnagar', 'Dhrol', 'Jamjodhpur', 'Jodiya', 'Kalavad', 'Lalpur'],
-            'Junagadh': ['Junagadh', 'Keshod', 'Visavadar', 'Mangrol', 'Vanthali', 'Mendarda', 'Bhesan'],
-            'Kheda': ['Nadiad', 'Kapadvanj', 'Matar', 'Mahemdabad', 'Mahudha', 'Thasra', 'Vaso'],
-            'Kutch': ['Bhuj', 'Gandhidham', 'Anjar', 'Mundra', 'Mandvi', 'Rapar', 'Abdasa', 'Nakhatrana'],
-            'Mahisagar': ['Godhra', 'Lunawada', 'Santrampur', 'Virpur', 'Khanpur', 'Kadana'],
-            'Mehsana': ['Mehsana', 'Visnagar', 'Unjha', 'Kadi', 'Patan', 'Becharaji', 'Satlasana'],
-            'Morbi': ['Morbi', 'Tankara', 'Wankaner', 'Halvad', 'Maliya'],
-            'Narmada': ['Rajpipla', 'Nandod', 'Dediapada', 'Garudeshwar', 'Sagbara', 'Tilakwada'],
-            'Navsari': ['Navsari', 'Gandevi', 'Chikhli', 'Vansda', 'Bansda', 'Jalalpore'],
-            'Panchmahal': ['Godhra', 'Halol', 'Kalol', 'Shehera', 'Lunawada', 'Morwa', 'Ghoghamba'],
-            'Patan': ['Patan', 'Sidhpur', 'Chanasma', 'Harij', 'Santalpur', 'Radhanpur'],
+            'Ahmedabad': ['Ahmedabad City', 'Dholka', 'Sanand', 'Viramgam'],
+            'Amreli': ['Amreli', 'Rajula', 'Savarkundla', 'Dhari'],
+            'Anand': ['Anand', 'Petlad', 'Borsad', 'Umreth'],
+            'Arvalli': ['Modasa', 'Bhiloda', 'Bayad'],
+            'Banaskantha': ['Palanpur', 'Deesa', 'Dhanera', 'Tharad'],
+            'Bharuch': ['Bharuch', 'Ankleshwar', 'Jambusar'],
+            'Bhavnagar': ['Bhavnagar', 'Palitana', 'Mahuva'],
+            'Botad': ['Botad', 'Gadhada', 'Barwala'],
+            'Chhota Udaipur': ['Chhota Udaipur', 'Kawant', 'Bodeli'],
+            'Dahod': ['Dahod', 'Limkheda', 'Jhalod'],
+            'Dang': ['Ahwa', 'Waghai', 'Subir'],
+            'Devbhoomi Dwarka': ['Khambhalia', 'Dwarka', 'Bhanvad'],
+            'Gandhinagar': ['Gandhinagar', 'Mansa', 'Kalol'],
+            'Gir Somnath': ['Veraval', 'Una', 'Kodinar'],
+            'Jamnagar': ['Jamnagar', 'Dhrol', 'Kalavad'],
+            'Junagadh': ['Junagadh', 'Keshod', 'Mangrol'],
+            'Kheda': ['Nadiad', 'Kapadvanj', 'Matar'],
+            'Kutch': ['Bhuj', 'Gandhidham', 'Mandvi'],
+            'Mahisagar': ['Lunawada', 'Santrampur', 'Kadana'],
+            'Mehsana': ['Mehsana', 'Visnagar', 'Unjha'],
+            'Morbi': ['Morbi', 'Tankara', 'Halvad'],
+            'Narmada': ['Rajpipla', 'Dediapada', 'Sagbara'],
+            'Navsari': ['Navsari', 'Gandevi', 'Chikhli'],
+            'Panchmahal': ['Godhra', 'Halol', 'Kalol'],
+            'Patan': ['Patan', 'Sidhpur', 'Harij'],
             'Porbandar': ['Porbandar', 'Ranavav', 'Kutiyana'],
-            'Rajkot': ['Rajkot', 'Gondal', 'Jetpur', 'Jasdan', 'Wankaner', 'Paddhari', 'Lodhika'],
-            'Sabarkantha': ['Himmatnagar', 'Idar', 'Talod', 'Prantij', 'Khedbrahma', 'Vadali', 'Poshina'],
-            'Surat': ['Surat City', 'Bardoli', 'Olpad', 'Mandvi', 'Mahuva', 'Kamrej', 'Mangrol', 'Palsana'],
-            'Surendranagar': ['Surendranagar', 'Wadhwan', 'Chotila', 'Dhrangadhra', 'Halvad', 'Limbdi', 'Muli'],
-            'Tapi': ['Vyara', 'Surat', 'Nizar', 'Ukai', 'Dolvan', 'Songadh', 'Valod'],
-            'Vadodara': ['Vadodara', 'Anklav', 'Dabhoi', 'Karjan', 'Padra', 'Waghodia', 'Savli', 'Shinor'],
-            'Valsad': ['Valsad', 'Vapi', 'Pardi', 'Umbergaon', 'Dharampur', 'Kaprada']
+            'Rajkot': ['Rajkot', 'Gondal', 'Jetpur'],
+            'Sabarkantha': ['Himmatnagar', 'Idar', 'Talod'],
+            'Surat': ['Surat City', 'Bardoli', 'Kamrej'],
+            'Surendranagar': ['Surendranagar', 'Wadhwan', 'Limbdi'],
+            'Tapi': ['Vyara', 'Nizar', 'Songadh'],
+            'Vadodara': ['Vadodara', 'Dabhoi', 'Padra'],
+            'Valsad': ['Valsad', 'Vapi', 'Pardi']
         };
 
-        function updateCities() {
-            const district = document.getElementById('district').value;
-            const citySelect = document.getElementById('city');
-            citySelect.innerHTML = '<option value="">-- Select City/Area --</option>';
-            if (district && districtCityMap[district]) {
-                districtCityMap[district].forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c;
-                    opt.textContent = c;
-                    citySelect.appendChild(opt);
-                });
+        const districts = Object.keys(districtCityMap);
+
+        function renderList(listEl, items, onSelect) {
+            listEl.innerHTML = '';
+            items.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'sd-item';
+                div.textContent = name;
+                div.onclick = () => onSelect(name);
+                listEl.appendChild(div);
+            });
+        }
+
+        function toggleDropdown(id) {
+            document.querySelectorAll('.slider-dropdown.open').forEach(el => { if (el.id !== id) el.classList.remove('open'); });
+            document.getElementById(id).classList.toggle('open');
+        }
+
+        function filterList(ddId, query) {
+            const listEl = document.getElementById(ddId + '-list');
+            const items = ddId === 'dd-district' ? districts : (districtCityMap[document.getElementById('district').value] || []);
+            renderList(listEl, items.filter(n => n.toLowerCase().includes(query.toLowerCase())),
+                name => selectItem(ddId, name));
+        }
+
+        function selectItem(ddId, name) {
+            const hiddenId = ddId === 'dd-district' ? 'district' : 'city';
+            document.getElementById(hiddenId).value = name;
+            document.getElementById(ddId + '-label').textContent = name;
+            document.getElementById(ddId + '-label').classList.remove('text-gray-400');
+            document.getElementById(ddId).classList.remove('open');
+            if (ddId === 'dd-district') {
+                document.getElementById('city').value = '';
+                document.getElementById('dd-city-label').textContent = 'Select City/Area';
+                document.getElementById('dd-city-label').classList.add('text-gray-400');
+                renderList(document.getElementById('dd-city-list'), districtCityMap[name] || [], n => selectItem('dd-city', n));
             }
         }
 
-        // Role Toggle
-        function toggleRole(role) {
-            currentRole = role;
-            document.getElementById('reg-role-input').value = role;
+        // init district list
+        renderList(document.getElementById('dd-district-list'), districts, name => selectItem('dd-district', name));
 
-            ['farmer', 'admin'].forEach(r => {
-                const btn = document.getElementById(`reg-btn-${r}`);
-                if (r === role) {
-                    btn.classList.add('bg-white', 'shadow-sm', 'text-emerald-700', 'border-emerald-200');
-                    btn.classList.remove('text-gray-500', 'hover:text-gray-700', 'border-transparent');
-                } else {
-                    btn.classList.remove('bg-white', 'shadow-sm', 'text-emerald-700', 'border-emerald-200');
-                    btn.classList.add('text-gray-500', 'hover:text-gray-700', 'border-transparent');
-                }
+        // init language list
+        const languages = [{ value: 'en', label: 'English' }, { value: 'gu', label: 'Gujarati' }, { value: 'hi', label: 'Hindi' }];
+        (function() {
+            const listEl = document.getElementById('dd-lang-list');
+            languages.forEach(lang => {
+                const div = document.createElement('div');
+                div.className = 'sd-item';
+                div.textContent = lang.label;
+                div.onclick = () => {
+                    document.getElementById('pref_lang').value = lang.value;
+                    document.getElementById('dd-lang-label').textContent = lang.label;
+                    document.getElementById('dd-lang-label').classList.remove('text-gray-400');
+                    document.getElementById('dd-lang').classList.remove('open');
+                };
+                listEl.appendChild(div);
             });
+        })();
 
-            document.querySelectorAll('.role-specific').forEach(field => field.classList.remove('active'));
-            document.getElementById(`${role}-fields`).classList.add('active');
+        // close on outside click
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.slider-dropdown')) {
+                document.querySelectorAll('.slider-dropdown.open').forEach(el => el.classList.remove('open'));
+            }
+        });
 
-            // --- FIX: Dynamic Required attributes to prevent "not focusable" errors ---
-            // Farmer-specific required fields
-            const farmerInputs = ['district', 'city', 'pincode', 'pref_lang', 'pin'];
-            farmerInputs.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.required = (role === 'farmer');
-            });
+        function updateCities() {}
 
-            // Admin-specific required fields
-            const adminInputs = ['admin_email', 'admin_pref_lang', 'admin_password'];
-            adminInputs.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.required = (role === 'admin');
-            });
+        function validateFullName() {
+            const value = document.getElementById('full_name').value.trim();
+            const valid = /^[\p{L}]+(?:\s+[\p{L}]+)+$/u.test(value) && value.length >= 3 && value.length <= 60;
+            const empty = value.length === 0;
+            document.getElementById('full-name-error').classList.toggle('hidden', valid || empty);
         }
 
-        // Farmer phone validation
         function validatePhone() {
-            const phone = document.getElementById('phone_no').value;
-            const error = document.getElementById('phone-reg-error');
-            if (phone.length > 0 && !/^[0-9]{10}$/.test(phone)) {
-                error.classList.remove('hidden');
-            } else {
-                error.classList.add('hidden');
-            }
+            const valid = /^[0-9]{10}$/.test(document.getElementById('phone_no').value);
+            const empty = document.getElementById('phone_no').value.length === 0;
+            document.getElementById('phone-reg-error').classList.toggle('hidden', valid || empty);
         }
 
-        // Farmer PIN validation
         function validatePin() {
-            const pin = document.getElementById('pin').value;
-            const error = document.getElementById('pin-error');
-            if (pin.length > 0 && !/^\d{6}$/.test(pin)) {
-                error.classList.remove('hidden');
-            } else {
-                error.classList.add('hidden');
-            }
+            const valid = /^\d{6}$/.test(document.getElementById('pin').value);
+            const empty = document.getElementById('pin').value.length === 0;
+            document.getElementById('pin-error').classList.toggle('hidden', valid || empty);
         }
 
-        // Admin Email validation
-        function validateAdminEmail() {
-            const email = document.getElementById('admin_email').value;
-            const error = document.getElementById('admin-email-error');
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (email.length > 0 && !emailRegex.test(email)) {
-                error.classList.remove('hidden');
-            } else {
-                error.classList.add('hidden');
-            }
-        }
-
-        // Admin Password validation
-        function validateAdminPassword() {
-            const pwd = document.getElementById('admin_password').value;
-            const error = document.getElementById('admin-pwd-error');
-            const adminRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{7,}$/;
-            if (pwd.length > 0 && !adminRegex.test(pwd)) {
-                error.classList.remove('hidden');
-            } else {
-                error.classList.add('hidden');
-            }
-        }
-
-        // PIN Toggle
         function togglePin() {
-            const pin = document.getElementById('pin');
-            const icon = document.getElementById('pin-icon');
-            passwordVisible = !passwordVisible;
-            pin.type = passwordVisible ? 'text' : 'password';
-            icon.classList.toggle('fa-eye', !passwordVisible);
-            icon.classList.toggle('fa-eye-slash', passwordVisible);
+            pinVisible = !pinVisible;
+            document.getElementById('pin').type = pinVisible ? 'text' : 'password';
+            document.getElementById('pin-icon').className = pinVisible ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
         }
 
-        // Admin Password Toggle
-        function toggleAdminPassword() {
-            const pwd = document.getElementById('admin_password');
-            const icon = document.getElementById('admin-pwd-icon');
-            const isVisible = pwd.type === 'text';
-            pwd.type = isVisible ? 'password' : 'text';
-            icon.classList.toggle('fa-eye', isVisible);
-            icon.classList.toggle('fa-eye-slash', !isVisible);
-        }
+        function handleRegister(event) {
+            event.preventDefault();
+            const fullName = document.getElementById('full_name').value.trim();
+            const phone = document.getElementById('phone_no').value;
+            const pin = document.getElementById('pin').value;
+            validateFullName();
+            validatePhone();
+            validatePin();
 
-        // Form Submit
-        function handleRegister(e) {
-            e.preventDefault();
-            let hasError = false;
-
-            if (currentRole === 'farmer') {
-                // Phone validation
-                const phone = document.getElementById('phone_no').value;
-                if (!/^[0-9]{10}$/.test(phone)) {
-                    document.getElementById('phone-reg-error').classList.remove('hidden');
-                    hasError = true;
-                } else {
-                    document.getElementById('phone-reg-error').classList.add('hidden');
-                }
-
-                // PIN validation
-                const pin = document.getElementById('pin').value;
-                if (!/^\d{6}$/.test(pin)) {
-                    document.getElementById('pin-error').classList.remove('hidden');
-                    hasError = true;
-                } else {
-                    document.getElementById('pin-error').classList.add('hidden');
-                }
-
-                if (hasError) return;
-
-            } else {
-                // Admin email validation
-                const email = document.getElementById('admin_email').value;
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    document.getElementById('admin-email-error').classList.remove('hidden');
-                    hasError = true;
-                } else {
-                    document.getElementById('admin-email-error').classList.add('hidden');
-                }
-
-                // Admin password validation
-                const pwd = document.getElementById('admin_password').value;
-                const adminRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{7,}$/;
-                if (!adminRegex.test(pwd)) {
-                    document.getElementById('admin-pwd-error').classList.remove('hidden');
-                    hasError = true;
-                } else {
-                    document.getElementById('admin-pwd-error').classList.add('hidden');
-                }
-
-                if (hasError) return;
+            if (!/^[\p{L}]+(?:\s+[\p{L}]+)+$/u.test(fullName) || fullName.length < 3 || fullName.length > 60 || !/^[0-9]{10}$/.test(phone) || !/^\d{6}$/.test(pin)) {
+                return;
             }
-
-            const formData = {
-                user_id: document.getElementById('user_id').value,
-                full_name: document.getElementById('full_name').value,
-                email: currentRole === 'admin' ? document.getElementById('admin_email').value : document.getElementById('email').value,
-                phone_no: currentRole === 'farmer' ? document.getElementById('phone_no').value : '',
-                role: currentRole,
-                pincode: document.getElementById('pincode')?.value || '',
-                district: document.getElementById('district')?.value || '',
-                city: document.getElementById('city')?.value || '',
-                pin: document.getElementById('pin')?.value || '',
-                pref_lang: currentRole === 'farmer' ? (document.getElementById('pref_lang')?.value || '') : (document.getElementById('admin_pref_lang')?.value || ''),
-                password: currentRole === 'admin' ? document.getElementById('admin_password').value : ''
-            };
 
             const btn = document.getElementById('submit-btn');
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Account...';
+            const original = btn.innerHTML;
             btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating Account...';
 
-            fetch("../backend/register_api.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(formData)
+            fetch('../backend/register_api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    full_name: document.getElementById('full_name').value,
+                    email: document.getElementById('email').value,
+                    phone_no: phone,
+                    role: 'farmer',
+                    district: document.getElementById('district').value,
+                    city: document.getElementById('city').value,
+                    pincode: document.getElementById('pincode').value,
+                    pref_lang: document.getElementById('pref_lang').value,
+                    pin: pin
+                })
             })
-            .then(async res => {
-                const text = await res.text();
-                try {
-                    return JSON.parse(text);
-                } catch(e) {
-                    console.error("Server raw response:", text);
-                    throw new Error("Invalid server response format.");
-                }
-            })
+            .then(r => r.json())
             .then(data => {
-                if (data.success) {
-                    alert(`✅ Account created successfully!\nWelcome ${data.user.name}`);
-                    window.location.href = 'login.php';
-                } else {
-                    alert(`❌ Error: ${data.message || 'Unknown error'}`);
-                    btn.innerHTML = originalContent;
-                    btn.disabled = false;
+                if (!data.success) {
+                    throw new Error(data.message || 'Registration failed');
                 }
+                alert(`Account created successfully.\nWelcome ${data.user.name}`);
+                window.location.href = 'login.php';
             })
             .catch(err => {
-                console.error("Registration error:", err);
-                alert(`❌ Connection Failed: ${err.message || "Server offline"}`);
-                btn.innerHTML = originalContent;
+                alert(`Error: ${err.message}`);
                 btn.disabled = false;
+                btn.innerHTML = original;
             });
         }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialLang = urlParams.get('lang') || localStorage.getItem('agricare_lang') || 'en';
-        changeLang(initialLang);
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialLang = localStorage.getItem('agricare_lang') || 'en';
+            changeLang(initialLang);
+        });
     </script>
 </body>
 

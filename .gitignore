@@ -24,12 +24,14 @@ composer.phar
 # Environment files
 # =========================
 .env
+!.env.example
 backend/db.local.php
 backend/openai.local.php
 backend/ollama.local.php
 backend/grok.local.php
 backend/groq.local.php
 backend/gemini.local.php
+backend/ollama.local.php
 
 # =========================
 # Logs

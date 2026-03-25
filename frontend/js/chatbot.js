@@ -6,41 +6,41 @@
     const errorEl = document.getElementById('chatError');
     const profileSummaryEl = document.getElementById('profileSummary');
     const modelBadgeEl = document.getElementById('modelBadge');
-    const clearChatBtn = document.getElementById('clearChatBtn'); // Still used for clearing current view
+    const clearChatBtn = document.getElementById('clearChatBtn');
     const promptButtons = document.querySelectorAll('.prompt-btn');
-    
-    // ChatGPT History Elements
+
     const sessionHistoryList = document.getElementById('sessionHistoryList');
     const newChatBtn = document.getElementById('newChatBtn');
-    
-    // New Elements
+
     const micBtn = document.getElementById('micBtn');
     const imgBtn = document.getElementById('imgBtn');
     const imageInput = document.getElementById('imageInput');
     const imagePreviewContainer = document.getElementById('imagePreviewContainer');
     const imagePreview = document.getElementById('imagePreview');
     const removeImgBtn = document.getElementById('removeImgBtn');
-    
+
     const apiUrl = '../backend/chat_api.php';
     const shopsApiUrl = '../backend/shops_api.php';
 
-    // ── Geolocation helper ────────────────────────────────────────────────────
     function getBrowserLocation() {
         return new Promise((resolve) => {
-            if (!navigator.geolocation) { resolve(null); return; }
+            if (!navigator.geolocation) {
+                resolve(null);
+                return;
+            }
             navigator.geolocation.getCurrentPosition(
                 (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-                ()    => resolve(null),
+                () => resolve(null),
                 { timeout: 8000, maximumAge: 60000 }
             );
         });
     }
 
-    // Show nearby shops as rich cards in chat (with live Google Maps embed)
     async function showNearbyShops(pest = '') {
+        stopSpeaking();
+
         const user = getUserPayload();
 
-        // Clear empty state and show as a "user" action
         if (messagesEl.children.length === 0 || messagesEl.textContent.includes('Start a farming conversation')) {
             messagesEl.innerHTML = '';
         }
@@ -49,25 +49,24 @@
         const loadingEl = renderMessage('assistant', '📍 Getting your location & finding nearby shops...');
 
         try {
-            // 1. Try to get GPS coordinates from the browser
             const gps = await getBrowserLocation();
 
             const params = new URLSearchParams({ district: user.district || '' });
-            if (pest)           params.set('pest', pest);
+            if (pest) params.set('pest', pest);
             if (gps) {
                 params.set('lat', gps.lat);
                 params.set('lng', gps.lng);
             }
 
-            const res  = await fetch(`${shopsApiUrl}?${params.toString()}`);
+            const res = await fetch(`${shopsApiUrl}?${params.toString()}`);
             const data = await res.json();
             loadingEl.remove();
 
             if (data.shops && data.shops.length > 0) {
                 renderShopResult({
-                    pest_name:     pest || 'Agricultural Shops Near You',
-                    pesticides:    data.pesticides || [],
-                    shops:         data.shops,
+                    pest_name: pest || 'Agricultural Shops Near You',
+                    pesticides: data.pesticides || [],
+                    shops: data.shops,
                     map_embed_src: data.map_embed_src || null,
                     gps
                 });
@@ -80,43 +79,132 @@
         }
     }
 
-    // Speech Configuration
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
     let isListening = false;
-    
-    if (SpeechRecognition) {
-        recognition = new SpeechRecognition();
-        recognition.continuous = false; // Better for short queries
-        recognition.interimResults = true;
-        
-        recognition.onstart = () => {
-            isListening = true;
+    let recognitionStopRequested = false;
+    let isSpeaking = false;
+    let currentUtterance = null;
+    let recognitionTranscript = '';
+    const defaultPlaceholder = inputEl ? (inputEl.getAttribute('placeholder') || 'Ask about your crop, prices, or subsidies...') : '';
+
+    function updateTextareaHeight(resetToMin) {
+        if (!inputEl) return;
+        if (resetToMin) {
+            inputEl.style.height = 'auto';
+            return;
+        }
+        inputEl.style.height = 'auto';
+        const maxHeight = 180;
+        inputEl.style.height = Math.min(inputEl.scrollHeight, maxHeight) + 'px';
+        inputEl.style.overflowY = inputEl.scrollHeight > maxHeight ? 'auto' : 'hidden';
+    }
+
+    function updateMicUI() {
+        if (!micBtn) return;
+        if (isListening) {
             micBtn.classList.remove('bg-slate-100', 'text-slate-600');
             micBtn.classList.add('bg-red-500', 'text-white', 'animate-pulse');
             micBtn.innerHTML = '<i class="fas fa-stop"></i>';
             inputEl.placeholder = 'Listening... Speak now';
-        };
-        
-        recognition.onend = () => {
-            isListening = false;
+        } else {
             micBtn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
             micBtn.classList.add('bg-slate-100', 'text-slate-600');
             micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-            inputEl.placeholder = 'Ask about your crop, prices, or subsidies...';
+            inputEl.placeholder = defaultPlaceholder;
+        }
+    }
+
+    function updateVoiceButtonsUI() {
+        const btnDesktop = document.getElementById('muteBtnDesktop');
+        const btnMobile = document.getElementById('muteBtnMobile');
+        const btnInput = document.getElementById('muteBtnInput');
+
+        if (isSpeaking) {
+            if (btnDesktop) btnDesktop.innerHTML = '<i class="fas fa-stop"></i> Voice <span>Stop</span>';
+            if (btnMobile) btnMobile.innerHTML = '<i class="fas fa-stop"></i>';
+            if (btnInput) btnInput.innerHTML = '<i class="fas fa-stop text-lg"></i>';
+            return;
+        }
+
+        const iconClass = isMuted ? 'fa-volume-mute' : 'fa-volume-up';
+        const labelText = isMuted ? 'Off' : 'On';
+
+        if (btnDesktop) btnDesktop.innerHTML = `<i class="fas ${iconClass}"></i> Voice <span>${labelText}</span>`;
+        if (btnMobile) btnMobile.innerHTML = `<i class="fas ${iconClass}"></i>`;
+        if (btnInput) btnInput.innerHTML = `<i class="fas ${iconClass} text-lg"></i>`;
+    }
+
+    function stopSpeaking() {
+        if (!window.speechSynthesis) return;
+        currentUtterance = null;
+        isSpeaking = false;
+        window.speechSynthesis.cancel();
+        updateVoiceButtonsUI();
+    }
+
+    function stopRecognition(clearListeningState) {
+        if (!recognition || !isListening) {
+            if (clearListeningState) {
+                recognitionStopRequested = false;
+                isListening = false;
+                updateMicUI();
+            }
+            return;
+        }
+
+        recognitionStopRequested = true;
+        try {
+            recognition.abort();
+        } catch (err) {
+            try {
+                recognition.stop();
+            } catch (e) {}
+        }
+
+        if (clearListeningState) {
+            isListening = false;
+            updateMicUI();
+        }
+    }
+
+    function resetComposer() {
+        if (!inputEl) return;
+        inputEl.value = '';
+        updateTextareaHeight(true);
+        updateTextareaHeight();
+    }
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+            recognitionStopRequested = false;
+            recognitionTranscript = inputEl.value || '';
+            isListening = true;
+            updateMicUI();
         };
-        
+
+        recognition.onend = () => {
+            isListening = false;
+            recognitionStopRequested = false;
+            updateMicUI();
+        };
+
         recognition.onresult = (event) => {
             let transcript = '';
             for (let i = event.resultIndex; i < event.results.length; ++i) {
                 transcript += event.results[i][0].transcript;
             }
-            inputEl.value = transcript;
+            inputEl.value = transcript.trimStart();
+            updateTextareaHeight();
         };
-        
+
         recognition.onerror = (event) => {
-            console.error('Speech recognition error:', event.error);
             if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                console.error('Speech recognition error:', event.error);
                 setError('Voice input failed: ' + event.error);
             }
         };
@@ -125,45 +213,63 @@
     let isMuted = localStorage.getItem('agricare_muted') === 'true';
 
     function updateMuteUI() {
-        const iconClass = isMuted ? 'fa-volume-mute' : 'fa-volume-up';
-        const labelText = isMuted ? 'Off' : 'On';
-        const btnDesktop = document.getElementById('muteBtnDesktop');
-        const btnMobile = document.getElementById('muteBtnMobile');
-        const btnInput = document.getElementById('muteBtnInput');
-        if (btnDesktop) btnDesktop.innerHTML = `<i class="fas ${iconClass}"></i> Voice <span>${labelText}</span>`;
-        if (btnMobile) btnMobile.innerHTML = `<i class="fas ${iconClass}"></i>`;
-        if (btnInput) btnInput.innerHTML = `<i class="fas ${iconClass} text-lg"></i>`;
+        updateVoiceButtonsUI();
     }
 
     function toggleMute() {
+        if (isSpeaking) {
+            stopSpeaking();
+            return;
+        }
+
         isMuted = !isMuted;
-        localStorage.setItem('agricare_muted', isMuted);
-        if (isMuted && window.speechSynthesis) window.speechSynthesis.cancel();
+        localStorage.setItem('agricare_muted', isMuted ? 'true' : 'false');
+
+        if (isMuted) stopSpeaking();
         updateMuteUI();
     }
 
     function speak(text) {
-        if (!window.speechSynthesis || isMuted) return;
-        
-        // Stop current speaking
-        window.speechSynthesis.cancel();
-        
+        if (!window.speechSynthesis || isMuted || !text) return;
+
+        stopSpeaking();
+
         const utterance = new SpeechSynthesisUtterance(text);
+        currentUtterance = utterance;
+
         const user = getUserPayload();
-        
-        // Map lang to BCP-47
-        const langMap = { 'en': 'en-IN', 'hi': 'hi-IN', 'gu': 'gu-IN' };
+        const langMap = { en: 'en-IN', hi: 'hi-IN', gu: 'gu-IN' };
         const bcp47 = langMap[user.pref_lang] || 'en-IN';
         utterance.lang = bcp47;
 
-        // Try to find a matching voice on the user's system
         const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v => v.lang.includes(bcp47.split('-')[0]));
+        const preferredVoice = voices.find((v) => v.lang && v.lang.toLowerCase().includes(bcp47.split('-')[0].toLowerCase()));
         if (preferredVoice) utterance.voice = preferredVoice;
 
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
-        
+
+        utterance.onstart = () => {
+            isSpeaking = true;
+            updateVoiceButtonsUI();
+        };
+
+        utterance.onend = () => {
+            if (currentUtterance === utterance) {
+                currentUtterance = null;
+                isSpeaking = false;
+                updateVoiceButtonsUI();
+            }
+        };
+
+        utterance.onerror = () => {
+            if (currentUtterance === utterance) {
+                currentUtterance = null;
+                isSpeaking = false;
+                updateVoiceButtonsUI();
+            }
+        };
+
         window.speechSynthesis.speak(utterance);
     }
 
@@ -199,10 +305,10 @@
 
     function escapeHtml(text) {
         return String(text)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
+            .replace(/&/g, '&')
+            .replace(/</g, '<')
+            .replace(/>/g, '>')
+            .replace(/"/g, '"')
             .replace(/'/g, '&#039;');
     }
 
@@ -231,7 +337,7 @@
     function renderMessage(role, text) {
         const isUser = role === 'user';
         const wrapper = document.createElement('div');
-        
+
         if (isUser) {
             wrapper.className = 'w-full px-4 mb-6 flex justify-end';
             wrapper.innerHTML = `
@@ -254,7 +360,7 @@
                 </div>
             `;
         }
-        
+
         messagesEl.appendChild(wrapper);
         messagesEl.scrollTop = messagesEl.scrollHeight;
         return wrapper;
@@ -272,7 +378,6 @@
         `;
     }
 
-    // ── Pest result card (from image upload) ────────────────────────────────
     function renderPestResult(data) {
         const wrapper = document.createElement('div');
         wrapper.className = 'w-full px-4 mb-6 flex justify-center';
@@ -297,7 +402,7 @@
 
         if (data.pesticides && data.pesticides.length > 0) {
             pestHtml += `<div class="px-5 py-4 border-b border-white/10"><p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">💊 Recommended Pesticides</p><div class="space-y-2">`;
-            data.pesticides.forEach(p => {
+            data.pesticides.forEach((p) => {
                 pestHtml += `<div class="flex items-start justify-between gap-3 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
                     <div><p class="font-black text-gray-200 text-sm">${escapeHtml(p.name || '')}</p>
                     <p class="text-xs text-gray-400">${escapeHtml(p.brand || '')} ${p.usage_instructions ? '• ' + escapeHtml(p.usage_instructions) : ''}</p></div>
@@ -311,7 +416,7 @@
 
         if (data.shops && data.shops.length > 0) {
             pestHtml += `<div class="px-5 py-4"><p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">🏪 Nearby Agricultural Shops</p><div class="space-y-3">`;
-            data.shops.forEach(s => {
+            data.shops.forEach((s) => {
                 pestHtml += buildShopCard(s);
             });
             pestHtml += `</div></div>`;
@@ -325,7 +430,6 @@
         messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    // ── Shop card HTML helper ─────────────────────────────────────────────────
     function buildShopCard(s) {
         const dirBtn = s.directions_url
             ? `<a href="${escapeHtml(s.directions_url)}" target="_blank" rel="noopener"
@@ -355,7 +459,6 @@
             </div>`;
     }
 
-    // ── Shop result card (from Find Nearby Shops button) ─────────────────────
     function renderShopResult(data) {
         const wrapper = document.createElement('div');
         wrapper.className = 'w-full px-4 mb-6 flex justify-center';
@@ -370,7 +473,6 @@
                     <i class="fas fa-leaf"></i>
                 </div>
                 <div class="flex-1 w-full max-w-2xl rounded-2xl overflow-hidden border border-gray-700 shadow-lg bg-[#2f2f2f] text-gray-200 mt-1">
-                <!-- Header -->
                 <div class="bg-gradient-to-r from-blue-600 to-emerald-600 px-5 py-4 text-white">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center">
@@ -385,7 +487,6 @@
                 </div>
         `;
 
-        // ── Embedded Google Maps ──────────────────────────────────────────────
         if (data.map_embed_src) {
             html += `
                 <div class="w-full" style="height:260px;">
@@ -403,15 +504,13 @@
             `;
         }
 
-        // ── Shop cards ───────────────────────────────────────────────────────
         if (data.shops && data.shops.length > 0) {
             html += `<div class="px-5 py-4"><p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">🏪 Shops in Database Near You</p><div class="space-y-3">`;
-            data.shops.forEach(s => {
+            data.shops.forEach((s) => {
                 html += buildShopCard(s);
             });
             html += `</div>`;
 
-            // "Search more on Google Maps" fallback link
             const user = getUserPayload();
             const q = encodeURIComponent('agricultural shop near ' + (user.district || 'me'));
             const moreUrl = data.gps
@@ -450,17 +549,17 @@
         const currentSession = getSessionKey();
 
         sessionHistoryList.innerHTML = '';
-        
+
         if (!data.sessions || data.sessions.length === 0) {
             sessionHistoryList.innerHTML = '<div class="p-8 text-center opacity-40"><i class="fas fa-history text-2xl mb-2"></i><p class="text-[10px] font-bold uppercase tracking-widest">No history yet</p></div>';
             return;
         }
 
         const groups = {
-            'Today': [],
-            'Yesterday': [],
+            Today: [],
+            Yesterday: [],
             'Previous 7 Days': [],
-            'Older': []
+            Older: []
         };
 
         const now = new Date();
@@ -471,17 +570,17 @@
         const sevenDaysAgo = new Date(now);
         sevenDaysAgo.setDate(now.getDate() - 7);
 
-        data.sessions.forEach(s => {
+        data.sessions.forEach((s) => {
             const d = new Date(s.last_activity);
             const dateStr = d.toDateString();
-            
-            if (dateStr === todayStr) groups['Today'].push(s);
-            else if (dateStr === yesterdayStr) groups['Yesterday'].push(s);
+
+            if (dateStr === todayStr) groups.Today.push(s);
+            else if (dateStr === yesterdayStr) groups.Yesterday.push(s);
             else if (d > sevenDaysAgo) groups['Previous 7 Days'].push(s);
-            else groups['Older'].push(s);
+            else groups.Older.push(s);
         });
 
-        Object.keys(groups).forEach(groupName => {
+        Object.keys(groups).forEach((groupName) => {
             if (groups[groupName].length === 0) return;
 
             const groupDiv = document.createElement('div');
@@ -489,12 +588,11 @@
             groupDiv.textContent = groupName;
             sessionHistoryList.appendChild(groupDiv);
 
-            groups[groupName].forEach(s => {
+            groups[groupName].forEach((s) => {
                 const isActive = s.session_key === currentSession;
                 const item = document.createElement('div');
                 item.className = 'group w-full relative';
-                
-                // Shorten title
+
                 let title = s.title || 'New Conversation';
                 if (title.length > 25) title = title.substring(0, 22) + '...';
 
@@ -506,19 +604,19 @@
                         </button>
                     </div>
                 `;
-                
+
                 item.querySelector('.nav-item').addEventListener('click', () => switchSession(s.session_key));
-                
+
                 const delBtn = item.querySelector('.delete-session-btn');
                 delBtn.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     if (!confirm('Are you sure you want to delete this conversation?')) return;
-                    
+
                     const userId = getUserPayload().id;
                     const res = await fetch(`${apiUrl}?user_id=${userId}&session_key=${s.session_key}`, {
                         method: 'DELETE'
                     });
-                    
+
                     if (res.ok) {
                         if (s.session_key === getSessionKey()) {
                             startNewChat();
@@ -534,9 +632,13 @@
     }
 
     async function switchSession(key) {
+        stopSpeaking();
+        stopRecognition(true);
         localStorage.setItem('agricare_chat_session', key);
+        resetComposer();
+        clearImage();
         await loadHistory();
-        loadSessions(); // Update active state
+        loadSessions();
     }
 
     async function loadHistory() {
@@ -568,14 +670,16 @@
             renderMessage(msg.role === 'assistant' ? 'assistant' : 'user', msg.message || '');
         });
 
-        // Whenever history loads, ensure session list is fresh
         loadSessions();
     }
 
     async function sendMessage(text) {
+        stopSpeaking();
+        stopRecognition(true);
+
         const trimmed = String(text || '').trim();
         const imageFile = imageInput.files[0];
-        
+
         if (!trimmed && !imageFile) return;
 
         setError('');
@@ -585,10 +689,10 @@
 
         const userMsg = imageFile ? `[Sent a photo] ${trimmed}` : trimmed;
         renderMessage('user', userMsg);
-        
-        inputEl.value = '';
+
+        resetComposer();
         clearImage();
-        
+
         sendBtn.disabled = true;
         sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i>';
 
@@ -605,7 +709,7 @@
             formData.append('user[district]', getUserPayload().district || '');
             formData.append('user[city]', getUserPayload().city || '');
             formData.append('user[crop]', getUserPayload().crop || '');
-            
+
             if (imageFile) {
                 formData.append('image', imageFile);
             }
@@ -615,12 +719,12 @@
                 body: formData
             });
 
-            const text = await response.text();
+            const textResponse = await response.text();
             let data;
             try {
-                data = JSON.parse(text);
+                data = JSON.parse(textResponse);
             } catch (err) {
-                const preview = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 180);
+                const preview = textResponse.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 180);
                 throw new Error(preview || 'Chat endpoint returned invalid JSON.');
             }
 
@@ -630,20 +734,17 @@
 
             pendingEl.remove();
             renderMessage('assistant', data.reply || 'No reply returned.');
-            
-            // If a pest/disease was identified, render rich UI cards
+
             if (data.pest_result) {
                 renderPestResult(data.pest_result);
             }
 
-            // Speak the response
             speak(data.reply || '');
 
             if (data.model) {
                 modelBadgeEl.textContent = data.model;
             }
 
-            // Refresh sessions if this was the start of a new one
             loadSessions();
         } catch (err) {
             pendingEl.remove();
@@ -652,10 +753,14 @@
             sendBtn.disabled = false;
             sendBtn.innerHTML = '<i class="fas fa-arrow-up text-sm"></i>';
             inputEl.focus();
+            updateTextareaHeight();
         }
     }
 
     function startNewChat() {
+        stopSpeaking();
+        stopRecognition(true);
+
         const created = 'chat_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
         localStorage.setItem('agricare_chat_session', created);
         messagesEl.innerHTML = '';
@@ -663,7 +768,8 @@
         modelBadgeEl.textContent = 'AI model pending';
         setError('');
         clearImage();
-        loadSessions(); // Update active highlight
+        resetComposer();
+        loadSessions();
     }
 
     function clearImage() {
@@ -672,7 +778,6 @@
         imagePreviewContainer.classList.add('hidden');
     }
 
-    // Event Listeners
     newChatBtn.addEventListener('click', startNewChat);
 
     const findShopsBtn = document.getElementById('findShopsBtn');
@@ -692,25 +797,41 @@
         }
     });
 
-    micBtn.addEventListener('click', function() {
+    inputEl.addEventListener('input', function () {
+        if (isListening) stopRecognition(true);
+        if (this.value.trim()) stopSpeaking();
+        updateTextareaHeight();
+    });
+
+    micBtn.addEventListener('click', function () {
         if (!recognition) {
             setError('Speech recognition is not supported in this browser.');
             return;
         }
+
+        setError('');
+
         if (isListening) {
-            recognition.stop();
-        } else {
-            const user = getUserPayload();
-            const langMap = { 'en': 'en-IN', 'hi': 'hi-IN', 'gu': 'gu-IN' };
-            recognition.lang = langMap[user.pref_lang] || 'en-IN';
-            inputEl.value = ''; // Optional: clear input when starting new voice session
+            stopRecognition(true);
+            return;
+        }
+
+        stopSpeaking();
+
+        const user = getUserPayload();
+        const langMap = { en: 'en-IN', hi: 'hi-IN', gu: 'gu-IN' };
+        recognition.lang = langMap[user.pref_lang] || 'en-IN';
+        recognitionTranscript = '';
+        try {
             recognition.start();
+        } catch (err) {
+            setError('Voice input could not start. Please try again.');
         }
     });
 
     imgBtn.addEventListener('click', () => imageInput.click());
 
-    imageInput.addEventListener('change', function() {
+    imageInput.addEventListener('change', function () {
         const file = this.files[0];
         if (file) {
             const reader = new FileReader();
@@ -726,6 +847,8 @@
 
     promptButtons.forEach((btn) => {
         btn.addEventListener('click', function () {
+            stopSpeaking();
+            stopRecognition(true);
             sendMessage(btn.dataset.prompt || '');
         });
     });
@@ -740,11 +863,16 @@
     if (muteBtnDesktop) muteBtnDesktop.addEventListener('click', toggleMute);
     if (muteBtnMobile) muteBtnMobile.addEventListener('click', toggleMute);
     if (muteBtnInput) muteBtnInput.addEventListener('click', toggleMute);
-    updateMuteUI();
 
+    if (window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = function () {
+            updateVoiceButtonsUI();
+        };
+    }
+
+    updateMuteUI();
+    updateMicUI();
     renderProfileSummary();
-    // Always start with a blank chat on page load
     startNewChat();
-    // Load history sidebar
     loadSessions();
 })();

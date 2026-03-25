@@ -1,12 +1,40 @@
 <?php
 header('Content-Type: application/json');
-
+require_once __DIR__ . '/security_headers.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/sync_market.php';
 
 try {
     date_default_timezone_set('Asia/Kolkata');
     $pdo = Database::getConnection();
+    $today = date('d/m/Y');
+    $syncMetaPath = __DIR__ . '/last_market_sync.json';
+    $syncMeta = ['synced_at' => null, 'target_date' => null];
+
+    if (is_file($syncMetaPath)) {
+        $decoded = json_decode((string) file_get_contents($syncMetaPath), true);
+        if (is_array($decoded)) {
+            $syncMeta = array_merge($syncMeta, $decoded);
+        }
+    }
+
+    $latestLocalDate = $pdo->query("SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY id DESC LIMIT 1")->fetchColumn();
+    $lastSyncTs = !empty($syncMeta['synced_at']) ? strtotime((string) $syncMeta['synced_at']) : 0;
+    $shouldSync = $latestLocalDate !== $today || !$lastSyncTs || (time() - $lastSyncTs) > 1800;
+
+    if ($shouldSync) {
+        try {
+            $syncResult = syncLatestMarketData();
+            $syncMeta = [
+                'synced_at' => $syncResult['synced_at'] ?? date(DATE_ATOM),
+                'target_date' => $syncResult['target_date'] ?? $latestLocalDate,
+                'processed' => $syncResult['processed'] ?? 0,
+            ];
+            @file_put_contents($syncMetaPath, json_encode($syncMeta, JSON_PRETTY_PRINT));
+        } catch (Throwable $syncError) {
+            // Keep serving the latest local data if sync fails.
+        }
+    }
 
     /* Read filters from frontend */
     $input = json_decode(file_get_contents("php://input"), true);
@@ -87,7 +115,13 @@ try {
         ];
     }
 
-    echo json_encode($result);
+    echo json_encode([
+        'success' => true,
+        'target_date' => $latestDate,
+        'today' => $today,
+        'synced_at' => $syncMeta['synced_at'] ?? null,
+        'rows' => $result,
+    ]);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);

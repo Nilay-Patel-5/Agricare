@@ -92,7 +92,7 @@
                         class="flex-1 py-2.5 text-xs font-bold rounded-xl text-gray-500 hover:text-gray-700 transition-all">ADMIN</button>
                 </div>
 
-                <form class="mt-4 space-y-4 relative z-10" action="#" method="GET" onsubmit="handleLogin(event)">
+                <form class="mt-4 space-y-4 relative z-10" action="#" method="POST" onsubmit="handleLogin(event)">
                     <input type="hidden" name="role" id="role-input" value="farmer">
                     <div class="space-y-3">
                         <div>

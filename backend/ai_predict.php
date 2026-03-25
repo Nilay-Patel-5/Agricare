@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 set_time_limit(90);
 
+require_once __DIR__ . '/env.php';
 require_once __DIR__ . '/gemini_client.php';
 require_once __DIR__ . '/chat_context.php';
 

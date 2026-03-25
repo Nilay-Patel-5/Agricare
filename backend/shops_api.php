@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: application/json');
+require_once __DIR__ . '/security_headers.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/chat_context.php';
 

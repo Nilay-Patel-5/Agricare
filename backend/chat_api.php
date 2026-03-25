@@ -14,6 +14,7 @@ set_error_handler(static function (int $severity, string $message, string $file,
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
+require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/chat_context.php';
 require_once __DIR__ . '/groq_client.php';
 require_once __DIR__ . '/gemini_client.php';
@@ -22,7 +23,7 @@ require_once __DIR__ . '/ai_common.php';
 function chat_json_input(): array
 {
     $data = [];
-    if ($_SERVER['CONTENT_TYPE'] && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+    if (!empty($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
         $raw = file_get_contents('php://input');
         $data = json_decode($raw ?: '', true);
     } else {
@@ -35,6 +36,44 @@ function chat_session_key_from_request(array $data): string
 {
     $key = trim((string) ($data['session_key'] ?? ($_GET['session_key'] ?? '')));
     return $key !== '' ? substr($key, 0, 120) : 'guest';
+}
+
+function chat_detect_intents(string $message, bool $hasImage): array
+{
+    $text = mb_strtolower($message);
+
+    $market = preg_match('/\b(market|mandi|price|prices|rate|rates|apmc|sell|selling)\b/u', $text) === 1;
+    $subsidy = preg_match('/\b(subsidy|subsidies|scheme|schemes|loan|grant|benefit|benefits|irrigation)\b/u', $text) === 1;
+    $schedule = preg_match('/\b(schedule|calendar|task|tasks|when|sow|plant|watering|fertilizer|spray|harvest)\b/u', $text) === 1;
+    $pesticide = $hasImage || preg_match('/\b(pest|disease|pesticide|pesticides|insect|fungus|fungal|spray|treatment)\b/u', $text) === 1;
+
+    $general = !$market && !$subsidy && !$schedule && !$pesticide;
+
+    return [
+        'market' => $market || $general,
+        'subsidy' => $subsidy || $general,
+        'schedule' => $schedule || $general,
+        'pesticide' => $pesticide || $general,
+    ];
+}
+
+function chat_trim_history_messages(array $history, int $maxChars = 600): array
+{
+    $trimmed = [];
+    foreach ($history as $item) {
+        $message = trim((string) ($item['message'] ?? ''));
+        if ($message === '') {
+            continue;
+        }
+        if (mb_strlen($message) > $maxChars) {
+            $message = mb_substr($message, 0, $maxChars) . '...';
+        }
+        $trimmed[] = [
+            'role' => ($item['role'] ?? '') === 'assistant' ? 'assistant' : 'user',
+            'content' => $message,
+        ];
+    }
+    return $trimmed;
 }
 
 try {
@@ -95,10 +134,11 @@ try {
     }
 
     $profile = chat_load_user_profile($pdo, $userId, $clientProfile);
-    $history = chat_fetch_recent_history($pdo, $userId, $sessionKey, 8);
-    $marketRows = chat_fetch_market_snapshot($pdo, $profile['district'], $profile['crop']);
-    $subsidyRows = chat_fetch_subsidy_snapshot($pdo, $profile['crop']);
-    $cropSchedule = chat_fetch_crop_schedule($pdo, $profile['crop']);
+    $history = chat_fetch_recent_history($pdo, $userId, $sessionKey, 6);
+    $intents = chat_detect_intents($message, isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name']));
+    $marketRows = $intents['market'] ? chat_fetch_market_snapshot($pdo, $profile['district'], $profile['crop']) : [];
+    $subsidyRows = $intents['subsidy'] ? chat_fetch_subsidy_snapshot($pdo, $profile['crop']) : [];
+    $cropSchedule = $intents['schedule'] ? chat_fetch_crop_schedule($pdo, $profile['crop']) : [];
 
     $identifiedPest = '';
     $pestResData = null; // structured data for frontend cards
@@ -158,37 +198,37 @@ try {
         [
             'role' => 'system',
             'content' => "You are AgriBot, a farming assistant. Reply ONLY in $targetLang.
-Rules: DO NOT say 'I cannot help'. Be brief and helpful.{$pestSection}",
+Rules: Be brief, practical, and action-oriented. Use the provided farm data first.{$pestSection}",
         ],
         [
             'role' => 'user',
             'content' => "FARM DATA:\n{$contextBlock}",
         ],
-        [
-            'role' => 'assistant',
-            'content' => "Understood. Farm data loaded.",
-        ],
     ];
 
-    foreach ($history as $item) {
-        $role = ($item['role'] ?? '') === 'assistant' ? 'assistant' : 'user';
-        $conversation[] = [
-            'role' => $role,
-            'content' => (string) ($item['message'] ?? ''),
-        ];
-    }
+    $conversation = array_merge($conversation, chat_trim_history_messages($history));
 
     $conversation[] = [
         'role' => 'user',
         'content' => $message,
     ];
 
-    $config = groq_config();
-    $response = groq_chat_create([
-        'model' => $config['model'],
-        'stream' => false,
-        'messages' => $conversation,
-    ]);
+    $provider = 'gemini';
+    $modelUsed = gemini_config()['text_model'] ?? 'gemini-2.5-flash';
+    $response = gemini_text_create($conversation, $modelUsed);
+    $reply = $response['ok'] ? gemini_extract_output_text($response['data']) : '';
+
+    if (!$response['ok'] || $reply === '') {
+        $provider = 'groq';
+        $groqConfig = groq_config();
+        $modelUsed = $groqConfig['model'];
+        $response = groq_chat_create([
+            'model' => $modelUsed,
+            'stream' => false,
+            'messages' => $conversation,
+        ]);
+        $reply = $response['ok'] ? groq_extract_output_text($response['data']) : '';
+    }
 
     if (!$response['ok']) {
         http_response_code($response['status'] ?: 502);
@@ -199,18 +239,18 @@ Rules: DO NOT say 'I cannot help'. Be brief and helpful.{$pestSection}",
         exit;
     }
 
-    $reply = groq_extract_output_text($response['data']);
     if ($reply === '') {
         http_response_code(502);
-        echo json_encode(['error' => 'Groq returned an empty reply.']);
+        echo json_encode(['error' => 'AI provider returned an empty reply.']);
         exit;
     }
 
-    chat_store_message($pdo, $userId, $sessionKey, 'assistant', $reply, $config['model']);
+    chat_store_message($pdo, $userId, $sessionKey, 'assistant', $reply, $modelUsed);
 
     $result = [
         'reply' => $reply,
-        'model' => $config['model'],
+        'model' => $modelUsed,
+        'provider' => $provider,
     ];
     
     if ($pestResData !== null) {

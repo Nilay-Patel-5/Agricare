@@ -1,37 +1,28 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "agricare", 3307);
+require_once __DIR__ . '/../env.php';
+
+$host = getenv('MYSQL_DB_HOST') ?: 'localhost';
+$user = getenv('MYSQL_DB_USER') ?: '';
+$pass = getenv('MYSQL_DB_PASS') ?: '';
+$db   = getenv('MYSQL_DB_NAME') ?: '';
+$port = (int) (getenv('MYSQL_DB_PORT') ?: 3306);
+
+$conn = new mysqli($host, $user, $pass, $db, $port);
 
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    http_response_code(500);
+    die("Connection failed.");
 }
 
-echo "=== DISTRICTS TABLE ===\n";
-$result = $conn->query("DESCRIBE districts");
-if ($result) {
-    while($row = $result->fetch_assoc()) {
-        echo $row['Field'] . " - " . $row['Type'] . "\n";
+foreach (['districts', 'markets', 'commodities'] as $table) {
+    echo "=== " . strtoupper($table) . " TABLE ===\n";
+    $result = $conn->query("DESCRIBE `$table`");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            echo $row['Field'] . " - " . $row['Type'] . "\n";
+        }
+    } else {
+        echo "Error describing $table.\n";
     }
-} else {
-    echo "Error describing districts: " . $conn->error . "\n";
+    echo "\n";
 }
-
-echo "\n=== MARKETS TABLE ===\n";
-$result = $conn->query("DESCRIBE markets");
-if ($result) {
-    while($row = $result->fetch_assoc()) {
-        echo $row['Field'] . " - " . $row['Type'] . "\n";
-    }
-} else {
-    echo "Error describing markets: " . $conn->error . "\n";
-}
-
-echo "\n=== COMMODITIES TABLE ===\n";
-$result = $conn->query("DESCRIBE commodities");
-if ($result) {
-    while($row = $result->fetch_assoc()) {
-        echo $row['Field'] . " - " . $row['Type'] . "\n";
-    }
-} else {
-    echo "Error describing commodities: " . $conn->error . "\n";
-}
-?>

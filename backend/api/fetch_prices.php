@@ -1,23 +1,25 @@
 <?php
+header('Content-Type: application/json');
+require_once __DIR__ . '/../env.php';
 
-// Database connection
-$conn = new mysqli("localhost", "root", "", "agricare", 3307);
+$host = getenv('MYSQL_DB_HOST') ?: 'localhost';
+$user = getenv('MYSQL_DB_USER') ?: '';
+$pass = getenv('MYSQL_DB_PASS') ?: '';
+$db   = getenv('MYSQL_DB_NAME') ?: '';
+$port = (int) (getenv('MYSQL_DB_PORT') ?: 3306);
 
+$conn = new mysqli($host, $user, $pass, $db, $port);
 if ($conn->connect_error) {
-    die("DB Failed: " . $conn->connect_error);
+    http_response_code(500);
+    echo json_encode(['error' => 'Database connection failed.']);
+    exit;
 }
 
-/* -------------------------------
-   0. CREATE TABLES IF NOT EXISTS
---------------------------------*/
-
-// Districts Table
+// Create tables if not exist
 $conn->query("CREATE TABLE IF NOT EXISTS districts (
     district_id INT AUTO_INCREMENT PRIMARY KEY,
     district_name VARCHAR(255) UNIQUE NOT NULL
 )");
-
-// Markets Table
 $conn->query("CREATE TABLE IF NOT EXISTS markets (
     market_id INT AUTO_INCREMENT PRIMARY KEY,
     market_name VARCHAR(255) NOT NULL,
@@ -25,14 +27,10 @@ $conn->query("CREATE TABLE IF NOT EXISTS markets (
     FOREIGN KEY (district_id) REFERENCES districts(district_id),
     UNIQUE KEY unique_market (market_name, district_id)
 )");
-
-// Commodities Table
 $conn->query("CREATE TABLE IF NOT EXISTS commodities (
     commodity_id INT AUTO_INCREMENT PRIMARY KEY,
     commodity_name VARCHAR(255) UNIQUE NOT NULL
 )");
-
-// Market Prices Table
 $conn->query("CREATE TABLE IF NOT EXISTS market_prices (
     price_id INT AUTO_INCREMENT PRIMARY KEY,
     commodity_id INT,
@@ -45,103 +43,96 @@ $conn->query("CREATE TABLE IF NOT EXISTS market_prices (
     FOREIGN KEY (market_id) REFERENCES markets(market_id)
 )");
 
-/* -------------------------------
-   1. CALL AGMARKNET API
---------------------------------*/
+$api_key     = getenv('DATA_GOV_API_KEY') ?: '';
+$resource_id = '9ef84268-d588-465a-a308-a864a43d0070';
 
-$api_key = "579b464db66ec23bdd00000112d98608618240ae6b2dd69c1d04ff51";
-$resource_id = "9ef84268-d588-465a-a308-a864a43d0070";
-$limit = 100; // Limit for records
+if (!$api_key) {
+    http_response_code(500);
+    echo json_encode(['error' => 'API key not configured.']);
+    exit;
+}
 
-// Added filter for Gujarat to make it more relevant as per previous context (optional but good practice)
-$url = "https://api.data.gov.in/resource/{$resource_id}?api-key={$api_key}&format=json&limit={$limit}";
-
+$url      = "https://api.data.gov.in/resource/{$resource_id}?api-key={$api_key}&format=json&limit=100";
 $response = file_get_contents($url);
 
-if(!$response){
-    die("API not working or limit exceeded");
+if ($response === false) {
+    http_response_code(502);
+    echo json_encode(['error' => 'External API request failed.']);
+    exit;
 }
 
 $data = json_decode($response, true);
-
 if (!isset($data['records'])) {
-    die("No records found in API response. Response: " . substr($response, 0, 100) . "...");
+    http_response_code(502);
+    echo json_encode(['error' => 'No records found in API response.']);
+    exit;
 }
 
-/* -------------------------------
-   2. READ DATA FROM API
---------------------------------*/
+// Prepared statements to prevent SQL injection
+$stmtInsertDistrict   = $conn->prepare("INSERT IGNORE INTO districts (district_name) VALUES (?)");
+$stmtSelectDistrict   = $conn->prepare("SELECT district_id FROM districts WHERE district_name = ?");
+$stmtInsertMarket     = $conn->prepare("INSERT IGNORE INTO markets (market_name, district_id) VALUES (?, ?)");
+$stmtSelectMarket     = $conn->prepare("SELECT market_id FROM markets WHERE market_name = ? AND district_id = ?");
+$stmtInsertCommodity  = $conn->prepare("INSERT IGNORE INTO commodities (commodity_name) VALUES (?)");
+$stmtSelectCommodity  = $conn->prepare("SELECT commodity_id FROM commodities WHERE commodity_name = ?");
+$stmtCheckPrice       = $conn->prepare("SELECT price_id FROM market_prices WHERE commodity_id = ? AND market_id = ? AND price_date = ?");
+$stmtInsertPrice      = $conn->prepare("INSERT INTO market_prices (commodity_id, market_id, price_per_quintal, arrival_tonnes, price_date, last_updated) VALUES (?, ?, ?, ?, ?, NOW())");
 
 $count = 0;
 
-foreach($data['records'] as $row){
-    
-    // Extract data with fallbacks
-    $commodity_name = isset($row['commodity']) ? $conn->real_escape_string($row['commodity']) : null;
-    $market_name    = isset($row['market']) ? $conn->real_escape_string($row['market']) : null;
-    $district_name  = isset($row['district']) ? $conn->real_escape_string($row['district']) : null;
-    $price          = isset($row['modal_price']) ? $row['modal_price'] : 0;
-    $arrival        = isset($row['arrival_quantity']) ? $row['arrival_quantity'] : 0; 
-    $date_str       = isset($row['arrival_date']) ? $row['arrival_date'] : date('d/m/Y');
-    
-    // Parse date (API often returns DD/MM/YYYY)
-    $date_obj = DateTime::createFromFormat('d/m/Y', $date_str);
-    $date = $date_obj ? $date_obj->format('Y-m-d') : date('Y-m-d');
+foreach ($data['records'] as $row) {
+    $commodity_name = trim($row['commodity'] ?? '');
+    $market_name    = trim($row['market'] ?? '');
+    $district_name  = trim($row['district'] ?? '');
+    $price          = is_numeric($row['modal_price'] ?? null) ? $row['modal_price'] : 0;
+    $arrival        = is_numeric($row['arrival_quantity'] ?? null) ? $row['arrival_quantity'] : 0;
+    $date_str       = $row['arrival_date'] ?? date('d/m/Y');
 
     if (!$commodity_name || !$market_name || !$district_name) {
-        continue; // Skip incomplete records
+        continue;
     }
 
-    /* -------------------------------
-       3. INSERT DISTRICT
-    --------------------------------*/
-    $conn->query("INSERT IGNORE INTO districts(district_name) VALUES('$district_name')");
-    
-    // Get ID
-    $res = $conn->query("SELECT district_id FROM districts WHERE district_name='$district_name'");
-    $district_row = $res->fetch_assoc();
-    $district_id = $district_row['district_id'];
+    $date_obj = DateTime::createFromFormat('d/m/Y', $date_str);
+    $date     = $date_obj ? $date_obj->format('Y-m-d') : date('Y-m-d');
 
-    /* -------------------------------
-       4. INSERT MARKET
-    --------------------------------*/
-    $conn->query("INSERT IGNORE INTO markets(market_name, district_id) VALUES('$market_name', '$district_id')");
-    
-    // Get ID
-    $res = $conn->query("SELECT market_id FROM markets WHERE market_name='$market_name' AND district_id='$district_id'");
-    $market_row = $res->fetch_assoc();
-    $market_id = $market_row['market_id'];
+    // District
+    $stmtInsertDistrict->bind_param('s', $district_name);
+    $stmtInsertDistrict->execute();
+    $stmtSelectDistrict->bind_param('s', $district_name);
+    $stmtSelectDistrict->execute();
+    $stmtSelectDistrict->bind_result($district_id);
+    $stmtSelectDistrict->fetch();
+    $stmtSelectDistrict->reset();
 
-    /* -------------------------------
-       5. INSERT COMMODITY
-    --------------------------------*/
-    $conn->query("INSERT IGNORE INTO commodities(commodity_name) VALUES('$commodity_name')");
-    
-    // Get ID
-    $res = $conn->query("SELECT commodity_id FROM commodities WHERE commodity_name='$commodity_name'");
-    $commodity_row = $res->fetch_assoc();
-    $commodity_id = $commodity_row['commodity_id'];
+    // Market
+    $stmtInsertMarket->bind_param('si', $market_name, $district_id);
+    $stmtInsertMarket->execute();
+    $stmtSelectMarket->bind_param('si', $market_name, $district_id);
+    $stmtSelectMarket->execute();
+    $stmtSelectMarket->bind_result($market_id);
+    $stmtSelectMarket->fetch();
+    $stmtSelectMarket->reset();
 
-    /* -------------------------------
-       6. INSERT PRICE DATA
-    --------------------------------*/
-    // Check if entry exists for this date to avoid duplication
-    $check = $conn->query("SELECT price_id FROM market_prices 
-                          WHERE commodity_id='$commodity_id' 
-                          AND market_id='$market_id' 
-                          AND price_date='$date'");
-    
-    if ($check->num_rows == 0) {
-        $sql = "INSERT INTO market_prices(commodity_id, market_id, price_per_quintal, arrival_tonnes, price_date, last_updated)
-                VALUES('$commodity_id', '$market_id', '$price', '$arrival', '$date', NOW())";
-        if ($conn->query($sql)) {
+    // Commodity
+    $stmtInsertCommodity->bind_param('s', $commodity_name);
+    $stmtInsertCommodity->execute();
+    $stmtSelectCommodity->bind_param('s', $commodity_name);
+    $stmtSelectCommodity->execute();
+    $stmtSelectCommodity->bind_result($commodity_id);
+    $stmtSelectCommodity->fetch();
+    $stmtSelectCommodity->reset();
+
+    // Check duplicate
+    $stmtCheckPrice->bind_param('iis', $commodity_id, $market_id, $date);
+    $stmtCheckPrice->execute();
+    $stmtCheckPrice->store_result();
+    if ($stmtCheckPrice->num_rows === 0) {
+        $stmtInsertPrice->bind_param('iidds', $commodity_id, $market_id, $price, $arrival, $date);
+        if ($stmtInsertPrice->execute()) {
             $count++;
-        } else {
-             // echo "Error: " . $conn->error . "<br>";
         }
     }
+    $stmtCheckPrice->free_result();
 }
 
-echo "DATA IMPORTED SUCCESSFULLY. imported $count records.";
-
-?>
+echo json_encode(['success' => true, 'inserted' => $count]);

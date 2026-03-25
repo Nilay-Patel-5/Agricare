@@ -1,12 +1,13 @@
 <?php
 // backend/db.php - PostgreSQL Connection Helper
+require_once __DIR__ . '/env.php';
 
 class Database
 {
     private static $defaultConfig = [
         'host' => 'localhost',
         'db' => 'agricare_db',
-        'user' => 'postgres',
+        'user' => '',
         'pass' => '',
         'port' => '5432',
         'sslmode' => null,
