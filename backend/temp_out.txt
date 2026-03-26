@@ -1,5 +1,6 @@
 === COMMODITIES ===
 Ajwan
+Apple
 Arhar(Tur/Red Gram)(Whole)
 Bajra(Pearl Millet/Cumbu)
 Banana
@@ -22,7 +23,7 @@ Cluster beans
 Coriander(Leaves)
 Corriander seed
 Cotton
-Cowpea(Vegetable)
+Cowpea(Veg)
 Cucumbar(Kheera)
 Cummin Seed(Jeera)
 Drumstick
@@ -31,23 +32,30 @@ Elephant Yam(Suran)/Amorphophallus
 French Beans(Frasbean)
 Garlic
 Ginger(Green)
+Grapes
 Green Chilli
 Green Gram(Moong)(Whole)
 Groundnut
 Groundnut(Split)
 Guar
 Guar Seed(Cluster Beans Seed)
+Guava
 Indian Beans(Seam)
 Isabgul(Psyllium)
 Jowar(Sorghum)
 Kabuli Chana(Chickpeas-White)
 Kinnow
+Leafy Vegetable
 Lemon
 Little gourd(Kundru)
 Long Melon(Kakri)
+Maize
 Mango(Raw-Ripe)
 Methi Seeds
+Methi(Leaves)
+Millets
 Mint(Pudina)
+Mousambi(Sweet Lime)
 Mustard
 Onion
 Onion Green
@@ -57,6 +65,7 @@ Papaya(Raw)
 Pea Pod/Pea Cod/हरी मटर
 Pegeon Pea(Arhar Fali)
 Pointed gourd(Parval)
+Pomegranate
 Potato
 Pumpkin
 Raddish
@@ -73,6 +82,7 @@ Sweet Potato
 Tinda
 Tomato
 Turmeric(raw)
+Water Melon
 Wheat
 Yam(Ratalu)
 
@@ -88,9 +98,11 @@ Chhatarpur
 Chhota Udaipur
 Dahod
 Gandhinagar
+Gir Somnath
 Indore
 Jamnagar
 Jhabua
+Junagarh
 Kachchh
 Kheda
 Mehsana

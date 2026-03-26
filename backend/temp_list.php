@@ -1,6 +1,6 @@
 <?php
-$dsn = "pgsql:host=localhost;port=5432;dbname=agricare_db";
-$pdo = new PDO($dsn, 'postgres', 'nrp@postgres7');
+$dsn = "pgsql:host=db.fnfqrectniyjpkyfkmal.supabase.co;port=5432;dbname=postgres;sslmode=require";
+$pdo = new PDO($dsn, 'postgres', 'nrpsupabase7');
 
 $out = "=== COMMODITIES ===\n";
 $stmt = $pdo->query("SELECT DISTINCT commodity FROM market_prices ORDER BY commodity");

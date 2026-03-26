@@ -166,14 +166,8 @@
             </div>
 
             <form id="weatherForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1" data-lang="labelState">State</label>
-                    <select id="stateSelect" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                        <option value="Gujarat">Gujarat</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Rajasthan">Rajasthan</option>
-                    </select>
-                </div>
+                <!-- State Selection Removed (Hardcoded to Gujarat) -->
+                <input type="hidden" id="stateSelect" value="Gujarat">
 
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1" data-lang="labelCity">City / District</label>
@@ -182,18 +176,9 @@
                         <option value="">Select City</option>
                     </select>
                 </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1" data-lang="labelCrop">Select Crop (Optional)</label>
-                    <select id="cropSelect" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                        <option value="" data-lang="cropGeneral">-- General --</option>
-                        <option value="Cotton" data-lang="cropCotton">Cotton (Kapas)</option>
-                        <option value="Groundnut" data-lang="cropGroundnut">Groundnut (Magfali)</option>
-                        <option value="Wheat" data-lang="cropWheat">Wheat (Gehu)</option>
-                        <option value="Rice" data-lang="cropRice">Rice (Dangar)</option>
-                        <option value="Sugarcane" data-lang="cropSugarcane">Sugarcane</option>
-                    </select>
-                </div>
+                
+                <!-- Crop Selection Removed (Hardcoded to General) -->
+                <input type="hidden" id="cropSelect" value="">
 
                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 mt-2">
                     <span data-lang="btnForecast">Get Forecast</span>
@@ -392,12 +377,7 @@
                     </div>
                 </div>
 
-                <div class="mt-8 relative z-10">
-                    <div class="bg-emerald-700/50 p-4 rounded-xl backdrop-blur-sm border border-emerald-500/30">
-                        <p class="text-sm font-medium opacity-90 mb-1" data-lang="cropFocus">Crop Focus</p>
-                        <div class="font-bold text-xl" id="cropFocus">General</div>
-                    </div>
-                </div>
+                <!-- Crop focus removed -->
             </div>
         </div>
 
@@ -413,21 +393,12 @@
         </div>
 
         <!-- Detailed Advisory Section -->
-        <div class="grid md:grid-cols-2 gap-8 slide-up" style="animation-delay: 0.4s;">
+        <div class="grid md:grid-cols-1 gap-8 slide-up" style="animation-delay: 0.4s;">
             <div class="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
                 <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
                     <i class="fas fa-clipboard-list text-orange-500"></i> <span data-lang="advisoryTitle">🌾 Agricultural Advisory</span>
                 </h3>
                 <ul class="space-y-4" id="mainAdvisoryList">
-                    <!-- Dynamic List -->
-                </ul>
-            </div>
-
-            <div class="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
-                <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-                    <i class="fas fa-leaf text-green-500"></i> <span data-lang="tipsTitle">Specific Tips:</span> <span id="cropTitle" class="text-emerald-600">General</span>
-                </h3>
-                <ul class="space-y-4" id="cropAdvisoryList">
                     <!-- Dynamic List -->
                 </ul>
             </div>
@@ -665,142 +636,61 @@
             '': 'cropGeneral'
         };
 
-        // --- District Data ---
+        // --- District Data (Gujarat Only with Translations) ---
         const stateDistricts = {
             'Gujarat': [
-                'Ahmedabad', 'Amreli', 'Anand', 'Banaskantha', 'Bharuch', 'Bhavnagar', 'Botad',
-                'Chhota Udaipur', 'Dahod', 'Dang', 'Devbhoomi Dwarka', 'Gandhinagar', 'Gir Somnath',
-                'Jamnagar', 'Junagadh', 'Kheda', 'Kutch', 'Mahisagar', 'Mehsana', 'Morbi',
-                'Narmada', 'Navsari', 'Panchmahal', 'Patan', 'Porbandar', 'Rajkot', 'Sabarkantha',
-                'Surat', 'Surendranagar', 'Tapi', 'Vadodara', 'Valsad'
-            ],
-            'Maharashtra': [
-                'Ahmednagar', 'Akola', 'Amravati', 'Aurangabad', 'Beed', 'Bhandara', 'Buldhana',
-                'Chandrapur', 'Dhule', 'Gadchiroli', 'Gondia', 'Hingoli', 'Jalgaon', 'Jalna',
-                'Kolhapur', 'Latur', 'Mumbai', 'Nagpur', 'Nanded', 'Nandurbar', 'Nashik',
-                'Osmanabad', 'Palghar', 'Parbhani', 'Pune', 'Raigad', 'Ratnagiri', 'Sangli',
-                'Satara', 'Sindhudurg', 'Solapur', 'Thane', 'Wardha', 'Washim', 'Yavatmal'
-            ],
-            'Rajasthan': [
-                'Ajmer', 'Alwar', 'Banswara', 'Baran', 'Barmer', 'Bharatpur', 'Bhilwara', 'Bikaner',
-                'Bundi', 'Chittorgarh', 'Churu', 'Dausa', 'Dholpur', 'Dungarpur', 'Hanumangarh',
-                'Jaipur', 'Jaisalmer', 'Jalore', 'Jhalawar', 'Jhunjhunu', 'Jodhpur', 'Karauli',
-                'Kota', 'Nagaur', 'Pali', 'Pratapgarh', 'Rajsamand', 'Sawai Madhopur', 'Sikar',
-                'Sirohi', 'Sri Ganganagar', 'Tonk', 'Udaipur'
+                { id: 'Ahmedabad', en: 'Ahmedabad', gu: 'અમદાવાદ', hi: 'अहमदाबाद' },
+                { id: 'Amreli', en: 'Amreli', gu: 'અમરેલી', hi: 'अमरेली' },
+                { id: 'Anand', en: 'Anand', gu: 'આણંદ', hi: 'आणंद' },
+                { id: 'Banaskantha', en: 'Banaskantha', gu: 'બનાસકાંઠા', hi: 'बनासकांठा' },
+                { id: 'Bharuch', en: 'Bharuch', gu: 'ભરૂચ', hi: 'भरूच' },
+                { id: 'Bhavnagar', en: 'Bhavnagar', gu: 'ભાવનગર', hi: 'भावनगर' },
+                { id: 'Botad', en: 'Botad', gu: 'બોટાદ', hi: 'बोटाद' },
+                { id: 'Chhota Udaipur', en: 'Chhota Udaipur', gu: 'છોટા ઉદેપુર', hi: 'छोटा उदयपुर' },
+                { id: 'Dahod', en: 'Dahod', gu: 'દાહોદ', hi: 'दाहोद' },
+                { id: 'Dang', en: 'Dang', gu: 'ડાંગ', hi: 'डांग' },
+                { id: 'Devbhoomi Dwarka', en: 'Devbhoomi Dwarka', gu: 'દેવભૂમિ દ્વારકા', hi: 'देवभूमि द्वारका' },
+                { id: 'Gandhinagar', en: 'Gandhinagar', gu: 'ગાંધીનગર', hi: 'गांधीनगर' },
+                { id: 'Gir Somnath', en: 'Gir Somnath', gu: 'ગીર સોમનાથ', hi: 'गिर सोमनाथ' },
+                { id: 'Jamnagar', en: 'Jamnagar', gu: 'જામનગર', hi: 'जामनगर' },
+                { id: 'Junagadh', en: 'Junagadh', gu: 'જૂનાગઢ', hi: 'जूनागढ़' },
+                { id: 'Kheda', en: 'Kheda', gu: 'ખેડા', hi: 'खेड़ा' },
+                { id: 'Kutch', en: 'Kutch', gu: 'કચ્છ', hi: 'कच्छ' },
+                { id: 'Mahisagar', en: 'Mahisagar', gu: 'મહીસાગર', hi: 'महीसागर' },
+                { id: 'Mehsana', en: 'Mehsana', gu: 'મહેસાણા', hi: 'मेहसाणा' },
+                { id: 'Morbi', en: 'Morbi', gu: 'મોરબી', hi: 'मोरबी' },
+                { id: 'Narmada', en: 'Narmada', gu: 'નર્મદા', hi: 'नर्मदा' },
+                { id: 'Navsari', en: 'Navsari', gu: 'નવસારી', hi: 'नवसारी' },
+                { id: 'Panchmahal', en: 'Panchmahal', gu: 'પંચમહાલ', hi: 'पंचमहाल' },
+                { id: 'Patan', en: 'Patan', gu: 'પાટણ', hi: 'पाटन' },
+                { id: 'Porbandar', en: 'Porbandar', gu: 'પોરબંદર', hi: 'पोरबंदर' },
+                { id: 'Rajkot', en: 'Rajkot', gu: 'રાજકોટ', hi: 'राजकोट' },
+                { id: 'Sabarkantha', en: 'Sabarkantha', gu: 'સાબરકાંઠા', hi: 'साबरकांठा' },
+                { id: 'Surat', en: 'Surat', gu: 'સુરત', hi: 'सूरत' },
+                { id: 'Surendranagar', en: 'Surendranagar', gu: 'સુરેન્દ્રનગર', hi: 'सुरेंद्रनगर' },
+                { id: 'Tapi', en: 'Tapi', gu: 'તાપી', hi: 'तापी' },
+                { id: 'Vadodara', en: 'Vadodara', gu: 'વડોદરા', hi: 'वडोदरा' },
+                { id: 'Valsad', en: 'Valsad', gu: 'વલસાડ', hi: 'वलसाड' }
             ]
         };
 
-        // --- WMO Weather Code Map (Crucial for Translations) ---
-        // Codes: 0=Clear, 1-3=Cloudy, 45-48=Fog, 51-67=Drizzle/Rain, 71-77=Snow, 80-82=Showers, 95-99=Thunderstorm
+        // --- Visual Crossing Weather Code Map (Crucial for Translations) ---
+        // Codes based on Visual Crossing icon strings
         const weatherCodeMap = {
-            0: {
-                en: 'Clear Sky',
-                gu: 'સ્વચ્છ આકાશ',
-                hi: 'साफ आसमान',
-                icon: 'fa-sun text-yellow-500'
-            },
-            1: {
-                en: 'Mainly Clear',
-                gu: 'મુખ્યત્વે સ્વચ્છ',
-                hi: 'मुख्य रूप से साफ',
-                icon: 'fa-cloud-sun text-yellow-400'
-            },
-            2: {
-                en: 'Partly Cloudy',
-                gu: 'આંશિક વાદળછાયું',
-                hi: 'आंशिक रूप से बादल',
-                icon: 'fa-cloud-sun text-gray-400'
-            },
-            3: {
-                en: 'Overcast',
-                gu: 'વાદળછાયું',
-                hi: 'बादल छाए हुए',
-                icon: 'fa-cloud text-gray-500'
-            },
-            45: {
-                en: 'Fog',
-                gu: 'ધૂમ્મસ',
-                hi: 'कोहरा',
-                icon: 'fa-smog text-gray-400'
-            },
-            48: {
-                en: 'Depositing Rime Fog',
-                gu: 'ગાઢ ધૂમ્મસ',
-                hi: 'घना कोहरा',
-                icon: 'fa-smog text-gray-400'
-            },
-            51: {
-                en: 'Light Drizzle',
-                gu: 'હળવો વરસાદ',
-                hi: 'हल्की बूंदाबांदी',
-                icon: 'fa-cloud-rain text-blue-300'
-            },
-            53: {
-                en: 'Moderate Drizzle',
-                gu: 'વરસાદ',
-                hi: 'बूंदाबांदी',
-                icon: 'fa-cloud-rain text-blue-400'
-            },
-            55: {
-                en: 'Dense Drizzle',
-                gu: 'ભારે વરસાદ',
-                hi: 'घनी बूंदाबांदी',
-                icon: 'fa-cloud-rain text-blue-500'
-            },
-            61: {
-                en: 'Slight Rain',
-                gu: 'હળવો વરસાદ',
-                hi: 'हल्की बारिश',
-                icon: 'fa-cloud-showers-heavy text-blue-400'
-            },
-            63: {
-                en: 'Moderate Rain',
-                gu: 'મધ્યમ વરસાદ',
-                hi: 'मध्यम बारिश',
-                icon: 'fa-cloud-showers-heavy text-blue-500'
-            },
-            65: {
-                en: 'Heavy Rain',
-                gu: 'ભારે વરસાદ',
-                hi: 'भारी बारिश',
-                icon: 'fa-cloud-showers-heavy text-blue-600'
-            },
-            80: {
-                en: 'Light Showers',
-                gu: 'હળવા ઝાપટા',
-                hi: 'हल्की बौछारें',
-                icon: 'fa-cloud-sun-rain text-blue-400'
-            },
-            81: {
-                en: 'Moderate Showers',
-                gu: 'મધ્યમ ઝાપટા',
-                hi: 'मध्यम बौछारें',
-                icon: 'fa-cloud-sun-rain text-blue-500'
-            },
-            82: {
-                en: 'Violent Showers',
-                gu: 'ભારે ઝાપટા',
-                hi: 'तेज बौछारें',
-                icon: 'fa-cloud-showers-water text-blue-700'
-            },
-            95: {
-                en: 'Thunderstorm',
-                gu: 'વાવાઝોડું',
-                hi: 'आंधी',
-                icon: 'fa-bolt text-yellow-600'
-            },
-            96: {
-                en: 'Thunderstorm with Hail',
-                gu: 'કરા સાથે વાવાઝોડું',
-                hi: 'ओलावृष्टि के साथ आंधी',
-                icon: 'fa-bolt text-red-500'
-            },
-            99: {
-                en: 'Heavy Thunderstorm',
-                gu: 'ભારે વાવાઝોડું',
-                hi: 'भारी आंधी',
-                icon: 'fa-bolt text-red-600'
-            }
+            'clear-day': { en: 'Clear Sky', gu: 'સ્વચ્છ આકાશ', hi: 'साफ आसमान', icon: 'fa-sun text-yellow-500' },
+            'clear-night': { en: 'Clear Night', gu: 'સ્વચ્છ રાત', hi: 'साफ रात', icon: 'fa-moon text-blue-300' },
+            'partly-cloudy-day': { en: 'Partly Cloudy', gu: 'આંશિક વાદળછાયું', hi: 'आंशिक रूप से बादल', icon: 'fa-cloud-sun text-yellow-400' },
+            'partly-cloudy-night': { en: 'Partly Cloudy Night', gu: 'આંશિક વાદળછાયું', hi: 'आंशिक रूप से बादल', icon: 'fa-cloud-moon text-gray-400' },
+            'cloudy': { en: 'Cloudy', gu: 'વાદળછાયું', hi: 'बादल छाए हुए', icon: 'fa-cloud text-gray-500' },
+            'fog': { en: 'Fog', gu: 'ધૂમ્મસ', hi: 'कोहरा', icon: 'fa-smog text-gray-400' },
+            'wind': { en: 'Windy', gu: 'પવન', hi: 'हवादार', icon: 'fa-wind text-gray-400' },
+            'rain': { en: 'Rain', gu: 'વરસાદ', hi: 'बारिश', icon: 'fa-cloud-showers-heavy text-blue-500' },
+            'snow': { en: 'Snow', gu: 'બરફ', hi: 'बर्फ', icon: 'fa-snowflake text-blue-200' },
+            'showers-day': { en: 'Showers', gu: 'ઝાપટા', hi: 'बौछारें', icon: 'fa-cloud-sun-rain text-blue-400' },
+            'showers-night': { en: 'Showers Night', gu: 'ઝાપટા', hi: 'बौछारें', icon: 'fa-cloud-moon-rain text-blue-400' },
+            'thunder-rain': { en: 'Thunderstorm', gu: 'વાવાઝોડું', hi: 'आंधी', icon: 'fa-bolt text-yellow-600' },
+            'thunder-showers-day': { en: 'Thunderstorm', gu: 'વાવાઝોડું', hi: 'आंधी', icon: 'fa-bolt text-yellow-600' },
+            'thunder-showers-night': { en: 'Thunderstorm', gu: 'વાવાઝોડું', hi: 'आंधी', icon: 'fa-bolt text-yellow-600' }
         };
 
         // Fallback for unmapped codes
@@ -808,8 +698,11 @@
             en: 'Unknown',
             gu: 'અજ્ઞાત',
             hi: 'अज्ञात',
-            icon: 'fa-question-circle text-gray-300'
+            icon: 'fa-cloud text-gray-300'
         };
+        
+        // --- API KEY ---
+        const API_KEY = '12c5d559d7c44638880183516261603';
 
         // --- State Management ---
         const state = {
@@ -827,7 +720,7 @@
         async function getCoordinates(city) {
             // Geocoding API (Open-Meteo)
             try {
-                const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`);
+                const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&country=IN&language=en&format=json`);
                 const data = await response.json();
                 if (data.results && data.results.length > 0) {
                     return {
@@ -844,10 +737,9 @@
         }
 
         async function getWeather(lat, lon) {
-            // Forecast API (Open-Meteo) - Free, No Key
-            // Added precipitation_probability_max to daily forecast
+            // Forecast API (WeatherAPI)
             try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=auto`;
+                const url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${lat},${lon}&days=7&aqi=no&alerts=no`;
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Weather fetch failed');
                 return await response.json();
@@ -885,32 +777,33 @@
 
             const lang = state.lang;
             const current = data.current;
-            const daily = data.daily;
+            const daily = data.forecast.forecastday;
 
             // 1. Current Conditions
-            // Get mapped text and icon based on weather code
-            const wCode = current.weather_code;
-            const wInfo = weatherCodeMap[wCode] || defaultWeather;
+            document.getElementById('tempDisplay').innerText = `${Math.round(current.temp_c)}°c`;
+            document.getElementById('feelsLike').innerText = `${Math.round(current.feelslike_c)}°c`;
+            document.getElementById('humidity').innerText = `${current.humidity}%`;
+            document.getElementById('windSpeed').innerText = `${current.wind_kph} km/h`;
 
-            document.getElementById('tempDisplay').innerText = `${Math.round(current.temperature_2m)}°c`;
-            document.getElementById('feelsLike').innerText = `${Math.round(current.apparent_temperature)}°c`;
-            document.getElementById('humidity').innerText = `${current.relative_humidity_2m}%`;
-            document.getElementById('windSpeed').innerText = `${current.wind_speed_10m} km/h`;
-
-            // Rain Probability (from Daily Max) - Check if exists, else fallback
-            const rainPercent = (daily && daily.precipitation_probability_max && daily.precipitation_probability_max.length > 0) ?
-                daily.precipitation_probability_max[0] :
-                (current.precipitation > 0 ? 100 : 0);
+            // Rain Probability
+            const rainPercent = daily[0].day.daily_chance_of_rain || 0;
             document.getElementById('rainProb').innerText = `${rainPercent}%`;
 
             // Translated Condition Text
-            document.getElementById('weatherConditionTag').innerText = wInfo[lang];
-            document.getElementById('conditionText').innerText = wInfo[lang];
+            const conditionText = current.condition.text;
+            document.getElementById('weatherConditionTag').innerText = conditionText;
+            document.getElementById('conditionText').innerText = conditionText;
 
             // Icon Update
             const iconEl = document.getElementById('weatherIcon');
-            // Reset classes and add new ones
-            iconEl.className = `fas weather-icon-lg animate-pulse ${wInfo.icon}`;
+            // Safely overriding the FontAwesome structure with a background image of the WeatherAPI icon
+            iconEl.className = `inline-block animate-pulse mb-6 drop-shadow-lg`;
+            iconEl.style.width = '120px';
+            iconEl.style.height = '120px';
+            iconEl.style.backgroundImage = `url('https:${current.condition.icon}')`;
+            iconEl.style.backgroundSize = 'contain';
+            iconEl.style.backgroundRepeat = 'no-repeat';
+            iconEl.style.backgroundPosition = 'center';
 
             // 2. Date & Time (Localized)
             const now = new Date();
@@ -918,25 +811,27 @@
             const dateStr = now.toLocaleDateString(lang === 'gu' ? 'gu-IN' : (lang === 'hi' ? 'hi-IN' : 'en-US'));
             const updateLabel = translations[lang]['updated'];
             document.getElementById('currentDate').innerText = `${updateLabel} ${dateStr} ${timeStr}`;
-            document.getElementById('displayLocation').innerText = state.location;
+            
+            // Translate Location Name if matched in stateDistricts
+            const districtObj = stateDistricts['Gujarat'].find(d => d.id === state.location || d.en === state.location);
+            const translatedLocation = districtObj ? (districtObj[lang] || districtObj.en) : state.location;
+            document.getElementById('displayLocation').innerText = translatedLocation;
 
-            // Crop Focus Text - TRANSLATED
-            const cropKey = cropKeyMap[state.crop] || 'cropGeneral';
-            const cropName = translations[lang][cropKey] || state.crop;
-            document.getElementById('cropFocus').innerText = cropName;
-            document.getElementById('cropTitle').innerText = cropName;
-
+            // Crop Focus Text logic removed
+            
             // 3. Forecast Rendering
             const forecastContainer = document.getElementById('forecastContainer');
             forecastContainer.innerHTML = '';
 
-            // Open-Meteo returns arrays for daily data. We loop through 7 days.
+            // We loop through 7 days provided by WeatherAPI.
             for (let i = 0; i < 7; i++) {
-                // Skip past days if API returns them, usually index 0 is today
-                const dateRaw = daily.time[i];
-                const maxTemp = Math.round(daily.temperature_2m_max[i]);
-                const fCode = daily.weather_code[i];
-                const fInfo = weatherCodeMap[fCode] || defaultWeather;
+                const dayData = daily[i];
+                if (!dayData) continue;
+                
+                const dateRaw = dayData.date;
+                const maxTemp = Math.round(dayData.day.maxtemp_c);
+                const conditionStr = dayData.day.condition.text;
+                const iconUrl = dayData.day.condition.icon;
 
                 // Format Date
                 const fDateObj = new Date(dateRaw);
@@ -948,32 +843,31 @@
                 forecastContainer.innerHTML += `
                     <div class="min-w-[120px] bg-white p-4 rounded-2xl shadow-sm text-center border border-gray-100 flex-shrink-0 transition-transform hover:scale-105">
                         <p class="text-sm font-bold text-gray-500 mb-2">${fDateStr}</p>
-                        <i class="fas ${fInfo.icon.replace('text-', 'text-')} text-2xl mb-2"></i>
-                        <p class="text-xs text-gray-400 mb-1 h-8 overflow-hidden">${fInfo[lang]}</p>
+                        <img src="https:${iconUrl}" alt="${conditionStr}" class="mx-auto w-12 h-12 mb-2 drop-shadow-sm">
+                        <p class="text-xs text-gray-400 mb-1 h-8 overflow-hidden">${conditionStr}</p>
                         <p class="text-xl font-black text-gray-800">${maxTemp}°</p>
                     </div>
                  `;
             }
 
             // 4. Advisories
-            renderAdvisories(current, state.crop, lang);
+            renderAdvisories(current, rainPercent, lang);
         }
 
-        function renderAdvisories(current, crop, lang) {
+        function renderAdvisories(current, rainPercent, lang) {
             const rules = [];
-            const cropRules = [];
 
             // Helper for translated strings
             const t = (en, gu, hi) => lang === 'gu' ? gu : (lang === 'hi' ? hi : en);
 
             // General Rules
-            if (current.precipitation > 0 || current.weather_code >= 51) {
+            if (rainPercent > 0 || current.condition.text.toLowerCase().includes('rain') || current.condition.text.toLowerCase().includes('shower')) {
                 rules.push({
                     text: t("Rain expected. Postpone irrigation.", "વરસાદની આગાહી છે. પિયત મુલતવી રાખો.", "बारिश की उम्मीद है। सिंचाई स्थगित करें।"),
                     type: "warning"
                 });
             } else {
-                if (current.temperature_2m > 35) {
+                if (current.temp_c > 35) {
                     rules.push({
                         text: t("High heat. Irrigate in early morning.", "વધારે ગરમી છે. વહેલી સવારે પિયત આપો.", "अधिक गर्मी है। सुबह जल्दी सिंचाई करें।"),
                         type: "warning"
@@ -986,32 +880,21 @@
                 }
             }
 
-            if (current.wind_speed_10m > 20) {
+            if (current.wind_kph > 20) {
                 rules.push({
                     text: t("High winds. Avoid spraying.", "વધારે પવન છે. દવાનો છંટકાવ ટાળો.", "तेज हवाएं। छिड़काव से बचें।"),
                     type: "danger"
                 });
             }
 
-            if (current.relative_humidity_2m > 75) {
+            if (current.humidity > 75) {
                 rules.push({
                     text: t("High humidity. Check for fungus.", "ભેજનું પ્રમાણ વધારે છે. ફૂગ માટે તપાસો.", "उच्च आर्द्रता। कवक की जाँच करें।"),
                     type: "info"
                 });
             }
 
-            // Crop Specific (Simplified Logic for Demo)
-            if (crop === 'Cotton') {
-                if (current.relative_humidity_2m > 60) cropRules.push(t("Watch for bollworms.", "ઈયળના ઉપદ્રવ માટે ધ્યાન રાખો.", "बोल्वौर्म के लिए देखें।"));
-                else cropRules.push(t("Ideal for cotton picking.", "કપાસ વીણવા માટે ઉત્તમ.", "कपास चुनने के लिए आदर्श।"));
-            } else if (crop === 'Groundnut') {
-                cropRules.push(t("Monitor soil moisture.", "જમીનમાં ભેજ ચકાસો.", "मिट्टी की नमी की जाँच करें।"));
-            } else if (crop === 'Wheat') {
-                if (current.temperature_2m > 30) cropRules.push(t("Heat stress risk.", "ગરમીથી પાકને નુકસાન થઈ શકે.", "गर्मी से फसल को नुकसान हो सकता है।"));
-                else cropRules.push(t("Good growth temperature.", "વિકાસ માટે યોગ્ય તાપમાન.", "विकास के लिए अच्छा तापमान।"));
-            } else {
-                cropRules.push(t("Check for weeds regularly.", "નિયમિત નિંદામણ કરો.", "नियमित रूप से खरपतवार की जाँच करें।"));
-            }
+            // Crop specific logic removed
 
             // Render Lists
             const quickContainer = document.getElementById('quickAdvise');
@@ -1044,16 +927,6 @@
                         <p class="text-gray-700 font-medium leading-relaxed">${item.text}</p>
                     </li>`;
             });
-
-            const cropList = document.getElementById('cropAdvisoryList');
-            cropList.innerHTML = '';
-            cropRules.forEach(text => {
-                cropList.innerHTML += `
-                    <li class="flex gap-4 items-start p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <i class="fas fa-leaf text-emerald-500 mt-1"></i>
-                        <p class="text-gray-700 font-medium leading-relaxed">${text}</p>
-                    </li>`;
-            });
         }
 
         // --- Logic Control ---
@@ -1061,13 +934,13 @@
         async function fetchWeather(forceRefresh = false) {
             if (state.isLoading) return;
 
-            // Check Cache (30 min)
+            // Check Cache (5 min)
             if (!forceRefresh) {
                 const lastFetch = localStorage.getItem('agri_last_fetch');
                 const cachedDataStr = localStorage.getItem('agri_weather_data');
                 if (lastFetch && cachedDataStr) {
                     const elapsed = Date.now() - parseInt(lastFetch);
-                    if (elapsed < 30 * 60 * 1000) { // 30 minutes
+                    if (elapsed < 5 * 60 * 1000) { // 5 minutes
                         // Use Cache
                         state.weatherData = JSON.parse(cachedDataStr);
                         renderWeather();
@@ -1160,6 +1033,9 @@
             if (state.weatherData) {
                 renderWeather();
             }
+
+            // RE-RENDER dropdown if visible
+            populateCities();
         }
 
         // --- Mobile Menu Logic ---
@@ -1204,21 +1080,30 @@
         }
 
         // --- Dynamic City Dropdown Logic ---
-        const stateSelect = document.getElementById('stateSelect');
         const citySelect = document.getElementById('citySelect');
 
         function populateCities() {
-            const selectedState = stateSelect.value;
-            const districts = stateDistricts[selectedState] || [];
+            // Hardcoded to Gujarat
+            const districts = stateDistricts['Gujarat'] || [];
+            
+            // "Select City" placeholder translation
+            const selectPlaceholderInfo = {
+                en: 'Select City / District',
+                gu: 'શહેર / જિલ્લો પસંદ કરો',
+                hi: 'शहर / जिला चुनें'
+            };
+            const placeholderText = selectPlaceholderInfo[state.lang] || selectPlaceholderInfo.en;
 
-            citySelect.innerHTML = '<option value="">Select City / District</option>';
+            // Retain previously selected value (if any)
+            const currentValue = citySelect.value;
+
+            citySelect.innerHTML = `<option value="">${placeholderText}</option>`;
             districts.forEach(district => {
-                citySelect.innerHTML += `<option value="${district}">${district}</option>`;
+                const displayName = district[state.lang] || district.en;
+                const isSelected = currentValue === district.id ? 'selected' : '';
+                citySelect.innerHTML += `<option value="${district.id}" ${isSelected}>${displayName}</option>`;
             });
         }
-
-        // Event Listener for State Change
-        stateSelect.addEventListener('change', populateCities);
 
         // Initial Population
         populateCities();

@@ -1,0 +1,76 @@
+M	.gitignore
+A	ai/predict_api.py
+A	ai/requirements.txt
+A	ai/train_model.py
+A	backend/api/check_schema.php
+A	backend/api/fetch_prices.php
+A	backend/db.php
+A	backend/fetch_api.php
+A	backend/getPrices.php
+A	backend/get_crops.php
+A	backend/get_filters.php
+A	backend/get_market.php
+A	backend/get_subsidies.php
+A	backend/last_sync.txt
+A	backend/login_api.php
+A	backend/register_api.php
+A	backend/sync_market.php
+A	backend/temp_list.php
+A	backend/temp_out.txt
+A	composer.json
+A	composer.lock
+A	dashboard/admin.php
+A	dashboard/admin_analytics.php
+A	dashboard/admin_market.php
+A	dashboard/admin_subsidies.php
+A	dashboard/admin_users.php
+A	dashboard/farmer.php
+R100	frontend/.gitkeep	database/agricare.sql
+A	database/scripts/check_dates.php
+A	database/scripts/check_dates_root.php
+A	database/scripts/check_farmer.php
+A	database/scripts/fix_db.php
+A	database/scripts/fix_market_schema.php
+A	database/scripts/import_data.php
+A	database/scripts/import_gujarat_pg.php
+A	database/scripts/schema.sql
+A	database/scripts/seed_subsidies_pg.php
+A	database/scripts/test_pg.php
+A	docs/Database agricare_db.txt
+A	favicon.ico
+A	frontend/about.php
+D	frontend/agricare new/.vscode/settings.json
+D	frontend/agricare new/frontend/auth/login.html
+D	frontend/agricare new/frontend/auth/register.html
+D	frontend/agricare new/frontend/dashboard/admin.html
+D	frontend/agricare new/frontend/dashboard/buyer.html
+D	frontend/agricare new/frontend/dashboard/farmer.html
+D	frontend/agricare new/frontend/dashboard/officer.html
+D	frontend/agricare new/frontend/index.html
+D	frontend/agricare new/frontend/modules/crop_management.html
+D	frontend/agricare new/frontend/modules/disease_detection.html
+D	frontend/agricare new/frontend/modules/marketplace.html
+D	frontend/agricare new/frontend/modules/soil_analysis.html
+D	frontend/agricare new/frontend/modules/support.html
+D	frontend/agricare new/frontend/modules/tasks.html
+D	frontend/agricare new/frontend/modules/weather.html
+D	frontend/agricare new/scripts/train_model.py
+A	frontend/assets/images/Crop.jpg
+A	frontend/assets/images/farmer.jpg
+A	frontend/assets/images/hero-bg.jpeg
+A	frontend/assets/images/hero-farm.jpeg
+A	frontend/assets/images/weather-bg-web.jpeg
+A	frontend/crop_calendar.php
+A	frontend/disease_detection.php
+R063	frontend/index.html	frontend/index.php
+R100	frontend/agricare new/1.php	frontend/js/script.js
+A	frontend/js/translations.js
+A	frontend/login.php
+A	frontend/market.php
+A	frontend/register.php
+A	frontend/subsidies.php
+A	frontend/templates/admin.html
+A	frontend/templates/farmer.html
+A	frontend/weather.php
+M	package.json
+A	stubs/mongodb.stub.php

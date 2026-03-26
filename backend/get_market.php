@@ -82,7 +82,7 @@ try {
     }
 
     // order using parsed date as well to keep latest first
-    $query .= " ORDER BY to_date(arrival_date,'DD/MM/YYYY') DESC LIMIT 500";
+    $query .= " ORDER BY to_date(arrival_date,'DD/MM/YYYY') DESC";
 
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);

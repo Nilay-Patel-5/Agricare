@@ -1,5 +1,11 @@
 const translations = {
     "en": {
+        "showing_records": "Showing",
+        "of_records": "of",
+        "records": "records",
+        "prev_page": "Prev",
+        "page": "Page",
+        "next_page": "Next",
         "logo": "AgriCare",
         "tagline": "Gujarat's Smart Farming Platform",
         "home": "🏠 Home",
@@ -539,6 +545,12 @@ const translations = {
         "market-desc": "Direct APMC connection to find the best selling price for your crops near you."
     },
     "gu": {
+        "showing_records": "દર્શાવે છે",
+        "of_records": "માંથી",
+        "records": "રેકોર્ડ્સ",
+        "prev_page": "પાછળ",
+        "page": "પેજ",
+        "next_page": "આગળ",
         "logo": "એગ્રીકેર",
         "tagline": "ગુજરાતનું સ્માર્ટ કૃષિ પ્લેટફોર્મ",
         "home": "🏠 મુખ્ય",
@@ -1081,6 +1093,12 @@ const translations = {
         "market-desc": "તમારા પાક માટે શ્રેષ્ઠ વેચાણ કિંમત શોધવા માટે સીધું APMC કનેક્શન."
     },
     "hi": {
+        "showing_records": "दर्शाए जा रहे हैं",
+        "of_records": "में से",
+        "records": "रिकॉर्ड्स",
+        "prev_page": "पिछला",
+        "page": "पेज",
+        "next_page": "अगला",
         "logo": "एग्रीकेर",
         "tagline": "गुजरात का स्मार्ट कृषि-मंच",
         "home": "🏠 होम",

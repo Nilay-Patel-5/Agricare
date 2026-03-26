@@ -3,10 +3,10 @@
 
 class Database
 {
-    private static $host = 'localhost';
-    private static $db = 'agricare_db';
+    private static $host = 'db.fnfqrectniyjpkyfkmal.supabase.co';
+    private static $db = 'postgres';
     private static $user = 'postgres';
-    private static $pass = 'nrp@postgres7';
+    private static $pass = 'nrpsupabase7';
     private static $port = '5432';
     private static $pdo = null;
 
@@ -14,7 +14,7 @@ class Database
     {
         if (self::$pdo === null) {
             try {
-                $dsn = "pgsql:host=" . self::$host . ";port=" . self::$port . ";dbname=" . self::$db;
+                $dsn = "pgsql:host=" . self::$host . ";port=" . self::$port . ";dbname=" . self::$db . ";sslmode=require";
                 self::$pdo = new PDO($dsn, self::$user, self::$pass, [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
