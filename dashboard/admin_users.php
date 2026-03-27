@@ -1,121 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>Admin - User Management | AgriCare</title>
+    <title>Farmer Registry | AgriCare Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../frontend/output.css">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
-        .sidebar-link { transition: all 0.3s; }
-        .sidebar-link.active { background-color: #ecfdf5; color: #047857; border-right: 4px solid #10b981; font-weight: bold; }
-        .sidebar-link:hover:not(.active) { background-color: #e5e7eb; }
+        body { font-family: 'Poppins', sans-serif; }
+        .card { background: white; border-radius: 1.5rem; border: 1px solid #f1f5f9; }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
+<body class="flex h-screen overflow-hidden bg-slate-50 text-slate-700">
 
-<body class="flex h-screen overflow-hidden text-gray-800">
+<?php include '_sidebar.php'; ?>
 
-    <!-- Admin Sidebar -->
-    <aside class="w-72 bg-gray-900 border-r border-gray-800 flex flex-col hidden lg:flex text-gray-300">
-        <div class="p-6 border-b border-gray-800 bg-gray-950">
-            <a href="../frontend/index.php" class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <div>
-                    <span class="text-xl font-black text-white tracking-tight block">AgriCare</span>
-                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Admin Control</span>
-                </div>
-            </a>
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+    <header class="bg-white border-b border-slate-100 px-8 py-5 flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-3">
+            <span class="w-1.5 h-7 bg-blue-500 rounded-full"></span>
+            <h1 class="text-xl font-black text-slate-900">Farmer Registry</h1>
         </div>
-
-        <nav class="flex-1 overflow-y-auto py-6">
-            <p class="px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Core Modules</p>
-            
-            <a href="admin.php" class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-chart-pie w-5 text-center"></i>
-                <span>Overview</span>
-            </a>
-            <a href="admin_users.php" class="sidebar-link active flex items-center gap-4 px-6 py-3 border-transparent" style="background-color: #064e3b; color: #34d399; border-right: 4px solid #10b981;">
-                <i class="fas fa-users w-5 text-center"></i>
-                <span>User Management</span>
-            </a>
-            <a href="admin_subsidies.php" class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-hand-holding-dollar w-5 text-center"></i>
-                <span>Manage Subsidies</span>
-            </a>
-            <a href="admin_market.php" class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-store w-5 text-center"></i>
-                <span>Market Control</span>
-            </a>
-            <a href="admin_analytics.php" class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-robot w-5 text-center"></i>
-                <span>AI Analytics</span>
-            </a>
-        </nav>
-
-        <div class="p-6 border-t border-gray-800 bg-gray-950">
-            <a href="../frontend/login.php" class="flex items-center gap-3 text-gray-500 hover:text-red-500 transition-colors font-bold text-sm">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Secure Logout</span>
-            </a>
+        <div class="w-9 h-9 bg-slate-900 rounded-xl flex items-center justify-center text-white text-sm">
+            <i class="fas fa-user-shield"></i>
         </div>
-    </aside>
+    </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden">
-        <!-- Topbar -->
-        <header class="bg-white border-b border-gray-200 py-4 px-6 lg:px-10 flex justify-between items-center shrink-0 shadow-sm z-10">
-            <div class="flex items-center gap-4">
-                <button class="lg:hidden text-gray-500 hover:text-emerald-600">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <h2 class="text-2xl font-black text-gray-800 hidden sm:block">Command Center</h2>
+    <div class="flex-1 overflow-y-auto px-8 py-8">
+
+        <!-- Search & Filter Bar -->
+        <div class="card p-4 mb-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+            <div class="relative flex-1 sm:flex-none sm:w-80">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input id="searchInput" type="text" placeholder="Search by name, phone, district..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    oninput="filterTable()">
             </div>
-            
-            <div class="flex items-center gap-6">
-                <!-- Notifications and User Profile (same as dashboard) -->
-                <div class="relative">
-                    <i class="fas fa-bell text-gray-400 text-xl hover:text-emerald-600 cursor-pointer transition-colors"></i>
-                </div>
-                
-                <div class="flex items-center gap-3 pl-6 border-l border-gray-200">
-                    <div class="text-right hidden md:block">
-                        <p class="text-sm font-bold text-gray-800 leading-tight">System Admin</p>
-                        <p class="text-[10px] text-emerald-600 font-black uppercase tracking-widest">Master Access</p>
+            <div class="flex gap-2 items-center flex-wrap">
+                <select id="districtFilter" onchange="filterTable()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 min-w-max">
+                    <option value="">All Districts</option>
+                </select>
+                <span id="totalCount" class="text-xs font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">0 farmers</span>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-slate-50 border-b border-slate-100">
+                        <tr>
+                            <th class="py-3 px-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">#</th>
+                            <th class="py-3 px-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Farmer</th>
+                            <th class="py-3 px-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone</th>
+                            <th class="py-3 px-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">District</th>
+                            <th class="py-3 px-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">City</th>
+                            <th class="py-3 px-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Language</th>
+                            <th class="py-3 px-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Joined</th>
+                            <th class="py-3 px-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                        <tr><td colspan="8" class="py-16 text-center text-slate-300"><i class="fas fa-circle-notch fa-spin text-2xl"></i></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+let allUsers = [];
+
+const langMap = { en: '🇬🇧 English', gu: '🇮🇳 Gujarati', hi: '🇮🇳 Hindi' };
+
+async function loadUsers() {
+    try {
+        const res = await fetch('../backend/admin_users_api.php');
+        const data = await res.json();
+        allUsers = data.users || [];
+
+        // Populate district filter
+        const districts = [...new Set(allUsers.map(u => u.district).filter(Boolean))].sort();
+        const sel = document.getElementById('districtFilter');
+        districts.forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; sel.appendChild(o); });
+
+        renderTable(allUsers);
+    } catch(e) {
+        document.getElementById('usersTable').innerHTML = '<tr><td colspan="8" class="py-8 text-center text-red-400">Failed to load farmers.</td></tr>';
+    }
+}
+
+function renderTable(users) {
+    document.getElementById('totalCount').textContent = users.length + ' farmer' + (users.length !== 1 ? 's' : '');
+    const tbody = document.getElementById('usersTable');
+    if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="py-12 text-center text-slate-400">No farmers found.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = users.map((u, i) => `
+        <tr class="border-t border-slate-50 hover:bg-slate-50 transition-colors" data-id="${u.id}">
+            <td class="py-4 px-6 text-xs text-slate-400 font-bold">#${String(u.id).padStart(4,'0')}</td>
+            <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=ecfdf5&color=059669&size=36" class="w-9 h-9 rounded-xl shrink-0">
+                    <div>
+                        <p class="font-bold text-slate-800 leading-tight">${escHtml(u.name)}</p>
+                        <p class="text-[10px] text-slate-400">${escHtml(u.email || '—')}</p>
                     </div>
-                    <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center text-white shadow-md">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
                 </div>
-            </div>
-        </header>
-
-        <!-- Dashboard Content -->
-        <div class="flex-1 overflow-y-auto px-6 lg:px-10 py-8">
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <p class="text-gray-500 font-bold uppercase tracking-widest text-xs mb-1">Administration</p>
-                    <h2 class="text-3xl font-black text-gray-900">User Management</h2>
-                </div>
-                <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold shadow-md transition-colors">
-                    + Add New User
+            </td>
+            <td class="py-4 px-6 text-slate-600">${escHtml(u.phone || '—')}</td>
+            <td class="py-4 px-6 text-slate-600">${escHtml(u.district || '—')}</td>
+            <td class="py-4 px-6 text-slate-600">${escHtml(u.city || '—')}</td>
+            <td class="py-4 px-6 text-xs text-slate-500">${langMap[u.pref_lang] || u.pref_lang || '—'}</td>
+            <td class="py-4 px-6 text-xs text-slate-400">${new Date(u.created_at).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</td>
+            <td class="py-4 px-6 text-right">
+                <button onclick="deleteUser(${u.id}, '${escHtml(u.name)}')" class="text-slate-300 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50" title="Delete">
+                    <i class="fas fa-trash-can text-xs"></i>
                 </button>
-            </div>
+            </td>
+        </tr>
+    `).join('');
+}
 
-            <!-- Page Specific Content -->
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden min-h-[400px] flex items-center justify-center flex-col">
-                <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500 mb-4">
-                    <i class="fas fa-users-cog text-3xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-2">User Directory Placeholder</h3>
-                <p class="text-gray-500 max-w-md text-center">Here you can view, edit, suspend, and promote users across the entire AgriCare platform.</p>
-            </div>
-        </div>
-    </main>
+function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const d = document.getElementById('districtFilter').value;
+    const filtered = allUsers.filter(u =>
+        (!q || [u.name, u.phone, u.district, u.email].some(v => v && v.toLowerCase().includes(q))) &&
+        (!d || u.district === d)
+    );
+    renderTable(filtered);
+}
+
+async function deleteUser(id, name) {
+    if (!confirm(`Delete farmer "${name}"? This cannot be undone.`)) return;
+    try {
+        const res = await fetch('../backend/admin_users_api.php', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (data.success) {
+            allUsers = allUsers.filter(u => u.id !== id);
+            filterTable();
+        } else {
+            alert(data.message || 'Failed to delete.');
+        }
+    } catch(e) { alert('Error deleting user.'); }
+}
+
+function escHtml(v) {
+    return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+loadUsers();
+</script>
 </body>
 </html>

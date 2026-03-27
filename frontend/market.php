@@ -451,14 +451,19 @@
                     body: JSON.stringify(filters)
                 });
 
-                if (!res.ok) throw new Error("Backend error");
+                const payload = await res.json().catch(() => null);
+                if (!res.ok) {
+                    const message = payload?.error || payload?.hint || "Backend error";
+                    throw new Error(message);
+                }
 
-                const data = await res.json();
+                const data = Array.isArray(payload) ? payload : [];
                 showResults(data);
             } catch (error) {
                 console.error("Fetch error:", error);
                 const container = document.getElementById("tableContainer");
                 const placeholder = document.getElementById("noDataPlaceholder");
+                const errorMessage = escapeHtml(error?.message || "Could not connect to the live market service.");
 
                 placeholder.classList.add("hidden");
                 container.classList.remove("hidden");
@@ -470,7 +475,7 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-bold text-red-800">Connection Failed</h3>
-                                <p class="text-red-600">Could not connect to the live market database. Please ensure the backend server and PostgreSQL Database are running.</p>
+                                <p class="text-red-600">${errorMessage}</p>
                             </div>
                         </div>
                     </div>`;
@@ -479,6 +484,18 @@
                 btn.innerHTML = originalContent;
             }
         });
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, function(char) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                })[char];
+            });
+        }
 
 
         let currentPage = 1;
@@ -553,18 +570,21 @@
     <tbody>`;
 
             pageRows.forEach(r => {
-                const trDistrict = getLocalizedMarketName(r.district, currentLang);
-                const trMarket = getLocalizedMarketName(r.market, currentLang);
-                const trCommodity = getLocalizedMarketName(r.commodity, currentLang);
+                const trDistrict = escapeHtml(getLocalizedMarketName(r.district, currentLang));
+                const trMarket = escapeHtml(getLocalizedMarketName(r.market, currentLang));
+                const trCommodity = escapeHtml(getLocalizedMarketName(r.commodity, currentLang));
+                const trMin = escapeHtml(String(r.min));
+                const trMax = escapeHtml(String(r.max));
+                const trModal = escapeHtml(String(r.modal));
 
                 html += `
         <tr class="border-b hover:bg-gray-50">
             <td class="p-3">${trDistrict}</td>
             <td class="p-3">${trMarket}</td>
             <td class="p-3">${trCommodity}</td>
-            <td class="p-3">₹${r.min}</td>
-            <td class="p-3">₹${r.max}</td>
-            <td class="p-3 font-bold text-emerald-700">₹${r.modal}</td>
+            <td class="p-3">₹${trMin}</td>
+            <td class="p-3">₹${trMax}</td>
+            <td class="p-3 font-bold text-emerald-700">₹${trModal}</td>
         </tr>`;
             });
 
@@ -1698,6 +1718,11 @@
 
         // first page load
         document.getElementById("searchBtn").click();
+        setInterval(() => {
+            if (!document.hidden) {
+                document.getElementById("searchBtn").click();
+            }
+        }, 15 * 60 * 1000);
 
         // Scroll Progress Bar
         window.onscroll = function() {

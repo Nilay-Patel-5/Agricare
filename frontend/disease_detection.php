@@ -10,7 +10,7 @@ exit;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disease Detection | AgriCare</title>
     <meta name="description" content="AI-powered plant disease detection for Gujarat farmers.">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="output.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -406,7 +406,8 @@ exit;
     </footer>
 
     <script>
-        const API_BASE = 'http://localhost:5000';
+        const AI_HEALTH_ENDPOINT = '../backend/ai_health.php';
+        const AI_PREDICT_ENDPOINT = '../backend/ai_predict.php';
         lucide.createIcons();
 
         // ── Translation Engine ───────────────────────────────────────
@@ -542,7 +543,7 @@ exit;
         // Health Checker
         async function checkApi() {
             try {
-                const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(3000) });
+                const res = await fetch(AI_HEALTH_ENDPOINT, { signal: AbortSignal.timeout(6000) });
                 if (res.ok) updateApiStatus('online');
                 else updateApiStatus('offline');
             } catch { updateApiStatus('offline'); }
@@ -606,7 +607,7 @@ exit;
             try {
                 const fd = new FormData();
                 fd.append('image', file);
-                const res = await fetch(`${API_BASE}/predict`, { method: 'POST', body: fd });
+                const res = await fetch(AI_PREDICT_ENDPOINT, { method: 'POST', body: fd });
                 if (!res.ok) throw new Error("API Connection Error");
                 const data = await res.json();
                 showResults(data);
@@ -625,7 +626,8 @@ exit;
             document.getElementById('result-image-preview').src = previewImg.src;
 
             document.getElementById('disease-name').textContent = data.label;
-            document.getElementById('plant-type').textContent = data.plant_type + " SPECIES";
+            const plantName = data.plant || data.plant_type || 'Plant';
+            document.getElementById('plant-type').textContent = plantName + " SPECIES";
             document.getElementById('disease-desc').textContent = data.info.desc;
             document.getElementById('irrigation-text').textContent = data.info.irrigation;
             document.getElementById('treatment-text').textContent = data.info.treatment;

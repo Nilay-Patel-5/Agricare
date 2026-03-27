@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-
+require_once __DIR__ . '/security_headers.php';
 require_once __DIR__ . '/db.php';
 
 try {
@@ -23,5 +23,5 @@ try {
     ]);
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+    echo json_encode(["error" => "Server error."]);
 }

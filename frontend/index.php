@@ -603,11 +603,12 @@
                         };
                         const emoji = getEmoji(r.commodity);
 
-                        // Apply translations if available
-                        let commodityName = getLocalizedMarketName(r.commodity, lang);
-                        let districtName = getLocalizedMarketName(r.district, lang);
+                        const escapeHtml = (v) => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+                        let commodityName = escapeHtml(getLocalizedMarketName(r.commodity, lang));
+                        let districtName = escapeHtml(getLocalizedMarketName(r.district, lang));
+                        let modal = escapeHtml(String(r.modal));
 
-                        return `<span>${emoji} ${commodityName} (${districtName}): ₹${r.modal} <span class="text-green-400">● ${lang === 'gu' ? 'લાઇવ' : (lang === 'hi' ? 'लाइव' : 'Live')}</span></span>`;
+                        return `<span>${emoji} ${commodityName} (${districtName}): ₹${modal} <span class="text-green-400">● ${lang === 'gu' ? 'લાઇવ' : (lang === 'hi' ? 'लाइव' : 'Live')}</span></span>`;
                     }).join('');
 
                     // Duplicate content to avoid gap during infinite scroll

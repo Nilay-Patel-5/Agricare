@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | AgriCare</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./output.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -78,21 +78,21 @@
                 <!-- Language Switcher -->
                 <div class="flex justify-center mb-4 relative z-10">
                     <div class="flex bg-gray-100/70 p-1 rounded-full shadow-sm">
-                        <button onclick="changeLang('en')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 transition-all active:bg-emerald-500 active:text-white active:shadow-md" data-lang-key="en">EN</button>
-                        <button onclick="changeLang('gu')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="gu">ગુ</button>
-                        <button onclick="changeLang('hi')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="hi">हिं</button>
+                        <button type="button" onclick="changeLang('en')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 transition-all active:bg-emerald-500 active:text-white active:shadow-md" data-lang-key="en">EN</button>
+                        <button type="button" onclick="changeLang('gu')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="gu">ગુ</button>
+                        <button type="button" onclick="changeLang('hi')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="hi">हिं</button>
                     </div>
                 </div>
 
                 <!-- Role Selector -->
                 <div class="flex justify-center space-x-1 bg-gray-100/50 p-1.5 rounded-2xl mb-4 relative z-10">
-                    <button onclick="selectRole('farmer')" id="btn-farmer"
+                    <button type="button" onclick="selectRole('farmer')" id="btn-farmer"
                         class="flex-1 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-emerald-700 transition-all">FARMER</button>
-                    <button onclick="selectRole('admin')" id="btn-admin"
+                    <button type="button" onclick="selectRole('admin')" id="btn-admin"
                         class="flex-1 py-2.5 text-xs font-bold rounded-xl text-gray-500 hover:text-gray-700 transition-all">ADMIN</button>
                 </div>
 
-                <form class="mt-4 space-y-4 relative z-10" action="#" method="GET" onsubmit="handleLogin(event)">
+                <form class="mt-4 space-y-4 relative z-10" action="#" method="POST" onsubmit="handleLogin(event)">
                     <input type="hidden" name="role" id="role-input" value="farmer">
                     <div class="space-y-3">
                         <div>
@@ -375,10 +375,53 @@
                 }
             }
 
-            // Hide error if successful
-            document.getElementById('phone-error').classList.add('hidden');
-            document.getElementById('admin-password-error').classList.add('hidden');
-            window.location.href = `../dashboard/${role}.html`;
+            // Prepare data for backend
+            const loginData = {
+                role: role,
+                identifier: identifier,
+                password: document.getElementById('password').value
+            };
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing in...';
+            btn.disabled = true;
+
+            fetch("../backend/login_api.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(loginData)
+            })
+            .then(async res => {
+                const data = await res.json().catch(() => ({
+                    success: false,
+                    message: `Unexpected server response (${res.status})`
+                }));
+
+                if (!res.ok) {
+                    throw new Error(data.message || `Request failed with status ${res.status}`);
+                }
+
+                return data;
+            })
+            .then(data => {
+                if (data.success) {
+                    sessionStorage.setItem('agricare_user', JSON.stringify(data.user));
+                    localStorage.setItem('agricare_user', JSON.stringify(data.user));
+                    localStorage.setItem('agricare_lang', data.user.pref_lang || lang);
+                    window.location.href = `../dashboard/${role}.php`;
+                } else {
+                    alert(`Login Failed: ${data.message}`);
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error("Login error:", err);
+                alert(`Login failed: ${err.message}`);
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            });
         }
 
         document.getElementById('identifier-input').addEventListener('input', validatePhoneInput);
@@ -393,9 +436,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const initialLang = urlParams.get('lang') || localStorage.getItem('agricare_lang') || 'en';
+            selectRole(document.getElementById('role-input').value || 'farmer');
             changeLang(initialLang);
-
-            // Run initial validation to lock PIN field by default
             validatePhoneInput();
         });
     </script>

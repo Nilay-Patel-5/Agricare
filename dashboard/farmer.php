@@ -6,7 +6,7 @@
     <title>Farmer Dashboard | AgriCare</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../frontend/output.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -102,6 +102,10 @@
                 class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
                 <i class="fas fa-hand-holding-dollar w-5 text-center"></i>
                 <span data-lang="subsidies">Government Subsidies</span>
+            </a>
+            <a href="../frontend/chatbot.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
+                <i class="fas fa-comments w-5 text-center"></i>
+                <span>AI Chat Assistant</span>
             </a>
             <a href="../frontend/market.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
                 <i class="fas fa-store w-5 text-center"></i>
@@ -375,7 +379,7 @@
 
     <script>
         // Data Configuration
-        const cropsData = {
+        const cropLibrary = {
             wheat: {
                 id: 'wheat',
                 icon: '🌾',
@@ -660,7 +664,7 @@
 
         let currentLang = localStorage.getItem('agricare_lang') || 'en';
         let activeCropIndex = 0;
-        // cropsData is already defined above as an object
+        let cropsData = [];
 
         function updateUserInfo() {
             const userData = JSON.parse(sessionStorage.getItem('agricare_user'));
@@ -674,11 +678,14 @@
             try {
                 const response = await fetch('../backend/get_crops.php');
                 const data = await response.json();
-                cropsData = data;
+                cropsData = Array.isArray(data) ? data : [];
+                activeCropIndex = 0;
                 renderSidebar();
                 renderCalendar();
             } catch (err) {
                 console.error("Failed to fetch crops:", err);
+                cropsData = [];
+                renderSidebar();
             }
         }
 
@@ -686,8 +693,8 @@
             const container = document.getElementById('cropSelector');
             container.innerHTML = '';
 
-            if (cropsData.length === 0) {
-                container.innerHTML = '<div class="p-4 text-gray-400 text-sm font-bold">Loading crops...</div>';
+            if (!Array.isArray(cropsData) || cropsData.length === 0) {
+                container.innerHTML = '<div class="p-4 text-gray-400 text-sm font-bold">Crop data unavailable.</div>';
                 return;
             }
 
@@ -706,7 +713,7 @@
         }
 
         function renderCalendar() {
-            if (cropsData.length === 0) return;
+            if (!Array.isArray(cropsData) || cropsData.length === 0) return;
 
             const crop = cropsData[activeCropIndex];
             document.getElementById('activeCropName').innerText = crop[`name_${currentLang}`];
@@ -794,7 +801,8 @@
             window.location.href = '../frontend/login.php';
         }
 
-        const API_BASE = 'http://localhost:5000';
+        const AI_HEALTH_ENDPOINT = '../backend/ai_health.php';
+        const AI_PREDICT_ENDPOINT = '../backend/ai_predict.php';
 
         function switchModule(modId, el = null) {
             // Find sidebar element if not provided
@@ -947,6 +955,7 @@
         function handleFiles(files) {
             if (!files[0]) return;
             const file = files[0];
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 previewImg.src = e.target.result;
@@ -974,19 +983,31 @@
 
                 analyzeBtn.disabled = true;
                 document.getElementById('btn-text').textContent = "Neural Mapping...";
-
                 try {
+                    const userData = JSON.parse(sessionStorage.getItem('agricare_user'));
                     const fd = new FormData();
                     fd.append('image', file);
-                    const res = await fetch(`${API_BASE}/predict`, {
+                    if (userData && userData.id) fd.append('user_id', userData.id);
+
+                    const res = await fetch(AI_PREDICT_ENDPOINT, {
                         method: 'POST',
                         body: fd
                     });
+
                     if (!res.ok) throw new Error("API Connection Error");
                     const data = await res.json();
+                    
+                    if (data.error) {
+                        alert("AI Message: " + data.error);
+                        analyzeBtn.disabled = false;
+                        document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
+                        return;
+                    }
+
                     showResults(data);
                 } catch (err) {
-                    alert("AI Engine is offline. Start predict_api.py on port 5000.");
+                    console.error("AI Analysis Error:", err);
+                    alert("Neural engine is taking longer than expected. Please check your internet connection.");
                     analyzeBtn.disabled = false;
                     document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
                 }
@@ -999,7 +1020,8 @@
 
             document.getElementById('result-image-preview').src = previewImg.src;
             document.getElementById('disease-name').textContent = data.label;
-            document.getElementById('plant-type').textContent = data.plant_type + " SPECIES";
+            const plantName = data.plant || data.plant_type || 'Plant';
+            document.getElementById('plant-type').textContent = plantName + " SPECIES";
             document.getElementById('disease-desc').textContent = data.info.desc;
             document.getElementById('irrigation-text').textContent = data.info.irrigation;
             document.getElementById('treatment-text').textContent = data.info.treatment;
@@ -1016,17 +1038,17 @@
         // Health Checker
         async function checkApi() {
             try {
-                const res = await fetch(`${API_BASE}/health`, {
-                    signal: AbortSignal.timeout(2000)
-                });
                 const label = document.getElementById('status-label');
                 const pulse = document.getElementById('status-pulse');
+                const res = await fetch(AI_HEALTH_ENDPOINT, {
+                    signal: AbortSignal.timeout(6000)
+                });
                 if (res.ok) {
-                    label.innerText = translations[currentLang].status_online;
+                    label.innerText = translations[currentLang].status_online || 'AI ONLINE';
                     label.className = "text-[10px] font-black uppercase tracking-widest text-emerald-600";
                     pulse.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
                 } else {
-                    label.innerText = translations[currentLang].status_offline;
+                    label.innerText = translations[currentLang].status_offline || 'AI OFFLINE';
                     label.className = "text-[10px] font-black uppercase tracking-widest text-orange-500";
                     pulse.className = "w-3 h-3 rounded-full bg-orange-400";
                 }
@@ -1046,6 +1068,18 @@
             fetchCrops();
         });
     </script>
+    <!-- Floating AI Chat Button -->
+    <a href="../frontend/chatbot.php" 
+       class="fixed bottom-8 right-8 w-16 h-16 bg-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-emerald-700 hover:scale-110 transition-all z-50 group">
+        <i class="fas fa-robot text-2xl"></i>
+        <span class="absolute right-20 bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl">
+            Ask AgriCare AI
+        </span>
+    </a>
 </body>
 
+
 </html>
+
+
+

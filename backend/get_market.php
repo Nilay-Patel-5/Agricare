@@ -1,10 +1,40 @@
 <?php
 header('Content-Type: application/json');
-
+require_once __DIR__ . '/security_headers.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/sync_market.php';
 
 try {
+    date_default_timezone_set('Asia/Kolkata');
     $pdo = Database::getConnection();
+    $today = date('d/m/Y');
+    $syncMetaPath = __DIR__ . '/last_market_sync.json';
+    $syncMeta = ['synced_at' => null, 'target_date' => null];
+
+    if (is_file($syncMetaPath)) {
+        $decoded = json_decode((string) file_get_contents($syncMetaPath), true);
+        if (is_array($decoded)) {
+            $syncMeta = array_merge($syncMeta, $decoded);
+        }
+    }
+
+    $latestLocalDate = $pdo->query("SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY id DESC LIMIT 1")->fetchColumn();
+    $lastSyncTs = !empty($syncMeta['synced_at']) ? strtotime((string) $syncMeta['synced_at']) : 0;
+    $shouldSync = $latestLocalDate !== $today || !$lastSyncTs || (time() - $lastSyncTs) > 1800;
+
+    if ($shouldSync) {
+        try {
+            $syncResult = syncLatestMarketData();
+            $syncMeta = [
+                'synced_at' => $syncResult['synced_at'] ?? date(DATE_ATOM),
+                'target_date' => $syncResult['target_date'] ?? $latestLocalDate,
+                'processed' => $syncResult['processed'] ?? 0,
+            ];
+            @file_put_contents($syncMetaPath, json_encode($syncMeta, JSON_PRETTY_PRINT));
+        } catch (Throwable $syncError) {
+            // Keep serving the latest local data if sync fails.
+        }
+    }
 
     /* Read filters from frontend */
     $input = json_decode(file_get_contents("php://input"), true);
@@ -12,32 +42,15 @@ try {
     $markets = $input['markets'] ?? [];
     $commodities = $input['commodities'] ?? [];
 
-    // Get the latest arrival date first, interpreting the stored string as dd/mm/YYYY
-    $dateQuery = "SELECT MAX(to_date(arrival_date,'DD/MM/YYYY')) as latest_dt FROM market_prices WHERE state ILIKE 'gujarat'";
+    // Get the latest arrival date first. 
+    // Optimization: Sort by ID desc and take the arrival_date from the most recent record.
+    // This is much faster than MAX(to_date(...)) on all rows.
+    $dateQuery = "SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY id DESC LIMIT 1";
     $dateStmt = $pdo->prepare($dateQuery);
     $dateStmt->execute();
     $latestDateResult = $dateStmt->fetch();
 
-    date_default_timezone_set('Asia/Kolkata');
-    $today = date('Y-m-d');
-    $latestVal = $latestDateResult['latest_dt'] ? date('Y-m-d', strtotime($latestDateResult['latest_dt'])) : null;
-
-    // Auto-sync logic: Only try fetching from the Gov API once per day to prevent blocking loads.
-    $syncCacheFile = __DIR__ . '/last_sync.txt';
-    $lastSyncAttempt = file_exists($syncCacheFile) ? trim(file_get_contents($syncCacheFile)) : '';
-
-    if ($lastSyncAttempt !== $today && (!$latestVal || $latestVal < $today)) {
-        file_put_contents($syncCacheFile, $today);
-        ob_start();
-        require_once __DIR__ . '/sync_market.php';
-        ob_end_clean();
-
-        // Re-fetch the latest date to reflect the freshly synced DB entries
-        $dateStmt->execute();
-        $latestDateResult = $dateStmt->fetch();
-    }
-
-    $latestDate = $latestDateResult['latest_dt'] ? date('d/m/Y', strtotime($latestDateResult['latest_dt'])) : null;
+    $latestDate = $latestDateResult['arrival_date'] ?? null;
 
     // Query for latest date data only
     $query = "SELECT * FROM market_prices WHERE state ILIKE 'gujarat'";
@@ -51,7 +64,7 @@ try {
     if (!empty($districts)) {
         $placeholders = [];
         foreach ($districts as $i => $d) {
-            $clean = trim($d); // Retain brackets, e.g. "Vadodara(Baroda)"
+            $clean = trim($d); 
             $key = "dist$i";
             $placeholders[] = ":$key";
             $params[$key] = "%$clean%";
@@ -73,7 +86,7 @@ try {
     if (!empty($commodities)) {
         $placeholders = [];
         foreach ($commodities as $i => $c) {
-            $clean = trim($c); // Do not strip brackets, exact matching is required for AGMARKNET variations
+            $clean = trim($c);
             $key = "cmd$i";
             $placeholders[] = ":$key";
             $params[$key] = "%$clean%";
@@ -81,8 +94,8 @@ try {
         $query .= " AND (" . implode(" OR ", array_map(fn($p) => "commodity ILIKE $p", $placeholders)) . ")";
     }
 
-    // order using parsed date as well to keep latest first
-    $query .= " ORDER BY to_date(arrival_date,'DD/MM/YYYY') DESC";
+    // Optimization: Sort by id DESC instead of converting strings to dates.
+    $query .= " ORDER BY id DESC LIMIT 500";
 
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
@@ -102,7 +115,13 @@ try {
         ];
     }
 
-    echo json_encode($result);
+    echo json_encode([
+        'success' => true,
+        'target_date' => $latestDate,
+        'today' => $today,
+        'synced_at' => $syncMeta['synced_at'] ?? null,
+        'rows' => $result,
+    ]);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
