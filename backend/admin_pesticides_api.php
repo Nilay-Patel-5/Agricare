@@ -18,14 +18,14 @@ try {
     if ($method === 'GET') {
         $stmt = $pdo->query("
             SELECT m.id as mapping_id, m.pest_name, m.effectiveness,
-                   p.id as pesticide_id, p.name, p.brand, p.price_range, p.target_pests, p.usage_instructions
+                   p.id as pesticide_id, p.name_en as name, p.brand, p.price_range, p.target_pests_en as target_pests, p.usage_en as usage_instructions
             FROM pest_pesticide_mapping m
             JOIN pesticides p ON m.pesticide_id = p.id
             ORDER BY m.pest_name ASC, m.effectiveness DESC
         ");
         $mappings = $stmt->fetchAll();
 
-        $stmtAllP = $pdo->query("SELECT id, name, brand FROM pesticides ORDER BY name ASC");
+        $stmtAllP = $pdo->query("SELECT id, name_en as name, brand FROM pesticides ORDER BY name_en ASC");
         $allPesticides = $stmtAllP->fetchAll();
 
         echo json_encode(['status' => 'success', 'mappings' => $mappings, 'pesticides' => $allPesticides]);
@@ -42,8 +42,8 @@ try {
                 echo json_encode(['status' => 'error', 'message' => 'Name and brand are required.']);
                 exit;
             }
-            $stmt = $pdo->prepare("INSERT INTO pesticides (name, brand, target_pests, price_range, usage_instructions) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$name, $brand, trim($data['target_pests'] ?? ''), trim($data['price_range'] ?? ''), trim($data['usage_instructions'] ?? '')]);
+            $stmt = $pdo->prepare("INSERT INTO pesticides (name_en, name_gu, name_hi, brand, target_pests_en, price_range, usage_en) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$name, $name, $name, $brand, trim($data['target_pests'] ?? ''), trim($data['price_range'] ?? ''), trim($data['usage_instructions'] ?? '')]);
             echo json_encode(['status' => 'success', 'message' => 'Pesticide added.']);
 
         } elseif ($action === 'add_mapping') {

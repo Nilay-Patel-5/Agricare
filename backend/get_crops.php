@@ -24,7 +24,9 @@ try {
             'activity_color' => $sched['activity_color'],
             'task_en' => $sched['task_en'],
             'task_gu' => $sched['task_gu'],
-            'task_hi' => $sched['task_hi']
+            'task_hi' => $sched['task_hi'],
+            'start_day' => (int)$sched['start_day'],
+            'end_day' => (int)$sched['end_day']
         ];
     }
 

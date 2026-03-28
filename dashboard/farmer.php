@@ -62,6 +62,42 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #9ca3af;
         }
+        .timeline-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .process-card {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid #e5e7eb;
+            margin-left: 1rem;
+            padding-bottom: 2rem;
+        }
+
+        .process-card:last-child {
+            border-left: 2px solid transparent;
+            padding-bottom: 0;
+        }
+
+        .process-dot {
+            position: absolute;
+            left: -0.55rem;
+            top: 0;
+            width: 1rem;
+            height: 1rem;
+            background: white;
+            border: 3px solid #10b981;
+            border-radius: 9999px;
+            z-index: 10;
+        }
     </style>
 </head>
 
@@ -76,7 +112,7 @@
                     <i class="fas fa-wheat-awn"></i>
                 </div>
                 <div>
-                    <span class="text-xl font-black text-gray-800 tracking-tight block">AgriCare</span>
+                    <span class="text-xl font-black text-gray-800 tracking-tight block" data-lang="appName">AgriCare</span>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"
                         data-lang="farmerPortal">Farmer Portal</span>
                 </div>
@@ -105,15 +141,7 @@
             </a>
             <a href="../frontend/chatbot.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
                 <i class="fas fa-comments w-5 text-center"></i>
-                <span>AI Chat Assistant</span>
-            </a>
-            <a href="../frontend/market.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
-                <i class="fas fa-store w-5 text-center"></i>
-                <span data-lang="marketPrices">Mandi Prices</span>
-            </a>
-            <a href="../frontend/weather.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
-                <i class="fas fa-cloud-sun-rain w-5 text-center"></i>
-                <span data-lang="weather">Weather Forecast</span>
+                <span data-lang="chatAssistant">Chat Assistant</span>
             </a>
         </nav>
 
@@ -138,30 +166,10 @@
                 </h2>
             </div>
 
-            <div class="flex items-center gap-6">
-                <!-- Language Selector -->
-                <div class="flex bg-gray-100 p-1 rounded-xl">
-                    <button onclick="changeLang('en')"
-                        class="lang-btn px-3 py-1 text-sm font-bold rounded-lg transition-all active bg-white shadow text-emerald-700"
-                        data-lang-key="en">EN</button>
-                    <button onclick="changeLang('gu')"
-                        class="lang-btn px-3 py-1 text-sm font-bold rounded-lg text-gray-500 hover:text-emerald-700 transition-all"
-                        data-lang-key="gu">ગુ</button>
-                    <button onclick="changeLang('hi')"
-                        class="lang-btn px-3 py-1 text-sm font-bold rounded-lg text-gray-500 hover:text-emerald-700 transition-all"
-                        data-lang-key="hi">हिं</button>
-                </div>
-
-                <div class="flex items-center gap-3 pl-6 border-l border-gray-200">
-                    <div
-                        class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold border-2 border-white shadow-sm">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="hidden md:block">
-                        <p id="userNameDisplay" class="text-sm font-bold text-gray-800 leading-tight">Farmer User</p>
-                        <p id="userLocationDisplay"
-                            class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Gujarat, India</p>
-                    </div>
+            <div class="flex items-center gap-4">
+                <p id="userNameDisplay" class="text-sm font-bold text-gray-800">Farmer User</p>
+                <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold border-2 border-white shadow-sm">
+                    <i class="fas fa-user"></i>
                 </div>
             </div>
         </header>
@@ -203,8 +211,8 @@
                         </div>
                     </div>
 
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="calendarGrid">
-                        <!-- Javascript will populate months here -->
+                    <div class="space-y-4" id="calendarGrid">
+                        <!-- Timeline will be populated here -->
                     </div>
                 </div>
             </div>
@@ -572,6 +580,7 @@
 
         const translations = {
             en: {
+                appName: 'AgriCare',
                 farmerPortal: 'Farmer Portal',
                 menu: 'Menu',
                 cropCalendar: 'Crop Calendar',
@@ -598,9 +607,14 @@
                 status_offline: 'AI OFFLINE',
                 subsidy_hero_desc: 'Discover the latest financial aids, schemes, and benefits provided by the state and central government for farmers.',
                 apply_now: 'Apply Now',
-                view_details: 'View Details'
+                view_details: 'View Details',
+                chatAssistant: 'Chat Assistant',
+                askAgriCare: 'Ask AgriCare',
+                processTimeline: 'Process Timeline',
+                day: 'Day'
             },
             gu: {
+                appName: 'એગ્રીકેર',
                 farmerPortal: 'ખેડૂત પોર્ટલ',
                 menu: 'મેનુ',
                 cropCalendar: 'પાક કેલેન્ડર',
@@ -628,9 +642,14 @@
                 subsidy_hero_desc: 'તમારી કૃષિ જરૂરિયાતો માટે ઉપલબ્ધ સરકારી સહાય અને યોજનાઓ વિશે જાણો.',
                 apply_now: 'અરજી કરો',
                 view_details: 'વિગતો જુઓ',
-                benefit_label: 'લાભ:'
+                benefit_label: 'લાભ:',
+                chatAssistant: 'ચેટ સહાયક',
+                askAgriCare: 'એગ્રીકેરને પૂછો',
+                processTimeline: 'પ્રક્રિયા સમયરેખા',
+                day: 'દિવસ'
             },
             hi: {
+                appName: 'एग्रीकेयर',
                 farmerPortal: 'किसान पोर्टल',
                 menu: 'मेनू',
                 cropCalendar: 'फसल कैलेंडर',
@@ -658,7 +677,11 @@
                 subsidy_hero_desc: 'अपनी कृषि आवश्यकताओं के लिए उपलब्ध सरकारी सहायता और योजनाओं के बारे में जानें।',
                 apply_now: 'आवेदन करें',
                 view_details: 'विवरण देखें',
-                benefit_label: 'लाभ:'
+                benefit_label: 'लाभ:',
+                chatAssistant: 'चैट सहायक',
+                askAgriCare: 'एग्रीकेयर से पूछें',
+                processTimeline: 'प्रक्रिया समयरेखा',
+                day: 'दिन'
             }
         };
 
@@ -667,10 +690,9 @@
         let cropsData = [];
 
         function updateUserInfo() {
-            const userData = JSON.parse(sessionStorage.getItem('agricare_user'));
+            const userData = JSON.parse(sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user') || 'null');
             if (userData) {
                 document.getElementById('userNameDisplay').innerText = userData.name || 'Farmer User';
-                document.getElementById('userLocationDisplay').innerText = userData.district ? `${userData.district}, Gujarat` : 'Gujarat, India';
             }
         }
 
@@ -723,65 +745,61 @@
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
 
-            const currentMonthIndex = new Date().getMonth();
-
-            // Create a map for the schedule for easy lookup
-            const scheduleMap = {};
-            crop.schedule.forEach(s => {
-                scheduleMap[s.month_index] = s;
-            });
-
-            for (let i = 0; i < 12; i++) {
-                const isCurrentMonth = i === currentMonthIndex;
-                const activity = scheduleMap[i];
-
-                const card = document.createElement('div');
-                card.className = `bg-white rounded-[1.5rem] p-5 border transition-all ${isCurrentMonth ? 'current-month-indicator' : 'border-gray-100 shadow-sm hover:shadow-md'}`;
-
-                let activityHtml = '';
-                if (activity) {
-                    activityHtml = `
-                        <div class="mt-4 flex items-start gap-3 p-3 rounded-2xl bg-${activity.activity_color}-50">
-                            <div class="w-8 h-8 bg-white rounded-xl flex items-center justify-center text-${activity.activity_color}-600 shadow-sm shrink-0">
-                                <i class="fas fa-${activity.activity_icon} text-sm"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-800 text-xs leading-tight">${activity[`task_${currentLang}`]}</p>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    activityHtml = `
-                        <div class="mt-4 p-3 text-center">
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${translations[currentLang].noActivity}</p>
-                        </div>
-                    `;
-                }
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <h4 class="text-lg font-black text-gray-900">${monthNames[currentLang][i]}</h4>
-                        ${isCurrentMonth ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded">Current</span>` : ''}
+            if (!crop.schedule || crop.schedule.length === 0) {
+                grid.innerHTML = `
+                    <div class="bg-white rounded-[2rem] p-12 text-center border border-gray-100 shadow-sm">
+                        <i class="fas fa-calendar-day text-5xl text-gray-100 mb-4"></i>
+                        <p class="text-gray-400 font-bold uppercase tracking-widest text-sm">${translations[currentLang].noActivity}</p>
                     </div>
-                    ${activityHtml}
                 `;
-                grid.appendChild(card);
+                return;
             }
+
+            // Sort schedule by start_day
+            const sortedSchedule = [...crop.schedule].sort((a, b) => a.start_day - b.start_day);
+
+            sortedSchedule.forEach((activity, index) => {
+                const processCard = document.createElement('div');
+                processCard.className = 'process-card';
+
+                processCard.innerHTML = `
+                    <div class="process-dot"></div>
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                        <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-${activity.activity_color}-50 rounded-2xl flex items-center justify-center text-${activity.activity_color}-600">
+                                    <i class="fas fa-${activity.activity_icon}"></i>
+                                </div>
+                                <h4 class="text-xl font-black text-gray-900">${activity[`task_${currentLang}`]}</h4>
+                            </div>
+                            <div class="timeline-badge">
+                                ${translations[currentLang].day} ${activity.start_day} - ${activity.end_day}
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-2xl">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                                <p class="text-sm font-bold text-gray-800">Planned Operation</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-2xl">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Duration</p>
+                                <p class="text-sm font-bold text-gray-800">${activity.end_day - activity.start_day} Days</p>
+                            </div>
+                             <div class="bg-gray-50 p-4 rounded-2xl">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Impact</p>
+                                <p class="text-sm font-bold text-emerald-600">High Yield</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(processCard);
+            });
         }
 
         function changeLang(lang) {
             currentLang = lang;
             localStorage.setItem('agricare_lang', lang);
-
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'shadow', 'text-emerald-700');
-                btn.classList.add('text-gray-500');
-            });
-            const activeBtn = document.querySelector(`[data-lang-key="${lang}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('bg-white', 'shadow', 'text-emerald-700');
-                activeBtn.classList.remove('text-gray-500');
-            }
 
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
@@ -1072,8 +1090,8 @@
     <a href="../frontend/chatbot.php" 
        class="fixed bottom-8 right-8 w-16 h-16 bg-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-emerald-700 hover:scale-110 transition-all z-50 group">
         <i class="fas fa-robot text-2xl"></i>
-        <span class="absolute right-20 bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl">
-            Ask AgriCare AI
+        <span class="absolute right-20 bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl" data-lang="askAgriCare">
+            Ask AgriCare
         </span>
     </a>
 </body>

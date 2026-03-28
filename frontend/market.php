@@ -457,7 +457,7 @@
                     throw new Error(message);
                 }
 
-                const data = Array.isArray(payload) ? payload : [];
+                const data = (payload && payload.success && payload.rows) ? payload.rows : (Array.isArray(payload) ? payload : []);
                 showResults(data);
             } catch (error) {
                 console.error("Fetch error:", error);

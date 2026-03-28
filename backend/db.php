@@ -6,7 +6,7 @@ class Database
 {
     private static $defaultConfig = [
         'host' => 'db.fnfqrectniyjpkyfkmal.supabase.co',
-        'db' => 'postgres',
+        'db'   => 'postgres',
         'user' => 'postgres',
         'pass' => 'nrpsupabase7',
         'port' => '5432',
@@ -112,7 +112,7 @@ class Database
         if (self::$pdo === null) {
             try {
                 $config = self::getConfig();
-                $dsn = "pgsql:host={$config['host']};port={$config['port']};dbname={$config['db']}";
+                $dsn = "pgsql:host={$config['host']};port={$config['port']};dbname={$config['db']};connect_timeout=10";
                 if (!empty($config['sslmode'])) {
                     $dsn .= ";sslmode={$config['sslmode']}";
                 }
@@ -120,6 +120,7 @@ class Database
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => true,
+                    PDO::ATTR_TIMEOUT => 10,
                 ]);
                 // Removed ensureUsersTableSchema(self::$pdo) to speed up performance.
                 // Run update_db.php manually if schema changes are needed.

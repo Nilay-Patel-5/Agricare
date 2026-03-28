@@ -183,6 +183,7 @@
                     <a href="weather.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="weather">🌤️ Weather</a>
+
                     <a href="about.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="contact">ℹ️ About</a>
@@ -247,6 +248,7 @@
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">📈 Market</a>
                 <a href="weather.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">🌤️ Weather</a>
+
                 <a href="about.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">ℹ️
                     About</a>
@@ -352,7 +354,7 @@
         </div>
 
         <div class="grid md:grid-cols-3 gap-8">
-            <div
+            <a href="disease_detection.php"
                 class="bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
                 <div
                     class="w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center text-4xl text-emerald-600 mb-8 group-hover:scale-110 transition-transform">
@@ -361,9 +363,9 @@
                 <h3 class="text-2xl font-bold text-gray-800 mb-4" data-lang="prediction">Crop Disease Detector</h3>
                 <p class="text-gray-600 leading-relaxed" data-lang="prediction-desc">Identify crop diseases at an early
                     stage using image-based analysis and smart pattern detection</p>
-            </div>
+            </a>
 
-            <div
+            <a href="weather.php"
                 class="bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
                 <div
                     class="w-20 h-20 bg-orange-100 rounded-2xl flex items-center justify-center text-4xl text-orange-600 mb-8 group-hover:scale-110 transition-transform">
@@ -372,9 +374,9 @@
                 <h3 class="text-2xl font-bold text-gray-800 mb-4" data-lang="climate">Weather Alerts</h3>
                 <p class="text-gray-600 leading-relaxed" data-lang="climate-desc">Hyper-local weather forecasts with
                     automatic irrigation advisory for your village.</p>
-            </div>
+            </a>
 
-            <div
+            <a href="market.php"
                 class="bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
                 <div
                     class="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center text-4xl text-blue-600 mb-8 group-hover:scale-110 transition-transform">
@@ -383,7 +385,7 @@
                 <h3 class="text-2xl font-bold text-gray-800 mb-4" data-lang="market_intel">Mandi Prices</h3>
                 <p class="text-gray-600 leading-relaxed" data-lang="market-desc">Direct APMC connection to find the best
                     selling price for your crops near you.</p>
-            </div>
+            </a>
         </div>
     </section>
 
@@ -567,12 +569,12 @@
 
                 if (!res.ok) throw new Error("Backend error");
 
-                const data = await res.json();
+                const payload = await res.json();
                 const ticker = document.getElementById('mandiTicker');
 
-                if (data && data.length > 0) {
+                if (payload.success && payload.rows && payload.rows.length > 0) {
                     // Take top 15 results to scroll
-                    const displayData = data.slice(0, 15);
+                    const displayData = payload.rows.slice(0, 15);
                     const lang = localStorage.getItem('agricare_lang') || 'en';
 
                     // Generate items

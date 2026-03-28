@@ -13,27 +13,7 @@
     </style>
 </head>
 <body class="flex h-screen bg-slate-50 overflow-hidden">
-    <aside class="w-72 bg-slate-950 flex flex-col text-slate-400 shrink-0">
-        <div class="px-8 py-10">
-            <a href="admin.php" class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-emerald-900/40">
-                    <i class="fas fa-leaf"></i>
-                </div>
-                <div>
-                   <span class="text-xl font-black text-white block">AgriCare</span>
-                   <span class="text-[8px] font-black text-emerald-500 uppercase tracking-widest">Admin Control</span>
-                </div>
-            </a>
-        </div>
-        <nav class="flex-1 px-4 space-y-1">
-            <a href="admin.php" class="flex items-center gap-4 px-6 py-3.5 rounded-xl hover:bg-slate-900 text-sm font-bold transition-colors">
-                <i class="fas fa-chart-line w-5"></i> Dashboard
-            </a>
-            <a href="admin_pesticides.php" class="flex items-center gap-4 px-6 py-3.5 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-900/20 transition-all">
-                <i class="fas fa-vial-virus w-5"></i> Pesticides & Pests
-            </a>
-        </nav>
-    </aside>
+    <?php include '_sidebar.php'; ?>
 
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
         <header class="bg-white/80 border-b py-6 px-10 flex justify-between items-center">

@@ -18,11 +18,11 @@ if (!$data || !is_array($data)) {
 
 // Valid districts and languages
 $validDistricts = [
-    'Ahmedabad','Amreli','Anand','Arvalli','Banaskantha','Bharuch','Bhavnagar',
-    'Botad','Chhota Udaipur','Dahod','Dang','Devbhoomi Dwarka','Gandhinagar',
-    'Gir Somnath','Jamnagar','Junagadh','Kheda','Kutch','Mahisagar','Mehsana',
-    'Morbi','Narmada','Navsari','Panchmahal','Patan','Porbandar','Rajkot',
-    'Sabarkantha','Surat','Surendranagar','Tapi','Vadodara','Valsad'
+    'Ahmedabad', 'Amreli', 'Anand', 'Arvalli', 'Banaskantha', 'Bharuch', 'Bhavnagar',
+    'Botad', 'Chhota Udaipur', 'Dahod', 'Dang', 'Devbhoomi Dwarka', 'Gandhinagar',
+    'Gir Somnath', 'Jamnagar', 'Junagadh', 'Kheda', 'Kutch', 'Mahisagar', 'Mehsana',
+    'Morbi', 'Narmada', 'Navsari', 'Panchmahal', 'Patan', 'Porbandar', 'Rajkot',
+    'Sabarkantha', 'Surat', 'Surendranagar', 'Tapi', 'Vadodara', 'Valsad'
 ];
 $validLangs = ['en', 'gu', 'hi'];
 

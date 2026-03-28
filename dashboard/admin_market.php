@@ -19,54 +19,9 @@
     </style>
 </head>
 
-<body class="flex h-screen overflow-hidden text-gray-800">
+<body class="flex h-screen overflow-hidden bg-slate-50 text-slate-700">
 
-    <!-- Admin Sidebar -->
-    <aside class="w-72 bg-gray-900 border-r border-gray-800 flex flex-col hidden lg:flex text-gray-300">
-        <div class="p-6 border-b border-gray-800 bg-gray-950">
-            <a href="../frontend/index.php" class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <div>
-                    <span class="text-xl font-black text-white tracking-tight block">AgriCare</span>
-                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Admin Control</span>
-                </div>
-            </a>
-        </div>
-
-        <nav class="flex-1 overflow-y-auto py-6">
-            <p class="px-6 text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4">Core Modules</p>
-            
-            <a href="admin.php" class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-chart-pie w-5 text-center"></i>
-                <span>Overview</span>
-            </a>
-            <a href="admin_users.php" class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-users w-5 text-center"></i>
-                <span>User Management</span>
-            </a>
-            <a href="admin_subsidies.php" class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-hand-holding-dollar w-5 text-center"></i>
-                <span>Manage Subsidies</span>
-            </a>
-            <a href="admin_market.php" class="sidebar-link active flex items-center gap-4 px-6 py-3 border-transparent" style="background-color: #064e3b; color: #34d399; border-right: 4px solid #10b981;">
-                <i class="fas fa-store w-5 text-center"></i>
-                <span>Market Control</span>
-            </a>
-            <a href="admin_pesticides.php" class="sidebar-link flex items-center gap-4 px-6 py-3 hover:bg-gray-800 border-r-4 border-transparent hover:text-white transition-colors">
-                <i class="fas fa-vial w-5 text-center"></i>
-                <span>Pesticides</span>
-            </a>
-        </nav>
-
-        <div class="p-6 border-t border-gray-800 bg-gray-950">
-            <a href="../frontend/login.php" class="flex items-center gap-3 text-gray-500 hover:text-red-500 transition-colors font-bold text-sm">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Secure Logout</span>
-            </a>
-        </div>
-    </aside>
+    <?php include '_sidebar.php'; ?>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
