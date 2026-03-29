@@ -45,7 +45,10 @@ function syncLatestMarketData(int $lookbackDays = 7, int $limit = 500, int $maxP
     date_default_timezone_set('Asia/Kolkata');
 
     $pdo = Database::getConnection();
-    $apiKey = "579b464db66ec23bdd0000012b67c7ab775a420174e338ebaf35bb0c";
+    $apiKey = getenv('DATA_GOV_API_KEY') ?: '';
+    if (!$apiKey) {
+        throw new RuntimeException('DATA_GOV_API_KEY environment variable is not set.');
+    }
 
     $sql = "INSERT INTO market_prices (state, district, market, commodity, variety, grade, arrival_date, min_price, max_price, modal_price)
             VALUES (:state, :district, :market, :commodity, :variety, :grade, :arrival_date, :min_price, :max_price, :modal_price)

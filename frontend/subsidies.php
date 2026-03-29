@@ -9,7 +9,7 @@ exit;
     <meta charset="UTF-8">
     <title>Subsidies | AgriCare</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="output.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -40,18 +40,6 @@ exit;
             margin: 0 auto;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 4px;
-        }
 
         .subsidy-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

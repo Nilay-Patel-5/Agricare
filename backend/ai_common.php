@@ -67,7 +67,7 @@ function ai_start_engine(): bool
         . $stderrArg;
     @pclose(@popen($command, 'r'));
 
-    for ($i = 0; $i < 20; $i++) {
+    for ($i = 0; $i < 4; $i++) {
         usleep(500000);
         if (ai_is_healthy()) {
             return true;

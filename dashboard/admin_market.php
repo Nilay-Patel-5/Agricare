@@ -181,14 +181,13 @@
 
         function renderTable(data) {
             const tbody = document.getElementById('market-table');
-            const rows = Array.isArray(data) ? data : [];
             
-            if (!rows.length) {
+            if (!data.length) {
                 tbody.innerHTML = '<tr><td colspan="7" class="py-12 text-center text-gray-400">No market data available</td></tr>';
                 return;
             }
             
-            tbody.innerHTML = rows.map(m => `
+            tbody.innerHTML = data.map(m => `
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="py-4 px-6 text-gray-900 font-medium">${m.commodity || '—'}</td>
                     <td class="py-4 px-6 text-gray-600">${m.market || '—'}</td>

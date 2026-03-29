@@ -31,6 +31,7 @@
 </head>
 
 <body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div id="progressBar"></div>
 
     <div class="flex w-full h-screen bg-white overflow-hidden">
         <!-- Left Side: Image -->
@@ -92,7 +93,7 @@
                         class="flex-1 py-2.5 text-xs font-bold rounded-xl text-gray-500 hover:text-gray-700 transition-all">ADMIN</button>
                 </div>
 
-                <form class="mt-4 space-y-4 relative z-10" action="#" method="GET" onsubmit="handleLogin(event)">
+                <form class="mt-4 space-y-4 relative z-10" action="#" method="POST" onsubmit="handleLogin(event)">
                     <input type="hidden" name="role" id="role-input" value="farmer">
                     <div class="space-y-3">
                         <div>
@@ -440,6 +441,29 @@
             changeLang(initialLang);
             validatePhoneInput();
         });
+
+        // Universal Scroll Progress Bar
+        document.addEventListener('scroll', function(e) {
+            let target = e.target;
+            if (target === document) target = document.documentElement;
+            
+            let winScroll = target.scrollTop;
+            let height = target.scrollHeight - target.clientHeight;
+            if (height <= 0) return;
+            
+            let scrolled = (winScroll / height) * 100;
+            const bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "9999";
+                bar.style.transition = "width 0.1s";
+            }
+        }, true);
     </script>
 </body>
 

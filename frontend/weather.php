@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Weather Dashboard | AgriCare</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="output.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -125,19 +125,6 @@
             margin: 0 auto;
         }
 
-        /* Hide scrollbar for mobile menu */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 4px;
-        }
 
         .farm-hero {
             background:
@@ -166,14 +153,8 @@
             </div>
 
             <form id="weatherForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1" data-lang="labelState">State</label>
-                    <select id="stateSelect" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                        <option value="Gujarat">Gujarat</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Rajasthan">Rajasthan</option>
-                    </select>
-                </div>
+                <!-- State Selection Removed (Hardcoded to Gujarat) -->
+                <input type="hidden" id="stateSelect" value="Gujarat">
 
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1" data-lang="labelCity">City / District</label>
@@ -182,18 +163,9 @@
                         <option value="">Select City</option>
                     </select>
                 </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1" data-lang="labelCrop">Select Crop (Optional)</label>
-                    <select id="cropSelect" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
-                        <option value="" data-lang="cropGeneral">-- General --</option>
-                        <option value="Cotton" data-lang="cropCotton">Cotton (Kapas)</option>
-                        <option value="Groundnut" data-lang="cropGroundnut">Groundnut (Magfali)</option>
-                        <option value="Wheat" data-lang="cropWheat">Wheat (Gehu)</option>
-                        <option value="Rice" data-lang="cropRice">Rice (Dangar)</option>
-                        <option value="Sugarcane" data-lang="cropSugarcane">Sugarcane</option>
-                    </select>
-                </div>
+                
+                <!-- Crop Selection Removed (Hardcoded to General) -->
+                <input type="hidden" id="cropSelect" value="">
 
                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 mt-2">
                     <span data-lang="btnForecast">Get Forecast</span>
@@ -233,6 +205,7 @@
                     <a href="weather.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="weather">🌤️ Weather</a>
+
                     <a href="about.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="contact">ℹ️ About</a>
@@ -250,8 +223,6 @@
                             class="lang-btn px-3 py-1 text-sm font-bold rounded-lg text-gray-500 hover:text-emerald-700 transition-all"
                             data-lang-key="hi">हिं</button>
                     </div>
-
-                    <button onclick="resetLocation()" class="text-sm font-bold text-gray-500 hover:text-emerald-600 underline hidden lg:block border-l-2 border-gray-200 pl-4" data-lang="changeLoc">Change Location</button>
 
                     <a href="login.php" data-lang="loginBtn"
                         class="hidden lg:inline-flex text-emerald-700 font-bold py-3 px-6 hover:text-emerald-900 transition-all">
@@ -289,26 +260,22 @@
                     class="flex-1 py-2 font-bold rounded hover:bg-white text-gray-600 text-center">हिं</button>
             </div>
 
-            <button onclick="resetLocation(); closeMobileMenu();" class="w-full text-center text-sm font-bold text-gray-500 hover:text-emerald-600 underline py-2 mb-4 bg-gray-50 rounded-lg" data-lang="changeLoc">Change Location</button>
-
             <nav class="space-y-4">
                 <a href="index.php#home" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">🏠 Home</a>
                 <a href="index.php#features" onclick="closeMobileMenu()"
-                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">✨
-                    Features</a>
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">✨ Features</a>
                 <a href="market.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">📈 Market</a>
                 <a href="weather.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">🌤️ Weather</a>
+
                 <a href="about.php" onclick="closeMobileMenu()"
-                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">ℹ️
-                    About</a>
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">ℹ️ About</a>
                 <a href="login.php" data-lang="loginBtn"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">Login</a>
                 <a href="register.php"
-                    class="block bg-emerald-600 text-white font-bold py-3 rounded-xl text-center mt-6 shadow-lg">Register
-                    Now</a>
+                    class="block bg-emerald-600 text-white font-bold py-3 rounded-xl text-center mt-6 shadow-lg">Register Now</a>
             </nav>
         </div>
     </header>
@@ -328,6 +295,10 @@
                 <div class="flex items-center gap-2 text-gray-500 font-medium mb-1">
                     <i class="fas fa-map-marker-alt text-emerald-500"></i>
                     <span id="displayLocation">Loading...</span>
+                    <button onclick="resetLocation()" title="Change Location"
+                        class="ml-1 text-xs font-bold text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full transition-all flex items-center gap-1">
+                        <i class="fas fa-pencil-alt text-xs"></i> <span data-lang="btnChange">Change</span>
+                    </button>
                 </div>
                 <h1 class="text-4xl font-black text-gray-900" data-lang="dashboardTitle">Weather Dashboard</h1>
                 <p class="text-gray-500 text-sm mt-1" id="currentDate">Update: Just now</p>
@@ -338,7 +309,7 @@
         </div>
 
         <!-- Current Weather Card -->
-        <div class="grid lg:grid-cols-3 gap-8 mb-12 slide-up" style="animation-delay: 0.2s;">
+        <div class="grid lg:grid-cols-3 gap-8 mb-12 slide-up items-start" style="animation-delay: 0.2s;">
             <!-- Main Card -->
             <div class="lg:col-span-2 glass-card rounded-[2.5rem] p-8 lg:p-12 relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-yellow-100 rounded-full blur-3xl opacity-50 -mr-16 -mt-16 group-hover:bg-yellow-200 transition-colors duration-700"></div>
@@ -378,26 +349,21 @@
             </div>
 
             <!-- Advisory Summary -->
-            <div class="bg-emerald-600 rounded-[2.5rem] p-8 text-white flex flex-col justify-between shadow-xl relative overflow-hidden">
+            <div class="bg-emerald-600 rounded-[2.5rem] p-8 text-white flex flex-col gap-4 shadow-xl relative overflow-hidden self-start">
                 <div class="absolute bottom-0 right-0 text-emerald-700 text-9xl opacity-20 -mb-4 -mr-4"><i class="fas fa-seedling"></i></div>
 
                 <div class="relative z-10">
-                    <h3 class="text-2xl font-black mb-6 flex items-center gap-2">
+                    <h3 class="text-2xl font-black mb-4 flex items-center gap-2">
                         <i class="fas fa-robot"></i> <span data-lang="agriAdvisor">Agri-Advisor</span>
                     </h3>
 
-                    <div id="quickAdvise" class="space-y-4">
+                    <div id="quickAdvise" class="space-y-3">
                         <!-- Dynamic Content -->
                         <p class="opacity-75 text-sm">Loading advice...</p>
                     </div>
                 </div>
 
-                <div class="mt-8 relative z-10">
-                    <div class="bg-emerald-700/50 p-4 rounded-xl backdrop-blur-sm border border-emerald-500/30">
-                        <p class="text-sm font-medium opacity-90 mb-1" data-lang="cropFocus">Crop Focus</p>
-                        <div class="font-bold text-xl" id="cropFocus">General</div>
-                    </div>
-                </div>
+                <!-- Crop focus removed -->
             </div>
         </div>
 
@@ -413,21 +379,12 @@
         </div>
 
         <!-- Detailed Advisory Section -->
-        <div class="grid md:grid-cols-2 gap-8 slide-up" style="animation-delay: 0.4s;">
+        <div class="grid md:grid-cols-1 gap-8 slide-up" style="animation-delay: 0.4s;">
             <div class="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
                 <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
                     <i class="fas fa-clipboard-list text-orange-500"></i> <span data-lang="advisoryTitle">🌾 Agricultural Advisory</span>
                 </h3>
                 <ul class="space-y-4" id="mainAdvisoryList">
-                    <!-- Dynamic List -->
-                </ul>
-            </div>
-
-            <div class="bg-white rounded-[2rem] p-8 shadow-lg border border-gray-100">
-                <h3 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
-                    <i class="fas fa-leaf text-green-500"></i> <span data-lang="tipsTitle">Specific Tips:</span> <span id="cropTitle" class="text-emerald-600">General</span>
-                </h3>
-                <ul class="space-y-4" id="cropAdvisoryList">
                     <!-- Dynamic List -->
                 </ul>
             </div>
@@ -521,6 +478,7 @@
                 cropRice: 'Rice (Dangar)',
                 cropSugarcane: 'Sugarcane',
                 btnForecast: 'Get Forecast',
+                btnChange: 'Change',
                 changeLoc: 'Change Location',
                 navHome: 'Home',
                 dashboardTitle: 'Weather Dashboard',
@@ -572,6 +530,7 @@
                 cropRice: 'ડાંગર',
                 cropSugarcane: 'શેરડી',
                 btnForecast: 'આગાહી મેળવો',
+                btnChange: 'બદલો',
                 changeLoc: 'સ્થાન બદલો',
                 navHome: 'મુખ્ય',
                 dashboardTitle: 'હવામાન ડેશબોર્ડ',
@@ -623,6 +582,7 @@
                 cropRice: 'धान',
                 cropSugarcane: 'गन्ना',
                 btnForecast: 'पूर्वानुमान प्राप्त करें',
+                btnChange: 'बदलें',
                 changeLoc: 'स्थान बदलें',
                 navHome: 'होम',
                 dashboardTitle: 'मौसम डैशबोर्ड',
@@ -665,151 +625,73 @@
             '': 'cropGeneral'
         };
 
-        // --- District Data ---
+        // --- District Data (Gujarat Only with Translations) ---
         const stateDistricts = {
             'Gujarat': [
-                'Ahmedabad', 'Amreli', 'Anand', 'Banaskantha', 'Bharuch', 'Bhavnagar', 'Botad',
-                'Chhota Udaipur', 'Dahod', 'Dang', 'Devbhoomi Dwarka', 'Gandhinagar', 'Gir Somnath',
-                'Jamnagar', 'Junagadh', 'Kheda', 'Kutch', 'Mahisagar', 'Mehsana', 'Morbi',
-                'Narmada', 'Navsari', 'Panchmahal', 'Patan', 'Porbandar', 'Rajkot', 'Sabarkantha',
-                'Surat', 'Surendranagar', 'Tapi', 'Vadodara', 'Valsad'
-            ],
-            'Maharashtra': [
-                'Ahmednagar', 'Akola', 'Amravati', 'Aurangabad', 'Beed', 'Bhandara', 'Buldhana',
-                'Chandrapur', 'Dhule', 'Gadchiroli', 'Gondia', 'Hingoli', 'Jalgaon', 'Jalna',
-                'Kolhapur', 'Latur', 'Mumbai', 'Nagpur', 'Nanded', 'Nandurbar', 'Nashik',
-                'Osmanabad', 'Palghar', 'Parbhani', 'Pune', 'Raigad', 'Ratnagiri', 'Sangli',
-                'Satara', 'Sindhudurg', 'Solapur', 'Thane', 'Wardha', 'Washim', 'Yavatmal'
-            ],
-            'Rajasthan': [
-                'Ajmer', 'Alwar', 'Banswara', 'Baran', 'Barmer', 'Bharatpur', 'Bhilwara', 'Bikaner',
-                'Bundi', 'Chittorgarh', 'Churu', 'Dausa', 'Dholpur', 'Dungarpur', 'Hanumangarh',
-                'Jaipur', 'Jaisalmer', 'Jalore', 'Jhalawar', 'Jhunjhunu', 'Jodhpur', 'Karauli',
-                'Kota', 'Nagaur', 'Pali', 'Pratapgarh', 'Rajsamand', 'Sawai Madhopur', 'Sikar',
-                'Sirohi', 'Sri Ganganagar', 'Tonk', 'Udaipur'
+                { id: 'Ahmedabad', en: 'Ahmedabad', gu: 'અમદાવાદ', hi: 'अहमदाबाद' },
+                { id: 'Amreli', en: 'Amreli', gu: 'અમરેલી', hi: 'अमरेली' },
+                { id: 'Anand', en: 'Anand', gu: 'આણંદ', hi: 'आणंद' },
+                { id: 'Banaskantha', en: 'Banaskantha', gu: 'બનાસકાંઠા', hi: 'बनासकांठा' },
+                { id: 'Bharuch', en: 'Bharuch', gu: 'ભરૂચ', hi: 'भरूच' },
+                { id: 'Bhavnagar', en: 'Bhavnagar', gu: 'ભાવનગર', hi: 'भावनगर' },
+                { id: 'Botad', en: 'Botad', gu: 'બોટાદ', hi: 'बोटाद' },
+                { id: 'Chhota Udaipur', en: 'Chhota Udaipur', gu: 'છોટા ઉદેપુર', hi: 'छोटा उदयपुर' },
+                { id: 'Dahod', en: 'Dahod', gu: 'દાહોદ', hi: 'दाहोद' },
+                { id: 'Dang', en: 'Dang', gu: 'ડાંગ', hi: 'डांग' },
+                { id: 'Devbhoomi Dwarka', en: 'Devbhoomi Dwarka', gu: 'દેવભૂમિ દ્વારકા', hi: 'देवभूमि द्वारका' },
+                { id: 'Gandhinagar', en: 'Gandhinagar', gu: 'ગાંધીનગર', hi: 'गांधीनगर' },
+                { id: 'Gir Somnath', en: 'Gir Somnath', gu: 'ગીર સોમનાથ', hi: 'गिर सोमनाथ' },
+                { id: 'Jamnagar', en: 'Jamnagar', gu: 'જામનગર', hi: 'जामनगर' },
+                { id: 'Junagadh', en: 'Junagadh', gu: 'જૂનાગઢ', hi: 'जूनागढ़' },
+                { id: 'Kheda', en: 'Kheda', gu: 'ખેડા', hi: 'खेड़ा' },
+                { id: 'Kutch', en: 'Kutch', gu: 'કચ્છ', hi: 'कच्छ' },
+                { id: 'Mahisagar', en: 'Mahisagar', gu: 'મહીસાગર', hi: 'महीसागर' },
+                { id: 'Mehsana', en: 'Mehsana', gu: 'મહેસાણા', hi: 'मेहसाणा' },
+                { id: 'Morbi', en: 'Morbi', gu: 'મોરબી', hi: 'मोरबी' },
+                { id: 'Narmada', en: 'Narmada', gu: 'નર્મદા', hi: 'नर्मदा' },
+                { id: 'Navsari', en: 'Navsari', gu: 'નવસારી', hi: 'नवसारी' },
+                { id: 'Panchmahal', en: 'Panchmahal', gu: 'પંચમહાલ', hi: 'पंचमहाल' },
+                { id: 'Patan', en: 'Patan', gu: 'પાટણ', hi: 'पाटन' },
+                { id: 'Porbandar', en: 'Porbandar', gu: 'પોરબંદર', hi: 'पोरबंदर' },
+                { id: 'Rajkot', en: 'Rajkot', gu: 'રાજકોટ', hi: 'राजकोट' },
+                { id: 'Sabarkantha', en: 'Sabarkantha', gu: 'સાબરકાંઠા', hi: 'साबरकांठा' },
+                { id: 'Surat', en: 'Surat', gu: 'સુરત', hi: 'सूरत' },
+                { id: 'Surendranagar', en: 'Surendranagar', gu: 'સુરેન્દ્રનગર', hi: 'सुरेंद्रनगर' },
+                { id: 'Tapi', en: 'Tapi', gu: 'તાપી', hi: 'तापी' },
+                { id: 'Vadodara', en: 'Vadodara', gu: 'વડોદરા', hi: 'वडोदरा' },
+                { id: 'Valsad', en: 'Valsad', gu: 'વલસાડ', hi: 'वलसाड' }
             ]
         };
 
-        // --- WMO Weather Code Map (Crucial for Translations) ---
-        // Codes: 0=Clear, 1-3=Cloudy, 45-48=Fog, 51-67=Drizzle/Rain, 71-77=Snow, 80-82=Showers, 95-99=Thunderstorm
-        const weatherCodeMap = {
-            0: {
-                en: 'Clear Sky',
-                gu: 'સ્વચ્છ આકાશ',
-                hi: 'साफ आसमान',
-                icon: 'fa-sun text-yellow-500'
-            },
-            1: {
-                en: 'Mainly Clear',
-                gu: 'મુખ્યત્વે સ્વચ્છ',
-                hi: 'मुख्य रूप से साफ',
-                icon: 'fa-cloud-sun text-yellow-400'
-            },
-            2: {
-                en: 'Partly Cloudy',
-                gu: 'આંશિક વાદળછાયું',
-                hi: 'आंशिक रूप से बादल',
-                icon: 'fa-cloud-sun text-gray-400'
-            },
-            3: {
-                en: 'Overcast',
-                gu: 'વાદળછાયું',
-                hi: 'बादल छाए हुए',
-                icon: 'fa-cloud text-gray-500'
-            },
-            45: {
-                en: 'Fog',
-                gu: 'ધૂમ્મસ',
-                hi: 'कोहरा',
-                icon: 'fa-smog text-gray-400'
-            },
-            48: {
-                en: 'Depositing Rime Fog',
-                gu: 'ગાઢ ધૂમ્મસ',
-                hi: 'घना कोहरा',
-                icon: 'fa-smog text-gray-400'
-            },
-            51: {
-                en: 'Light Drizzle',
-                gu: 'હળવો વરસાદ',
-                hi: 'हल्की बूंदाबांदी',
-                icon: 'fa-cloud-rain text-blue-300'
-            },
-            53: {
-                en: 'Moderate Drizzle',
-                gu: 'વરસાદ',
-                hi: 'बूंदाबांदी',
-                icon: 'fa-cloud-rain text-blue-400'
-            },
-            55: {
-                en: 'Dense Drizzle',
-                gu: 'ભારે વરસાદ',
-                hi: 'घनी बूंदाबांदी',
-                icon: 'fa-cloud-rain text-blue-500'
-            },
-            61: {
-                en: 'Slight Rain',
-                gu: 'હળવો વરસાદ',
-                hi: 'हल्की बारिश',
-                icon: 'fa-cloud-showers-heavy text-blue-400'
-            },
-            63: {
-                en: 'Moderate Rain',
-                gu: 'મધ્યમ વરસાદ',
-                hi: 'मध्यम बारिश',
-                icon: 'fa-cloud-showers-heavy text-blue-500'
-            },
-            65: {
-                en: 'Heavy Rain',
-                gu: 'ભારે વરસાદ',
-                hi: 'भारी बारिश',
-                icon: 'fa-cloud-showers-heavy text-blue-600'
-            },
-            80: {
-                en: 'Light Showers',
-                gu: 'હળવા ઝાપટા',
-                hi: 'हल्की बौछारें',
-                icon: 'fa-cloud-sun-rain text-blue-400'
-            },
-            81: {
-                en: 'Moderate Showers',
-                gu: 'મધ્યમ ઝાપટા',
-                hi: 'मध्यम बौछारें',
-                icon: 'fa-cloud-sun-rain text-blue-500'
-            },
-            82: {
-                en: 'Violent Showers',
-                gu: 'ભારે ઝાપટા',
-                hi: 'तेज बौछारें',
-                icon: 'fa-cloud-showers-water text-blue-700'
-            },
-            95: {
-                en: 'Thunderstorm',
-                gu: 'વાવાઝોડું',
-                hi: 'आंधी',
-                icon: 'fa-bolt text-yellow-600'
-            },
-            96: {
-                en: 'Thunderstorm with Hail',
-                gu: 'કરા સાથે વાવાઝોડું',
-                hi: 'ओलावृष्टि के साथ आंधी',
-                icon: 'fa-bolt text-red-500'
-            },
-            99: {
-                en: 'Heavy Thunderstorm',
-                gu: 'ભારે વાવાઝોડું',
-                hi: 'भारी आंधी',
-                icon: 'fa-bolt text-red-600'
-            }
+        // --- WMO Weather Code Map (Open-Meteo uses WMO codes) ---
+        const wmoCodeMap = {
+            0:  { en: 'Clear Sky',          gu: 'સ્વચ્છ આકાશ',         hi: 'साफ आसमान',           icon: '☀️' },
+            1:  { en: 'Mainly Clear',        gu: 'મુખ્યત્વે સ્વચ્છ',      hi: 'मुख्यतः साफ',          icon: '🌤️' },
+            2:  { en: 'Partly Cloudy',       gu: 'આંશિક વાદળછાયું',       hi: 'आंशिक बादल',           icon: '⛅' },
+            3:  { en: 'Overcast',            gu: 'ઘટ્ટ વાદળ',              hi: 'घनघोर बादल',            icon: '☁️' },
+            45: { en: 'Foggy',               gu: 'ધૂમ્મસ',                hi: 'कोहरा',                icon: '🌫️' },
+            48: { en: 'Icy Fog',             gu: 'હિમ ધૂમ્મસ',             hi: 'बर्फीला कोहरा',         icon: '🌫️' },
+            51: { en: 'Light Drizzle',       gu: 'હળવી ઝરમર',              hi: 'हल्की बूंदाबांदी',      icon: '🌦️' },
+            53: { en: 'Drizzle',             gu: 'ઝરમર',                   hi: 'बूंदाबांदी',            icon: '🌦️' },
+            55: { en: 'Heavy Drizzle',       gu: 'ભારે ઝરમર',              hi: 'भारी बूंदाबांदी',       icon: '🌧️' },
+            61: { en: 'Light Rain',          gu: 'હળવો વરસાદ',             hi: 'हल्की बारिश',           icon: '🌧️' },
+            63: { en: 'Moderate Rain',       gu: 'મધ્યમ વરસાદ',            hi: 'मध्यम बारिश',           icon: '🌧️' },
+            65: { en: 'Heavy Rain',          gu: 'ભારે વરસાદ',             hi: 'भारी बारिश',            icon: '🌧️' },
+            71: { en: 'Light Snow',          gu: 'હળવો બરફ',               hi: 'हल्की बर्फ',            icon: '🌨️' },
+            73: { en: 'Moderate Snow',       gu: 'મધ્યમ બરફ',              hi: 'मध्यम बर्फ',            icon: '❄️' },
+            75: { en: 'Heavy Snow',          gu: 'ભારે બરફ',               hi: 'भारी बर्फ',             icon: '❄️' },
+            80: { en: 'Rain Showers',        gu: 'ઝાપટા',                  hi: 'बौछारें',              icon: '🌦️' },
+            81: { en: 'Moderate Showers',    gu: 'મધ્યમ ઝાપટા',            hi: 'मध्यम बौछारें',         icon: '🌦️' },
+            82: { en: 'Heavy Showers',       gu: 'ભારે ઝાપટા',             hi: 'भारी बौछारें',          icon: '⛈️' },
+            95: { en: 'Thunderstorm',        gu: 'વાવાઝોડું',              hi: 'आंधी-तूफान',           icon: '⛈️' },
+            96: { en: 'Thunderstorm w/ Hail',gu: 'વાવાઝોડું + કરા',        hi: 'ओलों के साथ तूफान',    icon: '⛈️' },
+            99: { en: 'Heavy Thunderstorm',  gu: 'ભારે વાવાઝોડું',         hi: 'भारी तूफान',            icon: '⛈️' },
         };
 
-        // Fallback for unmapped codes
-        const defaultWeather = {
-            en: 'Unknown',
-            gu: 'અજ્ઞાત',
-            hi: 'अज्ञात',
-            icon: 'fa-question-circle text-gray-300'
-        };
+        function getWmo(code, lang) {
+            const info = wmoCodeMap[code] || { en: 'Unknown', gu: 'અજ્ઞાત', hi: 'अज्ञात', icon: '🌡️' };
+            return { text: info[lang] || info.en, icon: info.icon };
+        }
 
         // --- State Management ---
         const state = {
@@ -824,10 +706,53 @@
 
         // --- Open-Meteo API Functions ---
 
+        // --- Precision Coordinates for all 33 Gujarat Districts ---
+        // Hardcoded lat/lon of each district headquarters for accurate weather data.
+        // This bypasses geocoding which returns wrong results for many Gujarat districts.
+        const gujaratCoords = {
+            'Ahmedabad':        { lat: 23.0225, lon: 72.5714 },
+            'Amreli':           { lat: 21.6032, lon: 71.2211 },
+            'Anand':            { lat: 22.5645, lon: 72.9289 },
+            'Banaskantha':      { lat: 24.1700, lon: 72.4300 },  // Palanpur HQ
+            'Bharuch':          { lat: 21.7051, lon: 72.9959 },
+            'Bhavnagar':        { lat: 21.7645, lon: 72.1519 },
+            'Botad':            { lat: 22.1694, lon: 71.6672 },
+            'Chhota Udaipur':   { lat: 22.3025, lon: 74.0149 },
+            'Dahod':            { lat: 22.8347, lon: 74.2565 },
+            'Dang':             { lat: 20.7537, lon: 73.6967 },  // Ahwa HQ
+            'Devbhoomi Dwarka': { lat: 22.2374, lon: 68.9678 },  // Khambhalia HQ
+            'Gandhinagar':      { lat: 23.2156, lon: 72.6369 },
+            'Gir Somnath':      { lat: 20.9078, lon: 70.3701 },  // Veraval HQ
+            'Jamnagar':         { lat: 22.4707, lon: 70.0577 },
+            'Junagadh':         { lat: 21.5222, lon: 70.4579 },
+            'Kheda':            { lat: 22.7506, lon: 72.6853 },
+            'Kutch':            { lat: 23.2420, lon: 69.6669 },  // Bhuj HQ
+            'Mahisagar':        { lat: 23.1058, lon: 73.5490 },  // Lunawada HQ
+            'Mehsana':          { lat: 23.5880, lon: 72.3693 },
+            'Morbi':            { lat: 22.8173, lon: 70.8377 },
+            'Narmada':          { lat: 21.8733, lon: 73.4950 },  // Rajpipla HQ
+            'Navsari':          { lat: 20.9467, lon: 72.9520 },
+            'Panchmahal':       { lat: 22.7000, lon: 73.6144 },  // Godhra HQ
+            'Patan':            { lat: 23.8493, lon: 72.1266 },
+            'Porbandar':        { lat: 21.6422, lon: 69.6093 },
+            'Rajkot':           { lat: 22.3039, lon: 70.8022 },
+            'Sabarkantha':      { lat: 23.5887, lon: 73.0219 },  // Himmatnagar HQ
+            'Surat':            { lat: 21.1702, lon: 72.8311 },
+            'Surendranagar':    { lat: 22.7271, lon: 71.6449 },
+            'Tapi':             { lat: 21.1160, lon: 73.3760 },  // Vyara HQ
+            'Vadodara':         { lat: 22.3072, lon: 73.1812 },
+            'Valsad':           { lat: 20.5992, lon: 72.9342 },
+        };
+
         async function getCoordinates(city) {
-            // Geocoding API (Open-Meteo)
+            // 1. Try hardcoded precision coordinates first
+            const known = gujaratCoords[city];
+            if (known) {
+                return { lat: known.lat, lon: known.lon, name: city };
+            }
+            // 2. Fallback: Geocoding API for any unlisted location
             try {
-                const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`);
+                const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&country=IN&language=en&format=json`);
                 const data = await response.json();
                 if (data.results && data.results.length > 0) {
                     return {
@@ -839,15 +764,17 @@
                 throw new Error('City not found');
             } catch (error) {
                 console.error("Geocoding Error:", error);
-                throw error; // Re-throw for showError logic
+                throw error;
             }
         }
 
         async function getWeather(lat, lon) {
-            // Forecast API (Open-Meteo) - Free, No Key
-            // Added precipitation_probability_max to daily forecast
+            // Open-Meteo API — free, no API key, same data as Google Weather
             try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=auto`;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+                    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m` +
+                    `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max` +
+                    `&timezone=Asia%2FKolkata&forecast_days=7`;
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Weather fetch failed');
                 return await response.json();
@@ -887,93 +814,97 @@
             const current = data.current;
             const daily = data.daily;
 
+            const temp     = Math.round(current.temperature_2m);
+            const feelsLk  = Math.round(current.apparent_temperature);
+            const humidity = current.relative_humidity_2m;
+            const wind     = Math.round(current.wind_speed_10m);
+            const wCode    = current.weather_code;
+            const wInfo    = getWmo(wCode, lang);
+
             // 1. Current Conditions
-            // Get mapped text and icon based on weather code
-            const wCode = current.weather_code;
-            const wInfo = weatherCodeMap[wCode] || defaultWeather;
+            document.getElementById('tempDisplay').innerText = `${temp}°C`;
+            document.getElementById('feelsLike').innerText   = `${feelsLk}°C`;
+            document.getElementById('humidity').innerText     = `${humidity}%`;
+            document.getElementById('windSpeed').innerText    = `${wind} km/h`;
 
-            document.getElementById('tempDisplay').innerText = `${Math.round(current.temperature_2m)}°c`;
-            document.getElementById('feelsLike').innerText = `${Math.round(current.apparent_temperature)}°c`;
-            document.getElementById('humidity').innerText = `${current.relative_humidity_2m}%`;
-            document.getElementById('windSpeed').innerText = `${current.wind_speed_10m} km/h`;
-
-            // Rain Probability (from Daily Max) - Check if exists, else fallback
-            const rainPercent = (daily && daily.precipitation_probability_max && daily.precipitation_probability_max.length > 0) ?
-                daily.precipitation_probability_max[0] :
-                (current.precipitation > 0 ? 100 : 0);
+            // Rain probability from today's daily
+            const rainPercent = daily.precipitation_probability_max[0] || 0;
             document.getElementById('rainProb').innerText = `${rainPercent}%`;
 
-            // Translated Condition Text
-            document.getElementById('weatherConditionTag').innerText = wInfo[lang];
-            document.getElementById('conditionText').innerText = wInfo[lang];
+            // Condition text & tag
+            document.getElementById('weatherConditionTag').innerText = wInfo.text;
+            document.getElementById('conditionText').innerText       = wInfo.text;
 
-            // Icon Update
+            // Weather icon (emoji-based, works without CDN)
             const iconEl = document.getElementById('weatherIcon');
-            // Reset classes and add new ones
-            iconEl.className = `fas weather-icon-lg animate-pulse ${wInfo.icon}`;
+            iconEl.className = '';
+            iconEl.style = '';
+            iconEl.innerText = wInfo.icon;
+            iconEl.style.fontSize = '6rem';
+            iconEl.style.display  = 'block';
+            iconEl.style.lineHeight = '1';
 
-            // 2. Date & Time (Localized)
+            // 2. Date & Time
             const now = new Date();
-            const timeStr = now.toLocaleTimeString(lang === 'gu' ? 'gu-IN' : (lang === 'hi' ? 'hi-IN' : 'en-US'));
-            const dateStr = now.toLocaleDateString(lang === 'gu' ? 'gu-IN' : (lang === 'hi' ? 'hi-IN' : 'en-US'));
-            const updateLabel = translations[lang]['updated'];
-            document.getElementById('currentDate').innerText = `${updateLabel} ${dateStr} ${timeStr}`;
-            document.getElementById('displayLocation').innerText = state.location;
+            const locale = lang === 'gu' ? 'gu-IN' : (lang === 'hi' ? 'hi-IN' : 'en-US');
+            const timeStr = now.toLocaleTimeString(locale);
+            const dateStr = now.toLocaleDateString(locale);
+            document.getElementById('currentDate').innerText =
+                `${translations[lang]['updated']} ${dateStr} ${timeStr}`;
 
-            // Crop Focus Text - TRANSLATED
-            const cropKey = cropKeyMap[state.crop] || 'cropGeneral';
-            const cropName = translations[lang][cropKey] || state.crop;
-            document.getElementById('cropFocus').innerText = cropName;
-            document.getElementById('cropTitle').innerText = cropName;
+            // Translate location name
+            const districtObj = stateDistricts['Gujarat'].find(
+                d => d.id === state.location || d.en === state.location
+            );
+            document.getElementById('displayLocation').innerText =
+                districtObj ? (districtObj[lang] || districtObj.en) : state.location;
 
-            // 3. Forecast Rendering
+            // 3. Forecast (7 days)
             const forecastContainer = document.getElementById('forecastContainer');
             forecastContainer.innerHTML = '';
 
-            // Open-Meteo returns arrays for daily data. We loop through 7 days.
             for (let i = 0; i < 7; i++) {
-                // Skip past days if API returns them, usually index 0 is today
-                const dateRaw = daily.time[i];
-                const maxTemp = Math.round(daily.temperature_2m_max[i]);
-                const fCode = daily.weather_code[i];
-                const fInfo = weatherCodeMap[fCode] || defaultWeather;
+                const dateRaw  = daily.time[i];
+                const maxTemp  = Math.round(daily.temperature_2m_max[i]);
+                const minTemp  = Math.round(daily.temperature_2m_min[i]);
+                const dCode    = daily.weather_code[i];
+                const dInfo    = getWmo(dCode, lang);
 
-                // Format Date
                 const fDateObj = new Date(dateRaw);
-                const fDateStr = fDateObj.toLocaleDateString(lang === 'gu' ? 'gu-IN' : (lang === 'hi' ? 'hi-IN' : 'en-US'), {
-                    weekday: 'short',
-                    day: 'numeric'
+                const fDateStr = fDateObj.toLocaleDateString(locale, {
+                    weekday: 'short', day: 'numeric'
                 });
 
                 forecastContainer.innerHTML += `
                     <div class="min-w-[120px] bg-white p-4 rounded-2xl shadow-sm text-center border border-gray-100 flex-shrink-0 transition-transform hover:scale-105">
                         <p class="text-sm font-bold text-gray-500 mb-2">${fDateStr}</p>
-                        <i class="fas ${fInfo.icon.replace('text-', 'text-')} text-2xl mb-2"></i>
-                        <p class="text-xs text-gray-400 mb-1 h-8 overflow-hidden">${fInfo[lang]}</p>
+                        <div class="text-4xl mb-2">${dInfo.icon}</div>
+                        <p class="text-xs text-gray-400 mb-1 h-8 overflow-hidden">${dInfo.text}</p>
                         <p class="text-xl font-black text-gray-800">${maxTemp}°</p>
+                        <p class="text-xs text-gray-400">${minTemp}°</p>
                     </div>
-                 `;
+                `;
             }
 
-            // 4. Advisories
-            renderAdvisories(current, state.crop, lang);
+            // 4. Advisories (pass raw values)
+            renderAdvisories({ temp_c: temp, humidity, wind_kph: wind,
+                condition: { text: wInfo.text } }, rainPercent, lang);
         }
 
-        function renderAdvisories(current, crop, lang) {
+        function renderAdvisories(current, rainPercent, lang) {
             const rules = [];
-            const cropRules = [];
 
             // Helper for translated strings
             const t = (en, gu, hi) => lang === 'gu' ? gu : (lang === 'hi' ? hi : en);
 
             // General Rules
-            if (current.precipitation > 0 || current.weather_code >= 51) {
+            if (rainPercent > 0 || current.condition.text.toLowerCase().includes('rain') || current.condition.text.toLowerCase().includes('shower')) {
                 rules.push({
                     text: t("Rain expected. Postpone irrigation.", "વરસાદની આગાહી છે. પિયત મુલતવી રાખો.", "बारिश की उम्मीद है। सिंचाई स्थगित करें।"),
                     type: "warning"
                 });
             } else {
-                if (current.temperature_2m > 35) {
+                if (current.temp_c > 35) {
                     rules.push({
                         text: t("High heat. Irrigate in early morning.", "વધારે ગરમી છે. વહેલી સવારે પિયત આપો.", "अधिक गर्मी है। सुबह जल्दी सिंचाई करें।"),
                         type: "warning"
@@ -986,32 +917,21 @@
                 }
             }
 
-            if (current.wind_speed_10m > 20) {
+            if (current.wind_kph > 20) {
                 rules.push({
                     text: t("High winds. Avoid spraying.", "વધારે પવન છે. દવાનો છંટકાવ ટાળો.", "तेज हवाएं। छिड़काव से बचें।"),
                     type: "danger"
                 });
             }
 
-            if (current.relative_humidity_2m > 75) {
+            if (current.humidity > 75) {
                 rules.push({
                     text: t("High humidity. Check for fungus.", "ભેજનું પ્રમાણ વધારે છે. ફૂગ માટે તપાસો.", "उच्च आर्द्रता। कवक की जाँच करें।"),
                     type: "info"
                 });
             }
 
-            // Crop Specific (Simplified Logic for Demo)
-            if (crop === 'Cotton') {
-                if (current.relative_humidity_2m > 60) cropRules.push(t("Watch for bollworms.", "ઈયળના ઉપદ્રવ માટે ધ્યાન રાખો.", "बोल्वौर्म के लिए देखें।"));
-                else cropRules.push(t("Ideal for cotton picking.", "કપાસ વીણવા માટે ઉત્તમ.", "कपास चुनने के लिए आदर्श।"));
-            } else if (crop === 'Groundnut') {
-                cropRules.push(t("Monitor soil moisture.", "જમીનમાં ભેજ ચકાસો.", "मिट्टी की नमी की जाँच करें।"));
-            } else if (crop === 'Wheat') {
-                if (current.temperature_2m > 30) cropRules.push(t("Heat stress risk.", "ગરમીથી પાકને નુકસાન થઈ શકે.", "गर्मी से फसल को नुकसान हो सकता है।"));
-                else cropRules.push(t("Good growth temperature.", "વિકાસ માટે યોગ્ય તાપમાન.", "विकास के लिए अच्छा तापमान।"));
-            } else {
-                cropRules.push(t("Check for weeds regularly.", "નિયમિત નિંદામણ કરો.", "नियमित रूप से खरपतवार की जाँच करें।"));
-            }
+            // Crop specific logic removed
 
             // Render Lists
             const quickContainer = document.getElementById('quickAdvise');
@@ -1044,16 +964,6 @@
                         <p class="text-gray-700 font-medium leading-relaxed">${item.text}</p>
                     </li>`;
             });
-
-            const cropList = document.getElementById('cropAdvisoryList');
-            cropList.innerHTML = '';
-            cropRules.forEach(text => {
-                cropList.innerHTML += `
-                    <li class="flex gap-4 items-start p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <i class="fas fa-leaf text-emerald-500 mt-1"></i>
-                        <p class="text-gray-700 font-medium leading-relaxed">${text}</p>
-                    </li>`;
-            });
         }
 
         // --- Logic Control ---
@@ -1061,13 +971,13 @@
         async function fetchWeather(forceRefresh = false) {
             if (state.isLoading) return;
 
-            // Check Cache (30 min)
+            // Check Cache (5 min)
             if (!forceRefresh) {
                 const lastFetch = localStorage.getItem('agri_last_fetch');
                 const cachedDataStr = localStorage.getItem('agri_weather_data');
                 if (lastFetch && cachedDataStr) {
                     const elapsed = Date.now() - parseInt(lastFetch);
-                    if (elapsed < 30 * 60 * 1000) { // 30 minutes
+                    if (elapsed < 5 * 60 * 1000) { // 5 minutes
                         // Use Cache
                         state.weatherData = JSON.parse(cachedDataStr);
                         renderWeather();
@@ -1160,6 +1070,9 @@
             if (state.weatherData) {
                 renderWeather();
             }
+
+            // RE-RENDER dropdown if visible
+            populateCities();
         }
 
         // --- Mobile Menu Logic ---
@@ -1204,21 +1117,30 @@
         }
 
         // --- Dynamic City Dropdown Logic ---
-        const stateSelect = document.getElementById('stateSelect');
         const citySelect = document.getElementById('citySelect');
 
         function populateCities() {
-            const selectedState = stateSelect.value;
-            const districts = stateDistricts[selectedState] || [];
+            // Hardcoded to Gujarat
+            const districts = stateDistricts['Gujarat'] || [];
+            
+            // "Select City" placeholder translation
+            const selectPlaceholderInfo = {
+                en: 'Select City / District',
+                gu: 'શહેર / જિલ્લો પસંદ કરો',
+                hi: 'शहर / जिला चुनें'
+            };
+            const placeholderText = selectPlaceholderInfo[state.lang] || selectPlaceholderInfo.en;
 
-            citySelect.innerHTML = '<option value="">Select City / District</option>';
+            // Retain previously selected value (if any)
+            const currentValue = citySelect.value;
+
+            citySelect.innerHTML = `<option value="">${placeholderText}</option>`;
             districts.forEach(district => {
-                citySelect.innerHTML += `<option value="${district}">${district}</option>`;
+                const displayName = district[state.lang] || district.en;
+                const isSelected = currentValue === district.id ? 'selected' : '';
+                citySelect.innerHTML += `<option value="${district.id}" ${isSelected}>${displayName}</option>`;
             });
         }
-
-        // Event Listener for State Change
-        stateSelect.addEventListener('change', populateCities);
 
         // Initial Population
         populateCities();
@@ -1232,6 +1154,13 @@
             if (city) {
                 state.location = city;
                 state.crop = crop;
+                // Clear stale coords & cache so new precise coordinates are always used
+                state.lat = null;
+                state.lon = null;
+                localStorage.removeItem('agri_lat');
+                localStorage.removeItem('agri_lon');
+                localStorage.removeItem('agri_weather_data');
+                localStorage.removeItem('agri_last_fetch');
                 localStorage.setItem('agri_location', city);
                 localStorage.setItem('agri_crop', crop);
                 document.getElementById('accessModal').classList.add('hidden');

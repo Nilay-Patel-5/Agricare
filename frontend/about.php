@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>About Us | AgriCare</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="output.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -55,8 +55,10 @@
 
                 <nav class="hidden xl:flex items-center gap-1">
                     <a href="index.php" class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2" data-lang="home">🏠 Home</a>
+                    <a href="index.php#features" class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2" data-lang="features">✨ Features</a>
                     <a href="market.php" class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2" data-lang="market">📈 Market</a>
                     <a href="weather.php" class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2" data-lang="weather">🌤️ Weather</a>
+
                     <a href="about.php" class="text-emerald-700 bg-emerald-50 font-bold px-6 py-3 rounded-full transition-all decoration-2" data-lang="contact">ℹ️ About</a>
                 </nav>
 
@@ -92,8 +94,10 @@
 
             <nav class="space-y-4">
                 <a href="index.php" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" data-lang="home">🏠 Home</a>
+                <a href="index.php#features" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" data-lang="features">✨ Features</a>
                 <a href="market.php" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" data-lang="market">📈 Market</a>
                 <a href="weather.php" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" data-lang="weather">🌤️ Weather</a>
+
                 <a href="about.php" onclick="closeMobileMenu()" class="block text-lg font-semibold text-emerald-600 py-2 border-b bg-emerald-50 rounded pl-2" data-lang="contact">ℹ️ About</a>
                 <a href="login.php" data-lang="loginBtn" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">Login</a>
                 <a href="register.php" data-lang="registerBtn" class="block bg-emerald-600 text-white font-bold py-3 rounded-xl text-center mt-6 shadow-lg">Register Now</a>

@@ -81,7 +81,7 @@ async function loadUsers() {
     try {
         const res = await fetch('../backend/admin_users_api.php');
         const data = await res.json();
-        allUsers = Array.isArray(data?.users) ? data.users : [];
+        allUsers = data.users || [];
 
         // Populate district filter
         const districts = [...new Set(allUsers.map(u => u.district).filter(Boolean))].sort();
@@ -95,14 +95,13 @@ async function loadUsers() {
 }
 
 function renderTable(users) {
-    const rows = Array.isArray(users) ? users : [];
-    document.getElementById('totalCount').textContent = rows.length + ' farmer' + (rows.length !== 1 ? 's' : '');
+    document.getElementById('totalCount').textContent = users.length + ' farmer' + (users.length !== 1 ? 's' : '');
     const tbody = document.getElementById('usersTable');
-    if (!rows.length) {
+    if (!users.length) {
         tbody.innerHTML = '<tr><td colspan="8" class="py-12 text-center text-slate-400">No farmers found.</td></tr>';
         return;
     }
-    tbody.innerHTML = rows.map((u, i) => `
+    tbody.innerHTML = users.map((u, i) => `
         <tr class="border-t border-slate-50 hover:bg-slate-50 transition-colors" data-id="${u.id}">
             <td class="py-4 px-6 text-xs text-slate-400 font-bold">#${String(u.id).padStart(4,'0')}</td>
             <td class="py-4 px-6">

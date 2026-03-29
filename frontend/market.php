@@ -37,20 +37,6 @@
             margin: 0 auto;
         }
 
-        /* Hide scrollbar for mobile menu */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 4px;
-        }
-
         /* No Data Placeholder Styles */
         .no-data-icon {
             width: 80px;
@@ -457,7 +443,7 @@
                     throw new Error(message);
                 }
 
-                const data = Array.isArray(payload) ? payload : [];
+                const data = (payload && payload.success && payload.rows) ? payload.rows : (Array.isArray(payload) ? payload : []);
                 showResults(data);
             } catch (error) {
                 console.error("Fetch error:", error);
@@ -498,27 +484,32 @@
         }
 
 
+        let currentPage = 1;
+        const PAGE_SIZE = 100;
+
         function showResults(rows) {
             currentMarketData = rows;
+            currentPage = 1;
+            renderPage();
+        }
 
+        function renderPage() {
+            const rows = currentMarketData;
             const container = document.getElementById("tableContainer");
             const placeholder = document.getElementById("noDataPlaceholder");
 
             if (!rows || rows.length === 0) {
                 placeholder.classList.remove("hidden");
                 container.classList.add("hidden");
-
-                // Hide arrival date if no data
                 const dateDisplay = document.getElementById("arrivalDateDisplay");
                 if (dateDisplay) dateDisplay.classList.add("hidden");
-
                 return;
             }
 
             placeholder.classList.add("hidden");
             container.classList.remove("hidden");
 
-            // Display dynamic arrival date from first record
+            // Display arrival date
             const dateDisplay = document.getElementById("arrivalDateDisplay");
             const dateText = document.getElementById("arrivalDateText");
             if (dateDisplay && dateText && rows[0].arrival_date) {
@@ -526,40 +517,99 @@
                 dateDisplay.classList.remove("hidden");
             }
 
+            const totalPages = Math.ceil(rows.length / PAGE_SIZE);
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const end = Math.min(start + PAGE_SIZE, rows.length);
+            const pageRows = rows.slice(start, end);
+
             let html = `
+    <div class="flex flex-wrap justify-between items-center mb-3 gap-3">
+        <span class="text-sm text-gray-600 font-medium">
+            ${translations[currentLang]['showing_records'] || 'Showing'} <strong>${start + 1}–${end}</strong> ${translations[currentLang]['of_records'] || 'of'} <strong>${rows.length}</strong> ${translations[currentLang]['records'] || 'records'}
+        </span>
+        <div class="flex items-center gap-2">
+            <button onclick="changePage(-1)" id="prevPageBtn"
+                class="px-4 py-1.5 rounded-lg border border-emerald-300 text-emerald-700 font-semibold text-sm hover:bg-emerald-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                ${currentPage === 1 ? 'disabled' : ''}>
+                ← ${translations[currentLang]['prev_page'] || 'Prev'}
+            </button>
+            <span class="text-sm font-semibold text-gray-700 px-2">${translations[currentLang]['page'] || 'Page'} ${currentPage} / ${totalPages}</span>
+            <button onclick="changePage(1)" id="nextPageBtn"
+                class="px-4 py-1.5 rounded-lg border border-emerald-300 text-emerald-700 font-semibold text-sm hover:bg-emerald-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                ${currentPage === totalPages ? 'disabled' : ''}>
+                ${translations[currentLang]['next_page'] || 'Next'} →
+            </button>
+        </div>
+    </div>
     <div class="overflow-x-auto bg-white rounded-2xl shadow">
     <table class="w-full text-sm text-left">
     <thead class="bg-emerald-600 text-white">
         <tr>
-            <th class="p-3" data-lang="district_label">${translations[currentLang]['district_label'] || 'District'}</th>
-            <th class="p-3" data-lang="market_label">${translations[currentLang]['market_label'] || 'Market'}</th>
-            <th class="p-3" data-lang="commodity_label">${translations[currentLang]['commodity_label'] || 'Commodity'}</th>
-            <th class="p-3" data-lang="min_price">${translations[currentLang]['min_price'] || 'Min Price (₹/Quintal)'}</th>
-            <th class="p-3" data-lang="max_price">${translations[currentLang]['max_price'] || 'Max Price (₹/Quintal)'}</th>
-            <th class="p-3" data-lang="modal_price">${translations[currentLang]['modal_price'] || 'Modal Price (₹/Quintal)'}</th>
+            <th class="p-3">${translations[currentLang]['district_label'] || 'District'}</th>
+            <th class="p-3">${translations[currentLang]['market_label'] || 'Market'}</th>
+            <th class="p-3">${translations[currentLang]['commodity_label'] || 'Commodity'}</th>
+            <th class="p-3">${translations[currentLang]['min_price'] || 'Min Price (₹/Quintal)'}</th>
+            <th class="p-3">${translations[currentLang]['max_price'] || 'Max Price (₹/Quintal)'}</th>
+            <th class="p-3">${translations[currentLang]['modal_price'] || 'Modal Price (₹/Quintal)'}</th>
         </tr>
     </thead>
     <tbody>`;
 
-            rows.forEach(r => {
-                const trDistrict = getLocalizedMarketName(r.district, currentLang);
-                const trMarket = getLocalizedMarketName(r.market, currentLang);
-                const trCommodity = getLocalizedMarketName(r.commodity, currentLang);
+            pageRows.forEach(r => {
+                const trDistrict = escapeHtml(getLocalizedMarketName(r.district, currentLang));
+                const trMarket = escapeHtml(getLocalizedMarketName(r.market, currentLang));
+                const trCommodity = escapeHtml(getLocalizedMarketName(r.commodity, currentLang));
+                const trMin = escapeHtml(String(r.min));
+                const trMax = escapeHtml(String(r.max));
+                const trModal = escapeHtml(String(r.modal));
 
                 html += `
         <tr class="border-b hover:bg-gray-50">
             <td class="p-3">${trDistrict}</td>
             <td class="p-3">${trMarket}</td>
             <td class="p-3">${trCommodity}</td>
-            <td class="p-3">₹${r.min}</td>
-            <td class="p-3">₹${r.max}</td>
-            <td class="p-3 font-bold text-emerald-700">₹${r.modal}</td>
+            <td class="p-3">₹${trMin}</td>
+            <td class="p-3">₹${trMax}</td>
+            <td class="p-3 font-bold text-emerald-700">₹${trModal}</td>
         </tr>`;
             });
 
-            html += "</tbody></table></div>";
+            html += `</tbody></table></div>`;
+
+            // Bottom pagination
+            if (totalPages > 1) {
+                html += `
+    <div class="flex flex-wrap justify-between items-center mt-3 gap-3">
+        <span class="text-sm text-gray-600 font-medium">
+            ${translations[currentLang]['showing_records'] || 'Showing'} <strong>${start + 1}–${end}</strong> ${translations[currentLang]['of_records'] || 'of'} <strong>${rows.length}</strong> ${translations[currentLang]['records'] || 'records'}
+        </span>
+        <div class="flex items-center gap-2">
+            <button onclick="changePage(-1)"
+                class="px-4 py-1.5 rounded-lg border border-emerald-300 text-emerald-700 font-semibold text-sm hover:bg-emerald-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                ${currentPage === 1 ? 'disabled' : ''}>
+                ← ${translations[currentLang]['prev_page'] || 'Prev'}
+            </button>
+            <span class="text-sm font-semibold text-gray-700 px-2">${translations[currentLang]['page'] || 'Page'} ${currentPage} / ${totalPages}</span>
+            <button onclick="changePage(1)"
+                class="px-4 py-1.5 rounded-lg border border-emerald-300 text-emerald-700 font-semibold text-sm hover:bg-emerald-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                ${currentPage === totalPages ? 'disabled' : ''}>
+                ${translations[currentLang]['next_page'] || 'Next'} →
+            </button>
+        </div>
+    </div>`;
+            }
 
             container.innerHTML = html;
+
+            // Scroll to top of table on page change
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function changePage(delta) {
+            if (!currentMarketData) return;
+            const totalPages = Math.ceil(currentMarketData.length / PAGE_SIZE);
+            currentPage = Math.max(1, Math.min(currentPage + delta, totalPages));
+            renderPage();
         }
         // Copying minimal needed script for menu & language
 

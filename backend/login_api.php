@@ -1,10 +1,12 @@
 <?php
+require_once __DIR__ . '/security_headers.php';
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 
-$data = json_decode(file_get_contents('php://input'), true);
+$raw = file_get_contents('php://input');
+$data = json_decode($raw, true);
 
-if (!$data) {
+if (!$data || !is_array($data)) {
     echo json_encode(['success' => false, 'message' => 'No login data provided']);
     exit;
 }
@@ -27,7 +29,7 @@ try {
         $stmt->execute([$identifier]);
         $user = $stmt->fetch();
 
-        if ($user && $user['pin'] === $password) {
+        if ($user && password_verify($password, $user['pin'])) {
             echo json_encode(['success' => true, 'user' => [
                 'id' => $user['id'],
                 'user_id' => $user['user_id'],
@@ -61,5 +63,6 @@ try {
     }
 
 } catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Server error: ' . $e->getMessage()]);
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'Server error. Please try again.']);
 }

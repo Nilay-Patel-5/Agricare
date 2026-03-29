@@ -6,7 +6,7 @@
     <title>Farmer Dashboard | AgriCare</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../frontend/output.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -45,27 +45,48 @@
             border: 2px solid #10b981;
         }
 
-        /* Hide scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
+
+        .timeline-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
+        .process-card {
+            position: relative;
+            padding-left: 2rem;
+            border-left: 2px solid #e5e7eb;
+            margin-left: 1rem;
+            padding-bottom: 2rem;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 10px;
+        .process-card:last-child {
+            border-left: 2px solid transparent;
+            padding-bottom: 0;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
+        .process-dot {
+            position: absolute;
+            left: -0.55rem;
+            top: 0;
+            width: 1rem;
+            height: 1rem;
+            background: white;
+            border: 3px solid #10b981;
+            border-radius: 9999px;
+            z-index: 10;
         }
     </style>
 </head>
 
 <body class="flex h-screen overflow-hidden">
+    <div id="progressBar"></div>
 
     <!-- Sidebar -->
     <aside class="w-72 bg-white border-r border-gray-100 flex flex-col hidden lg:flex">
@@ -76,7 +97,7 @@
                     <i class="fas fa-wheat-awn"></i>
                 </div>
                 <div>
-                    <span class="text-xl font-black text-gray-800 tracking-tight block">AgriCare</span>
+                    <span class="text-xl font-black text-gray-800 tracking-tight block" data-lang="appName">AgriCare</span>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-widest"
                         data-lang="farmerPortal">Farmer Portal</span>
                 </div>
@@ -103,13 +124,9 @@
                 <i class="fas fa-hand-holding-dollar w-5 text-center"></i>
                 <span data-lang="subsidies">Government Subsidies</span>
             </a>
-            <a href="../frontend/market.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
-                <i class="fas fa-store w-5 text-center"></i>
-                <span data-lang="marketPrices">Mandi Prices</span>
-            </a>
-            <a href="../frontend/weather.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
-                <i class="fas fa-cloud-sun-rain w-5 text-center"></i>
-                <span data-lang="weather">Weather Forecast</span>
+            <a href="../frontend/chatbot.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
+                <i class="fas fa-comments w-5 text-center"></i>
+                <span data-lang="chatAssistant">Chat Assistant</span>
             </a>
         </nav>
 
@@ -134,30 +151,10 @@
                 </h2>
             </div>
 
-            <div class="flex items-center gap-6">
-                <!-- Language Selector -->
-                <div class="flex bg-gray-100 p-1 rounded-xl">
-                    <button onclick="changeLang('en')"
-                        class="lang-btn px-3 py-1 text-sm font-bold rounded-lg transition-all active bg-white shadow text-emerald-700"
-                        data-lang-key="en">EN</button>
-                    <button onclick="changeLang('gu')"
-                        class="lang-btn px-3 py-1 text-sm font-bold rounded-lg text-gray-500 hover:text-emerald-700 transition-all"
-                        data-lang-key="gu">ગુ</button>
-                    <button onclick="changeLang('hi')"
-                        class="lang-btn px-3 py-1 text-sm font-bold rounded-lg text-gray-500 hover:text-emerald-700 transition-all"
-                        data-lang-key="hi">हिं</button>
-                </div>
-
-                <div class="flex items-center gap-3 pl-6 border-l border-gray-200">
-                    <div
-                        class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold border-2 border-white shadow-sm">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="hidden md:block">
-                        <p id="userNameDisplay" class="text-sm font-bold text-gray-800 leading-tight">Farmer User</p>
-                        <p id="userLocationDisplay"
-                            class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Gujarat, India</p>
-                    </div>
+            <div class="flex items-center gap-4">
+                <p id="userNameDisplay" class="text-sm font-bold text-gray-800">Farmer User</p>
+                <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold border-2 border-white shadow-sm">
+                    <i class="fas fa-user"></i>
                 </div>
             </div>
         </header>
@@ -185,26 +182,26 @@
 
                 <!-- Main Content: The Calendar -->
                 <div class="lg:col-span-3">
-                    <div
-                        class="flex justify-between items-center mb-6 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <div>
-                            <h2 class="text-2xl font-black text-emerald-800 tracking-tight" id="activeCropName">
-                                Loading...</h2>
-                            <p class="text-sm font-bold text-gray-500 mt-1 uppercase tracking-widest"
-                                id="activeCropSeason">Season</p>
-                        </div>
-                        <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-2xl shrink-0"
-                            id="activeCropIcon">
-                            🌾
-                        </div>
+                <div
+                    class="flex justify-between items-center mb-6 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div>
+                        <h2 class="text-2xl font-black text-emerald-800 tracking-tight" id="activeCropName">
+                            Loading...</h2>
+                        <p class="text-sm font-bold text-gray-500 mt-1 uppercase tracking-widest"
+                            id="activeCropSeason">Season</p>
                     </div>
+                    <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+                        id="activeCropIcon">
+                        🌾
+                    </div>
+                </div>
 
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="calendarGrid">
-                        <!-- Javascript will populate months here -->
-                    </div>
+                <div class="space-y-4" id="calendarGrid">
+                    <!-- Timeline will be populated here -->
                 </div>
             </div>
         </div>
+    </div>
 
         <!-- Module: Disease Detector -->
         <div id="module-disease" class="module-view hidden flex-1 overflow-y-auto px-6 lg:px-10 py-8">
@@ -348,10 +345,10 @@
             <!-- Filters -->
             <div class="space-y-6 mb-8">
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="filterSubsidies('All')" data-cat="All" class="subsidy-tab bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-95">All Schemes</button>
-                    <button onclick="filterSubsidies('Income Support')" data-cat="Income Support" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100">Income Support</button>
-                    <button onclick="filterSubsidies('Irrigation')" data-cat="Irrigation" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100">Irrigation</button>
-                    <button onclick="filterSubsidies('Equipment')" data-cat="Equipment" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100">Equipment</button>
+                    <button onclick="filterSubsidies('All')" data-cat="All" class="subsidy-tab bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-95" data-lang="cat_all">All Schemes</button>
+                    <button onclick="filterSubsidies('Income Support')" data-cat="Income Support" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_income">Income Support</button>
+                    <button onclick="filterSubsidies('Irrigation')" data-cat="Irrigation" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_irrigation">Irrigation</button>
+                    <button onclick="filterSubsidies('Equipment')" data-cat="Equipment" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_equipment">Equipment</button>
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-4">
@@ -568,6 +565,7 @@
 
         const translations = {
             en: {
+                appName: 'AgriCare',
                 farmerPortal: 'Farmer Portal',
                 menu: 'Menu',
                 cropCalendar: 'Crop Calendar',
@@ -594,9 +592,24 @@
                 status_offline: 'AI OFFLINE',
                 subsidy_hero_desc: 'Discover the latest financial aids, schemes, and benefits provided by the state and central government for farmers.',
                 apply_now: 'Apply Now',
-                view_details: 'View Details'
+                view_details: 'View Details',
+                chatAssistant: 'Chat Assistant',
+                askAgriCare: 'Ask AgriCare',
+                processTimeline: 'Process Timeline',
+                status: 'Status',
+                planned_op: 'Planned Operation',
+                duration: 'Duration',
+                days: 'Days',
+                impact: 'Impact',
+                high_yield: 'High Yield',
+                cat_all: 'All Schemes',
+                cat_income: 'Income Support',
+                cat_irrigation: 'Irrigation',
+                cat_equipment: 'Equipment',
+                day: 'Day'
             },
             gu: {
+                appName: 'એગ્રીકેર',
                 farmerPortal: 'ખેડૂત પોર્ટલ',
                 menu: 'મેનુ',
                 cropCalendar: 'પાક કેલેન્ડર',
@@ -624,9 +637,24 @@
                 subsidy_hero_desc: 'તમારી કૃષિ જરૂરિયાતો માટે ઉપલબ્ધ સરકારી સહાય અને યોજનાઓ વિશે જાણો.',
                 apply_now: 'અરજી કરો',
                 view_details: 'વિગતો જુઓ',
-                benefit_label: 'લાભ:'
+                benefit_label: 'લાભ:',
+                chatAssistant: 'ચેટ સહાયક',
+                askAgriCare: 'એગ્રીકેરને પૂછો',
+                processTimeline: 'પ્રક્રિયા સમયરેખા',
+                status: 'સ્થિતિ',
+                planned_op: 'આયોજિત કામગીરી',
+                duration: 'સમયગાળો',
+                days: 'દિવસો',
+                impact: 'અસર',
+                high_yield: 'વધુ ઉપજ',
+                cat_all: 'બધી યોજનાઓ',
+                cat_income: 'આવક સહાય',
+                cat_irrigation: 'સિંચાઈ',
+                cat_equipment: 'સાધનો',
+                day: 'દિવસ'
             },
             hi: {
+                appName: 'एग्रीकेयर',
                 farmerPortal: 'किसान पोर्टल',
                 menu: 'मेनू',
                 cropCalendar: 'फसल कैलेंडर',
@@ -654,7 +682,21 @@
                 subsidy_hero_desc: 'अपनी कृषि आवश्यकताओं के लिए उपलब्ध सरकारी सहायता और योजनाओं के बारे में जानें।',
                 apply_now: 'आवेदन करें',
                 view_details: 'विवरण देखें',
-                benefit_label: 'लाभ:'
+                benefit_label: 'लाभ:',
+                chatAssistant: 'चैट सहायक',
+                askAgriCare: 'एग्रीकेयर से पूछें',
+                processTimeline: 'प्रक्रिया समयरेखा',
+                status: 'स्थिति',
+                planned_op: 'नियोजित कार्य',
+                duration: 'अवधि',
+                days: 'दिन',
+                impact: 'प्रभाव',
+                high_yield: 'उच्च उपज',
+                cat_all: 'सभी योजनाएं',
+                cat_income: 'आय सहायता',
+                cat_irrigation: 'सिंचाई',
+                cat_equipment: 'उपकरण',
+                day: 'दिन'
             }
         };
 
@@ -663,10 +705,9 @@
         let cropsData = [];
 
         function updateUserInfo() {
-            const userData = JSON.parse(sessionStorage.getItem('agricare_user'));
+            const userData = JSON.parse(sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user') || 'null');
             if (userData) {
                 document.getElementById('userNameDisplay').innerText = userData.name || 'Farmer User';
-                document.getElementById('userLocationDisplay').innerText = userData.district ? `${userData.district}, Gujarat` : 'Gujarat, India';
             }
         }
 
@@ -694,18 +735,35 @@
                 return;
             }
 
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative';
+            
+            const selectEl = document.createElement('select');
+            selectEl.className = 'w-full appearance-none bg-white border border-gray-200 text-gray-700 text-lg py-4 px-5 pr-12 rounded-2xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer hover:border-emerald-300 transition-colors';
+            
+            selectEl.onchange = (e) => {
+                activeCropIndex = parseInt(e.target.value);
+                renderCalendar();
+            };
+
             cropsData.forEach((crop, index) => {
-                const isActive = index === activeCropIndex;
-                const btn = document.createElement('button');
-                btn.className = `w-full text-left px-5 py-4 rounded-2xl font-bold transition-all flex items-center gap-4 ${isActive ? 'bg-emerald-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-emerald-50 border border-gray-100 shadow-sm'}`;
-                btn.innerHTML = `<span class="text-xl">${crop.icon}</span> <span class="text-sm">${crop[`name_${currentLang}`]}</span>`;
-                btn.onclick = () => {
-                    activeCropIndex = index;
-                    renderSidebar();
-                    renderCalendar();
-                };
-                container.appendChild(btn);
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = `${crop.icon} ${crop[`name_${currentLang}`]}`;
+                if (index === activeCropIndex) {
+                    opt.selected = true;
+                }
+                selectEl.appendChild(opt);
             });
+
+            wrapper.appendChild(selectEl);
+
+            const arrow = document.createElement('div');
+            arrow.className = 'pointer-events-none absolute inset-y-0 right-0 flex items-center pr-5 text-emerald-500';
+            arrow.innerHTML = '<i class="fas fa-chevron-down text-lg"></i>';
+            wrapper.appendChild(arrow);
+
+            container.appendChild(wrapper);
         }
 
         function renderCalendar() {
@@ -719,65 +777,61 @@
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
 
-            const currentMonthIndex = new Date().getMonth();
-
-            // Create a map for the schedule for easy lookup
-            const scheduleMap = {};
-            crop.schedule.forEach(s => {
-                scheduleMap[s.month_index] = s;
-            });
-
-            for (let i = 0; i < 12; i++) {
-                const isCurrentMonth = i === currentMonthIndex;
-                const activity = scheduleMap[i];
-
-                const card = document.createElement('div');
-                card.className = `bg-white rounded-[1.5rem] p-5 border transition-all ${isCurrentMonth ? 'current-month-indicator' : 'border-gray-100 shadow-sm hover:shadow-md'}`;
-
-                let activityHtml = '';
-                if (activity) {
-                    activityHtml = `
-                        <div class="mt-4 flex items-start gap-3 p-3 rounded-2xl bg-${activity.activity_color}-50">
-                            <div class="w-8 h-8 bg-white rounded-xl flex items-center justify-center text-${activity.activity_color}-600 shadow-sm shrink-0">
-                                <i class="fas fa-${activity.activity_icon} text-sm"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-800 text-xs leading-tight">${activity[`task_${currentLang}`]}</p>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    activityHtml = `
-                        <div class="mt-4 p-3 text-center">
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">${translations[currentLang].noActivity}</p>
-                        </div>
-                    `;
-                }
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <h4 class="text-lg font-black text-gray-900">${monthNames[currentLang][i]}</h4>
-                        ${isCurrentMonth ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded">Current</span>` : ''}
+            if (!crop.schedule || crop.schedule.length === 0) {
+                grid.innerHTML = `
+                    <div class="bg-white rounded-[2rem] p-12 text-center border border-gray-100 shadow-sm">
+                        <i class="fas fa-calendar-day text-5xl text-gray-100 mb-4"></i>
+                        <p class="text-gray-400 font-bold uppercase tracking-widest text-sm">${translations[currentLang].noActivity}</p>
                     </div>
-                    ${activityHtml}
                 `;
-                grid.appendChild(card);
+                return;
             }
+
+            // Sort schedule by start_day
+            const sortedSchedule = [...crop.schedule].sort((a, b) => a.start_day - b.start_day);
+
+            sortedSchedule.forEach((activity, index) => {
+                const processCard = document.createElement('div');
+                processCard.className = 'process-card';
+
+                processCard.innerHTML = `
+                    <div class="process-dot"></div>
+                    <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+                        <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-${activity.activity_color}-50 rounded-2xl flex items-center justify-center text-${activity.activity_color}-600">
+                                    <i class="fas fa-${activity.activity_icon}"></i>
+                                </div>
+                                <h4 class="text-xl font-black text-gray-900">${activity[`task_${currentLang}`]}</h4>
+                            </div>
+                            <div class="timeline-badge">
+                                ${translations[currentLang].day} ${activity.start_day} - ${activity.end_day}
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-2xl">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${translations[currentLang].status || 'Status'}</p>
+                                <p class="text-sm font-bold text-gray-800">${translations[currentLang].planned_op || 'Planned Operation'}</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-2xl">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${translations[currentLang].duration || 'Duration'}</p>
+                                <p class="text-sm font-bold text-gray-800">${activity.end_day - activity.start_day} ${translations[currentLang].days || 'Days'}</p>
+                            </div>
+                             <div class="bg-gray-50 p-4 rounded-2xl">
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${translations[currentLang].impact || 'Impact'}</p>
+                                <p class="text-sm font-bold text-emerald-600">${translations[currentLang].high_yield || 'High Yield'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(processCard);
+            });
         }
 
         function changeLang(lang) {
             currentLang = lang;
             localStorage.setItem('agricare_lang', lang);
-
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'shadow', 'text-emerald-700');
-                btn.classList.add('text-gray-500');
-            });
-            const activeBtn = document.querySelector(`[data-lang-key="${lang}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('bg-white', 'shadow', 'text-emerald-700');
-                activeBtn.classList.remove('text-gray-500');
-            }
 
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
@@ -951,6 +1005,7 @@
         function handleFiles(files) {
             if (!files[0]) return;
             const file = files[0];
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 previewImg.src = e.target.result;
@@ -978,19 +1033,31 @@
 
                 analyzeBtn.disabled = true;
                 document.getElementById('btn-text').textContent = "Neural Mapping...";
-
                 try {
+                    const userData = JSON.parse(sessionStorage.getItem('agricare_user'));
                     const fd = new FormData();
                     fd.append('image', file);
+                    if (userData && userData.id) fd.append('user_id', userData.id);
+
                     const res = await fetch(AI_PREDICT_ENDPOINT, {
                         method: 'POST',
                         body: fd
                     });
+
                     if (!res.ok) throw new Error("API Connection Error");
                     const data = await res.json();
+                    
+                    if (data.error) {
+                        alert("AI Message: " + data.error);
+                        analyzeBtn.disabled = false;
+                        document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
+                        return;
+                    }
+
                     showResults(data);
                 } catch (err) {
-                    alert("AI Engine is offline. Start predict_api.py on port 5050.");
+                    console.error("AI Analysis Error:", err);
+                    alert("Neural engine is taking longer than expected. Please check your internet connection.");
                     analyzeBtn.disabled = false;
                     document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
                 }
@@ -1027,11 +1094,11 @@
                     signal: AbortSignal.timeout(6000)
                 });
                 if (res.ok) {
-                    label.innerText = translations[currentLang].status_online;
+                    label.innerText = translations[currentLang].status_online || 'AI ONLINE';
                     label.className = "text-[10px] font-black uppercase tracking-widest text-emerald-600";
                     pulse.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
                 } else {
-                    label.innerText = translations[currentLang].status_offline;
+                    label.innerText = translations[currentLang].status_offline || 'AI OFFLINE';
                     label.className = "text-[10px] font-black uppercase tracking-widest text-orange-500";
                     pulse.className = "w-3 h-3 rounded-full bg-orange-400";
                 }
@@ -1051,7 +1118,41 @@
             fetchCrops();
         });
     </script>
+    <!-- Floating AI Chat Button -->
+    <a href="../frontend/chatbot.php" 
+       class="fixed bottom-8 right-8 w-16 h-16 bg-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-emerald-700 hover:scale-110 transition-all z-50 group">
+        <i class="fas fa-robot text-2xl"></i>
+        <span class="absolute right-20 bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl" data-lang="askAgriCare">
+            Ask AgriCare
+        </span>
+    </a>
+
+    <script>
+        // Universal Scroll Progress Bar
+        document.addEventListener('scroll', function(e) {
+            let target = e.target;
+            if (target === document) target = document.documentElement;
+            
+            let winScroll = target.scrollTop;
+            let height = target.scrollHeight - target.clientHeight;
+            if (height <= 0) return;
+            
+            let scrolled = (winScroll / height) * 100;
+            const bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "9999";
+                bar.style.transition = "width 0.1s";
+            }
+        }, true);
+    </script>
 </body>
+
 
 </html>
 

@@ -133,14 +133,13 @@
 
         function renderTable(data) {
             const tbody = document.getElementById('subsidies-table');
-            const rows = Array.isArray(data) ? data : [];
             
-            if (!rows.length) {
+            if (!data.length) {
                 tbody.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-gray-400">No subsidies available</td></tr>';
                 return;
             }
             
-            tbody.innerHTML = rows.map(s => `
+            tbody.innerHTML = data.map(s => `
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="py-4 px-6 text-gray-900 font-medium">${s.name || '—'}</td>
                     <td class="py-4 px-6 text-gray-600">

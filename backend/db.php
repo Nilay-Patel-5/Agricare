@@ -1,16 +1,18 @@
 <?php
 // backend/db.php - PostgreSQL Connection Helper
+require_once __DIR__ . '/env.php';
 
 class Database
 {
     private static $defaultConfig = [
-        'host' => 'localhost',
-        'db' => 'agricare_db',
+        'host' => 'db.fnfqrectniyjpkyfkmal.supabase.co',
+        'db'   => 'postgres',
         'user' => 'postgres',
-        'pass' => '',
+        'pass' => 'nrpsupabase7',
         'port' => '5432',
-        'sslmode' => null,
+        'sslmode' => 'require',
     ];
+
     private static $pdo = null;
     private static $config = null;
 
@@ -110,15 +112,18 @@ class Database
         if (self::$pdo === null) {
             try {
                 $config = self::getConfig();
-                $dsn = "pgsql:host={$config['host']};port={$config['port']};dbname={$config['db']}";
+                $dsn = "pgsql:host={$config['host']};port={$config['port']};dbname={$config['db']};connect_timeout=10";
                 if (!empty($config['sslmode'])) {
                     $dsn .= ";sslmode={$config['sslmode']}";
                 }
                 self::$pdo = new PDO($dsn, $config['user'], $config['pass'], [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_EMULATE_PREPARES => true,
+                    PDO::ATTR_TIMEOUT => 10,
                 ]);
+                // Removed ensureUsersTableSchema(self::$pdo) to speed up performance.
+                // Run update_db.php manually if schema changes are needed.
             } catch (PDOException $e) {
                 throw $e;
             }
@@ -126,3 +131,4 @@ class Database
         return self::$pdo;
     }
 }
+
