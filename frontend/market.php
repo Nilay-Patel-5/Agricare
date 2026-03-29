@@ -37,20 +37,6 @@
             margin: 0 auto;
         }
 
-        /* Hide scrollbar for mobile menu */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 4px;
-        }
-
         /* No Data Placeholder Styles */
         .no-data-icon {
             width: 80px;

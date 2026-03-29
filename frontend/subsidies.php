@@ -40,18 +40,6 @@ exit;
             margin: 0 auto;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 4px;
-        }
 
         .subsidy-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

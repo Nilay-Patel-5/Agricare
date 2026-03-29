@@ -44,9 +44,9 @@
         if (messagesEl.children.length === 0 || messagesEl.textContent.includes('Start a farming conversation')) {
             messagesEl.innerHTML = '';
         }
-        renderMessage('user', pest ? `Show shops for: ${pest}` : 'Find nearby agricultural shops 🗺️');
+        renderMessage('user', pest ? `${(window.CHAT_T && window.CHAT_T.findShopsMsg && pest) ? 'Show shops for: ' + pest : 'Show shops for: ' + pest}` : ((window.CHAT_T && window.CHAT_T.findShopsMsg) || 'Find nearby agricultural shops 🗺️'));
 
-        const loadingEl = renderMessage('assistant', '📍 Getting your location & finding nearby shops...');
+        const loadingEl = renderMessage('assistant', (window.CHAT_T && window.CHAT_T.gettingLocation) || '📍 Getting your location & finding nearby shops...');
 
         try {
             const gps = await getBrowserLocation();
@@ -229,7 +229,51 @@
         updateMuteUI();
     }
 
-    function speak(text) {
+    // Cache loaded voices and resolve once ready
+    let _voicesCache = null;
+    function getVoicesReady() {
+        return new Promise((resolve) => {
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                _voicesCache = voices;
+                return resolve(voices);
+            }
+            // Browsers load voices async; wait for event
+            window.speechSynthesis.onvoiceschanged = () => {
+                _voicesCache = window.speechSynthesis.getVoices();
+                resolve(_voicesCache);
+            };
+            // Fallback timeout in case event never fires
+            setTimeout(() => resolve(window.speechSynthesis.getVoices() || []), 1500);
+        });
+    }
+
+    // Priority-ranked voice picker:
+    // 1. Exact locale match (e.g. gu-IN)  2. Language prefix match (e.g. gu)  3. null → browser default
+    function pickVoice(voices, bcp47) {
+        const lang = bcp47.toLowerCase();
+        const prefix = lang.split('-')[0];
+
+        // 1 — exact locale, prefer non-remote
+        const exactLocal = voices.find(v => v.lang.toLowerCase() === lang && !v.remote);
+        if (exactLocal) return exactLocal;
+
+        // 2 — exact locale, allow remote
+        const exactRemote = voices.find(v => v.lang.toLowerCase() === lang);
+        if (exactRemote) return exactRemote;
+
+        // 3 — same language prefix, prefer non-remote
+        const prefixLocal = voices.find(v => v.lang.toLowerCase().startsWith(prefix) && !v.remote);
+        if (prefixLocal) return prefixLocal;
+
+        // 4 — same language prefix, any
+        const prefixAny = voices.find(v => v.lang.toLowerCase().startsWith(prefix));
+        if (prefixAny) return prefixAny;
+
+        return null; // let browser choose
+    }
+
+    async function speak(text) {
         if (!window.speechSynthesis || isMuted || !text) return;
 
         stopSpeaking();
@@ -237,17 +281,29 @@
         const utterance = new SpeechSynthesisUtterance(text);
         currentUtterance = utterance;
 
-        const user = getUserPayload();
+        // Determine language: prefer the globally set CHAT_LANG (from chatbot.php),
+        // then fall back to the user's stored pref_lang
+        const activeLang = window.CHAT_LANG || getUserPayload().pref_lang || 'en';
         const langMap = { en: 'en-IN', hi: 'hi-IN', gu: 'gu-IN' };
-        const bcp47 = langMap[user.pref_lang] || 'en-IN';
+        const bcp47 = langMap[activeLang] || 'en-IN';
         utterance.lang = bcp47;
 
-        const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find((v) => v.lang && v.lang.toLowerCase().includes(bcp47.split('-')[0].toLowerCase()));
-        if (preferredVoice) utterance.voice = preferredVoice;
+        // Rate & pitch adjustments per language for naturalness
+        if (activeLang === 'hi') {
+            utterance.rate = 0.9;
+            utterance.pitch = 1.05;
+        } else if (activeLang === 'gu') {
+            utterance.rate = 0.88;
+            utterance.pitch = 1.0;
+        } else {
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+        }
 
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
+        // Load voices (handles async browser loading)
+        const voices = await getVoicesReady();
+        const voice = pickVoice(voices, bcp47);
+        if (voice) utterance.voice = voice;
 
         utterance.onstart = () => {
             isSpeaking = true;
@@ -342,19 +398,19 @@
             wrapper.className = 'w-full px-4 mb-6 flex justify-end';
             wrapper.innerHTML = `
                 <div class="max-w-3xl w-full flex justify-end">
-                    <div class="bg-[#2f2f2f] text-[#ececf1] px-5 py-3 rounded-2xl max-w-[80%] md:max-w-[70%] text-[15px] leading-relaxed break-words whitespace-pre-wrap">
+                    <div class="bg-emerald-600 text-white px-5 py-3 rounded-2xl max-w-[80%] md:max-w-[70%] text-[15px] leading-relaxed break-words whitespace-pre-wrap shadow-sm">
                         ${nl2br(text)}
                     </div>
                 </div>
             `;
         } else {
-            wrapper.className = 'w-full px-4 mb-6 flex justify-center hover:bg-[#2a2b32] py-2 transition-colors';
+            wrapper.className = 'w-full px-4 mb-6 flex justify-center hover:bg-gray-50 py-2 transition-colors rounded-xl';
             wrapper.innerHTML = `
                 <div class="max-w-3xl w-full flex gap-4">
-                    <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center bg-white text-black text-sm border border-gray-300">
+                    <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center bg-emerald-600 text-white text-sm shadow-sm">
                         <i class="fas fa-leaf"></i>
                     </div>
-                    <div class="flex-1 text-[#ececf1] text-[15px] leading-relaxed break-words whitespace-pre-wrap py-1 prose prose-invert">
+                    <div class="flex-1 text-gray-800 text-[15px] leading-relaxed break-words whitespace-pre-wrap py-1 prose">
                         ${nl2br(text)}
                     </div>
                 </div>
@@ -367,13 +423,14 @@
     }
 
     function renderEmptyState() {
+        const t = window.CHAT_T || {};
         messagesEl.innerHTML = `
             <div class="flex flex-col items-center justify-center h-full px-4 text-center pb-20">
-                <div class="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center text-3xl mb-6 shadow-lg shadow-black/20">
+                <div class="w-16 h-16 bg-emerald-600 text-white rounded-full flex items-center justify-center text-3xl mb-6 shadow-lg shadow-emerald-200">
                     <i class="fas fa-leaf"></i>
                 </div>
-                <h2 class="text-2xl font-semibold text-gray-200 mb-2">How can I help you farm today?</h2>
-                <p class="text-gray-400 text-sm max-w-sm">Ask about subsidies, crop market prices, daily tasks, or upload a photo of a pest for AI identification.</p>
+                <h2 class="text-2xl font-semibold text-gray-800 mb-2">${t.welcomeTitle || 'How can I help you farm today?'}</h2>
+                <p class="text-gray-400 text-sm max-w-sm">${t.welcomeSubtitle || 'Ask about subsidies, crop market prices, daily tasks, or upload a photo of a pest for AI identification.'}</p>
             </div>
         `;
     }
@@ -382,18 +439,19 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'w-full px-4 mb-6 flex justify-center';
 
+        const t = window.CHAT_T || {};
         let pestHtml = `
             <div class="max-w-3xl w-full flex gap-4">
-                <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center bg-white text-black text-sm border border-gray-300">
+                <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center bg-emerald-600 text-white text-sm shadow-sm">
                     <i class="fas fa-leaf"></i>
                 </div>
-                <div class="flex-1 w-full max-w-2xl rounded-2xl overflow-hidden border border-gray-700 shadow-lg bg-[#2f2f2f] text-gray-200 mt-1">
+                <div class="flex-1 w-full max-w-2xl rounded-2xl overflow-hidden border border-gray-200 shadow-md bg-white text-gray-800 mt-1">
 
                 <div class="bg-gradient-to-r from-orange-500 to-red-500 px-5 py-4 text-white">
                     <div class="flex items-center gap-3">
                         <i class="fas fa-bug text-2xl"></i>
                         <div>
-                            <p class="text-[10px] font-black uppercase tracking-widest opacity-80">Pest / Disease Detected</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest opacity-80">${t.pestDetected || 'Pest / Disease Detected'}</p>
                             <p class="text-xl font-black">${escapeHtml(data.pest_name)}</p>
                         </div>
                     </div>
@@ -401,27 +459,27 @@
         `;
 
         if (data.pesticides && data.pesticides.length > 0) {
-            pestHtml += `<div class="px-5 py-4 border-b border-white/10"><p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">💊 Recommended Pesticides</p><div class="space-y-2">`;
+            pestHtml += `<div class="px-5 py-4 border-b border-gray-100"><p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">${t.recommendedPesticides || '💊 Recommended Pesticides'}</p><div class="space-y-2">`;
             data.pesticides.forEach((p) => {
-                pestHtml += `<div class="flex items-start justify-between gap-3 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
-                    <div><p class="font-black text-gray-200 text-sm">${escapeHtml(p.name || '')}</p>
-                    <p class="text-xs text-gray-400">${escapeHtml(p.brand || '')} ${p.usage_instructions ? '• ' + escapeHtml(p.usage_instructions) : ''}</p></div>
-                    <span class="shrink-0 text-xs font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-lg whitespace-nowrap">₹ ${escapeHtml(p.price_range || 'N/A')}</span>
+                pestHtml += `<div class="flex items-start justify-between gap-3 rounded-xl bg-gray-50 border border-gray-200 px-4 py-3">
+                    <div><p class="font-black text-gray-800 text-sm">${escapeHtml(p.name || '')}</p>
+                    <p class="text-xs text-gray-500">${escapeHtml(p.brand || '')} ${p.usage_instructions ? '• ' + escapeHtml(p.usage_instructions) : ''}</p></div>
+                    <span class="shrink-0 text-xs font-black text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-lg whitespace-nowrap">₹ ${escapeHtml(p.price_range || 'N/A')}</span>
                 </div>`;
             });
             pestHtml += `</div></div>`;
         } else {
-            pestHtml += `<div class="px-5 py-3 border-b border-white/10 text-xs text-gray-400">Search for "${escapeHtml(data.pest_name)}" pesticides completed. No specific matches found in your local regional database.</div>`;
+            pestHtml += `<div class="px-5 py-3 border-b border-gray-100 text-xs text-gray-400">${t.noPestMatch || 'No specific matches found in your local regional database.'}</div>`;
         }
 
         if (data.shops && data.shops.length > 0) {
-            pestHtml += `<div class="px-5 py-4"><p class="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-3">🏪 Nearby Agricultural Shops</p><div class="space-y-3">`;
+            pestHtml += `<div class="px-5 py-4"><p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">${t.nearbyShops || '🏪 Nearby Agricultural Shops'}</p><div class="space-y-3">`;
             data.shops.forEach((s) => {
                 pestHtml += buildShopCard(s);
             });
             pestHtml += `</div></div>`;
         } else {
-            pestHtml += `<div class="px-5 py-3 text-xs text-gray-400">No nearby shops found in your current district profile.</div>`;
+            pestHtml += `<div class="px-5 py-3 text-xs text-gray-400">${t.noShopsFound || 'No nearby shops found in your current district profile.'}</div>`;
         }
 
         pestHtml += `</div></div></div>`;
@@ -444,15 +502,15 @@
                </a>`
             : '';
         return `
-            <div class="rounded-xl border border-gray-600 p-4 bg-[#232323] shadow-sm">
+            <div class="rounded-xl border border-gray-200 p-4 bg-gray-50 shadow-sm">
                 <div class="flex items-start gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-gray-700 flex items-center justify-center text-white shrink-0">
+                    <div class="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
                         <i class="fas fa-store text-sm"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="font-bold text-gray-200 text-sm truncate">${escapeHtml(s.name || '')}</p>
-                        <p class="text-xs text-gray-400 mt-0.5">📍 ${escapeHtml((s.address || '') + (s.city ? ', ' + s.city : ''))}</p>
-                        ${s.phone ? `<p class="text-xs text-gray-400 mt-0.5">📞 ${escapeHtml(s.phone)}</p>` : ''}
+                        <p class="font-bold text-gray-800 text-sm truncate">${escapeHtml(s.name || '')}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">📍 ${escapeHtml((s.address || '') + (s.city ? ', ' + s.city : ''))}</p>
+                        ${s.phone ? `<p class="text-xs text-gray-500 mt-0.5">📞 ${escapeHtml(s.phone)}</p>` : ''}
                     </div>
                 </div>
                 <div class="flex gap-2 mt-3 flex-wrap">${mapBtn}${dirBtn}</div>
@@ -462,6 +520,7 @@
     function renderShopResult(data) {
         const wrapper = document.createElement('div');
         wrapper.className = 'w-full px-4 mb-6 flex justify-center';
+        const t = window.CHAT_T || {};
 
         const gpsNote = data.gps
             ? `<span class="text-[10px] text-gray-300 font-medium ml-2 bg-black/30 px-2 py-0.5 rounded-full">📍 GPS: ${data.gps.lat.toFixed(4)}, ${data.gps.lng.toFixed(4)}</span>`
@@ -469,17 +528,17 @@
 
         let html = `
             <div class="max-w-3xl w-full flex gap-4">
-                <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center bg-white text-black text-sm border border-gray-300">
+                <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center bg-emerald-600 text-white text-sm shadow-sm">
                     <i class="fas fa-leaf"></i>
                 </div>
-                <div class="flex-1 w-full max-w-2xl rounded-2xl overflow-hidden border border-gray-700 shadow-lg bg-[#2f2f2f] text-gray-200 mt-1">
+                <div class="flex-1 w-full max-w-2xl rounded-2xl overflow-hidden border border-gray-200 shadow-md bg-white text-gray-800 mt-1">
                 <div class="bg-gradient-to-r from-blue-600 to-emerald-600 px-5 py-4 text-white">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center">
                             <i class="fas fa-map-marked-alt text-xl"></i>
                         </div>
                         <div>
-                            <p class="text-[10px] font-black uppercase tracking-widest opacity-80">Nearby Shops</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest opacity-80">${t.nearbyShopsTitle || 'Nearby Shops'}</p>
                             <p class="text-lg font-black">${escapeHtml(data.pest_name)}</p>
                             ${gpsNote}
                         </div>
@@ -520,7 +579,7 @@
                 <div class="pt-3 border-t border-slate-100 mt-3">
                     <a href="${moreUrl}" target="_blank" rel="noopener"
                        class="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-emerald-600 text-white text-xs font-black shadow-md hover:opacity-90 transition-opacity">
-                        <i class="fas fa-search-location"></i> Search More Shops on Google Maps
+                        <i class="fas fa-search-location"></i> ${(window.CHAT_T && window.CHAT_T.searchMoreShops) || '🔍 Search More Shops on Google Maps'}
                     </a>
                 </div>
             `;
@@ -551,7 +610,7 @@
         sessionHistoryList.innerHTML = '';
 
         if (!data.sessions || data.sessions.length === 0) {
-            sessionHistoryList.innerHTML = '<div class="p-8 text-center opacity-40"><i class="fas fa-history text-2xl mb-2"></i><p class="text-[10px] font-bold uppercase tracking-widest">No history yet</p></div>';
+            sessionHistoryList.innerHTML = '<div class="p-8 text-center opacity-40"><i class="fas fa-history text-2xl mb-2"></i><p class="text-[10px] font-bold uppercase tracking-widest">' + ((window.CHAT_T && window.CHAT_T.noHistoryYet) || 'No history yet') + '</p></div>';
             return;
         }
 
@@ -696,7 +755,7 @@
         sendBtn.disabled = true;
         sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i>';
 
-        const pendingEl = renderMessage('assistant', 'Thinking...');
+        const pendingEl = renderMessage('assistant', (window.CHAT_T && window.CHAT_T.thinking) || 'Thinking...');
 
         try {
             const formData = new FormData();

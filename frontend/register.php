@@ -63,6 +63,7 @@
 </head>
 
 <body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div id="progressBar"></div>
     <div class="flex w-full h-screen bg-white overflow-hidden">
         <div class="hidden lg:flex lg:w-1/2 relative bg-emerald-900 overflow-hidden items-end justify-start">
             <div class="absolute inset-0 bg-emerald-900/30 mix-blend-multiply z-10"></div>
@@ -115,8 +116,8 @@
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 ml-1" data-label="labelFullName"><span data-lang="labelFullName">Full Name</span> <span class="text-red-500">*</span></label>
                             <input id="full_name" type="text" required
                                 class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
-                                placeholder="Garv Patel" oninput="validateFullName()">
-                            <p id="full-name-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1">Enter full name in Indian format using only letters and spaces, like Garv Patel.</p>
+                                placeholder="Nilay Rajeshbhai Patel" data-lang-placeholder="placeholderFullName" oninput="validateFullName()">
+                            <p id="full-name-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1" data-lang="fullNameError">Enter full name in Indian format using only letters and spaces, like Nilay Rajeshbhai Patel.</p>
                         </div>
 
                         <div>
@@ -228,6 +229,8 @@
                 labelPincode: 'Pincode',
                 labelPrefLang: 'Preferred Language',
                 labelPin: '6-Digit PIN',
+                placeholderFullName: 'Nilay Rajeshbhai Patel',
+                fullNameError: 'Enter full name in Indian format using only letters and spaces, like Nilay Rajeshbhai Patel.',
                 placeholderDistrict: 'Select District',
                 placeholderCity: 'Select District First',
                 placeholderLang: 'Select Language',
@@ -251,6 +254,8 @@
                 labelPincode: 'પિનકોડ',
                 labelPrefLang: 'પ્રિય ભાષા',
                 labelPin: '6-અંકનો પિન',
+                placeholderFullName: 'નિલય રાજેશભાઈ પટેલ',
+                fullNameError: 'ફક્ત અક્ષરો અને જગ્યાઓનો ઉપયોગ કરીને ભારતીય ફોર્મેટમાં પૂરું નામ દાખલ કરો, જેમ કે નિલય રાજેશભાઈ પટેલ.',
                 placeholderDistrict: 'જિલ્લો પસંદ કરો',
                 placeholderCity: 'પહેલા જિલ્લો પસંદ કરો',
                 placeholderLang: 'ભાષા પસંદ કરો',
@@ -274,6 +279,8 @@
                 labelPincode: 'पिनकोड',
                 labelPrefLang: 'पसंदीदा भाषा',
                 labelPin: '6-अंकों का पिन',
+                placeholderFullName: 'निलय राजेशभाई पटेल',
+                fullNameError: 'केवल अक्षरों और रिक्त स्थान का उपयोग करके भारतीय प्रारूप में पूरा नाम दर्ज करें, जैसे निलय राजेशभाई पटेल।',
                 placeholderDistrict: 'जिला चुनें',
                 placeholderCity: 'पहले जिला चुनें',
                 placeholderLang: 'भाषा चुनें',
@@ -310,29 +317,102 @@
                 if (t[key]) el.childNodes[0].textContent = t[key] + ' ';
             });
 
-            // Update placeholders
+            // Update placeholders for inputs
+            document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-lang-placeholder');
+                if (t[key]) el.placeholder = t[key];
+            });
+
+            // Update placeholders and selections dynamically
+            const dVal = document.getElementById('district').value;
             const districtLabel = document.getElementById('dd-district-label');
-            if (districtLabel.textContent === translations['en'].placeholderDistrict ||
-                districtLabel.textContent === translations['gu'].placeholderDistrict ||
-                districtLabel.textContent === translations['hi'].placeholderDistrict) {
-                districtLabel.textContent = t.placeholderDistrict;
-            }
+            if (dVal) districtLabel.textContent = typeof tTerm === 'function' ? tTerm(dVal) : dVal;
+            else districtLabel.textContent = t.placeholderDistrict;
+
+            const cVal = document.getElementById('city').value;
             const cityLabel = document.getElementById('dd-city-label');
-            if (cityLabel.textContent === translations['en'].placeholderCity ||
-                cityLabel.textContent === translations['gu'].placeholderCity ||
-                cityLabel.textContent === translations['hi'].placeholderCity) {
-                cityLabel.textContent = t.placeholderCity;
-            }
+            if (cVal) cityLabel.textContent = typeof tTerm === 'function' ? tTerm(cVal) : cVal;
+            else cityLabel.textContent = t.placeholderCity;
+
+            const lVal = document.getElementById('pref_lang').value;
             const langLabel = document.getElementById('dd-lang-label');
-            if (langLabel.textContent === translations['en'].placeholderLang ||
-                langLabel.textContent === translations['gu'].placeholderLang ||
-                langLabel.textContent === translations['hi'].placeholderLang) {
+            if (lVal && typeof languages !== 'undefined') {
+                const lObj = languages.find(l => l.value === lVal);
+                if (lObj) langLabel.textContent = lObj[lang] || lObj.en;
+            } else {
                 langLabel.textContent = t.placeholderLang;
+            }
+
+            if (typeof renderList === 'function' && typeof districts !== 'undefined') {
+                renderList(document.getElementById('dd-district-list'), districts, name => selectItem('dd-district', name));
+                if (dVal) renderList(document.getElementById('dd-city-list'), districtCityMap[dVal] || [], n => selectItem('dd-city', n));
+            }
+
+            if (typeof languages !== 'undefined') {
+                const langListEl = document.getElementById('dd-lang-list');
+                if (langListEl) {
+                    langListEl.innerHTML = '';
+                    languages.forEach(langObj => {
+                        const div = document.createElement('div');
+                        div.className = 'sd-item';
+                        div.textContent = langObj[lang] || langObj.en;
+                        div.onclick = () => {
+                            document.getElementById('pref_lang').value = langObj.value;
+                            const curLang = localStorage.getItem('agricare_lang') || 'en';
+                            document.getElementById('dd-lang-label').textContent = langObj[curLang] || langObj.en;
+                            document.getElementById('dd-lang-label').classList.remove('text-gray-400');
+                            document.getElementById('dd-lang').classList.remove('open');
+                        };
+                        langListEl.appendChild(div);
+                    });
+                }
             }
 
             document.body.classList.remove('gu-text', 'hi-text');
             if (lang === 'gu') document.body.classList.add('gu-text');
             if (lang === 'hi') document.body.classList.add('hi-text');
+        }
+
+        const transMap = {
+            'Ahmedabad': { gu: 'અમદાવાદ', hi: 'अहमदाबाद' }, 'Ahmedabad City': { gu: 'અમદાવાદ શહેર', hi: 'अहमदाबाद शहर' }, 'Dholka': { gu: 'ધોળકા', hi: 'धोलका' }, 'Sanand': { gu: 'સાણંદ', hi: 'साणंद' }, 'Viramgam': { gu: 'વિરમગામ', hi: 'विरमगाम' },
+            'Amreli': { gu: 'અમરેલી', hi: 'अमरेली' }, 'Rajula': { gu: 'રાજુલા', hi: 'राजुला' }, 'Savarkundla': { gu: 'સાવરકુંડલા', hi: 'सावरकुंडला' }, 'Dhari': { gu: 'ધારી', hi: 'धारी' },
+            'Anand': { gu: 'આણંદ', hi: 'आणंद' }, 'Petlad': { gu: 'પેટલાદ', hi: 'पेटलाद' }, 'Borsad': { gu: 'બોરસદ', hi: 'बोरसद' }, 'Umreth': { gu: 'ઉમરેઠ', hi: 'उमरेठ' },
+            'Arvalli': { gu: 'અરવલ્લી', hi: 'अरवल्ली' }, 'Modasa': { gu: 'મોડાસા', hi: 'मोडासा' }, 'Bhiloda': { gu: 'ભિલોડા', hi: 'भिलोड़ा' }, 'Bayad': { gu: 'બાયડ', hi: 'बायड' },
+            'Banaskantha': { gu: 'બનાસકાંઠા', hi: 'बनासकांठा' }, 'Palanpur': { gu: 'પાલનપુર', hi: 'पालनपुर' }, 'Deesa': { gu: 'ડીસા', hi: 'डीसा' }, 'Dhanera': { gu: 'ધાનેરા', hi: 'धानेरा' }, 'Tharad': { gu: 'થરાદ', hi: 'थराद' },
+            'Bharuch': { gu: 'ભરૂચ', hi: 'भरूच' }, 'Ankleshwar': { gu: 'અંકલેશ્વર', hi: 'अंकलेश्वर' }, 'Jambusar': { gu: 'જંબુસર', hi: 'जंबूसर' },
+            'Bhavnagar': { gu: 'ભાવનગર', hi: 'भावनगर' }, 'Palitana': { gu: 'પાલીતાણા', hi: 'पालीताना' }, 'Mahuva': { gu: 'મહુવા', hi: 'महुवा' },
+            'Botad': { gu: 'બોટાદ', hi: 'बोटाद' }, 'Gadhada': { gu: 'ગઢડા', hi: 'गढ़ड़ा' }, 'Barwala': { gu: 'બરવાળા', hi: 'बरवाला' },
+            'Chhota Udaipur': { gu: 'છોટા ઉદેપુર', hi: 'छोटा उदयपुर' }, 'Kawant': { gu: 'કવાંટ', hi: 'कवांट' }, 'Bodeli': { gu: 'બોડેલી', hi: 'बोडेली' },
+            'Dahod': { gu: 'દાહોદ', hi: 'दाहोद' }, 'Limkheda': { gu: 'લીમખેડા', hi: 'लीमखेड़ा' }, 'Jhalod': { gu: 'ઝાલોદ', hi: 'झालोद' },
+            'Dang': { gu: 'ડાંગ', hi: 'डांग' }, 'Ahwa': { gu: 'આહવા', hi: 'आहवा' }, 'Waghai': { gu: 'વઘઇ', hi: 'वघई' }, 'Subir': { gu: 'સુબીર', hi: 'सुबीर' },
+            'Devbhoomi Dwarka': { gu: 'દેવભૂમિ દ્વારકા', hi: 'देवभूमि द्वारका' }, 'Khambhalia': { gu: 'ખંભાળિયા', hi: 'खंभालिया' }, 'Dwarka': { gu: 'દ્વારકા', hi: 'द्वारका' }, 'Bhanvad': { gu: 'ભાણવડ', hi: 'भाणवड' },
+            'Gandhinagar': { gu: 'ગાંધીનગર', hi: 'गांधीनगर' }, 'Mansa': { gu: 'માણસા', hi: 'माणसा' }, 'Kalol': { gu: 'કલોલ', hi: 'कलोल' },
+            'Gir Somnath': { gu: 'ગીર સોમનાથ', hi: 'गिर सोमनाथ' }, 'Veraval': { gu: 'વેરાવળ', hi: 'वेरावल' }, 'Una': { gu: 'ઊના', hi: 'ऊना' }, 'Kodinar': { gu: 'કોડીનાર', hi: 'कोडिनार' },
+            'Jamnagar': { gu: 'જામનગર', hi: 'जामनगर' }, 'Dhrol': { gu: 'ધ્રોલ', hi: 'ध्रोल' }, 'Kalavad': { gu: 'કાલાવાડ', hi: 'कालावड' },
+            'Junagadh': { gu: 'જૂનાગઢ', hi: 'जूनागढ़' }, 'Keshod': { gu: 'કેશોદ', hi: 'केशाेद' }, 'Mangrol': { gu: 'માંગરોળ', hi: 'मांगरोल' },
+            'Kheda': { gu: 'ખેડા', hi: 'खेड़ा' }, 'Nadiad': { gu: 'નડિયાદ', hi: 'नडियाद' }, 'Kapadvanj': { gu: 'કપડવંજ', hi: 'कपडवंज' }, 'Matar': { gu: 'માતર', hi: 'मातर' },
+            'Kutch': { gu: 'કચ્છ', hi: 'कच्छ' }, 'Bhuj': { gu: 'ભુજ', hi: 'भुज' }, 'Gandhidham': { gu: 'ગાંધીધામ', hi: 'गांधीधाम' }, 'Mandvi': { gu: 'માંડવી', hi: 'मांडवी' },
+            'Mahisagar': { gu: 'મહીસાગર', hi: 'महीसागर' }, 'Lunawada': { gu: 'લુણાવાડા', hi: 'लुणावाडा' }, 'Santrampur': { gu: 'સંતરામપુર', hi: 'संतरामपुर' }, 'Kadana': { gu: 'કડાણા', hi: 'कड़ाना' },
+            'Mehsana': { gu: 'મહેસાણા', hi: 'मेहसाणा' }, 'Visnagar': { gu: 'વિસનગર', hi: 'विसनगर' }, 'Unjha': { gu: 'ઊંઝા', hi: 'ऊंझा' },
+            'Morbi': { gu: 'મોરબી', hi: 'मोरबी' }, 'Tankara': { gu: 'ટંકારા', hi: 'टंकारा' }, 'Halvad': { gu: 'હળવદ', hi: 'हलवद' },
+            'Narmada': { gu: 'નર્મદા', hi: 'नर्मदा' }, 'Rajpipla': { gu: 'રાજપીપળા', hi: 'राजपीपला' }, 'Dediapada': { gu: 'ડેડીયાપાડા', hi: 'डेडियापाडा' }, 'Sagbara': { gu: 'સાગબારા', hi: 'सागबारा' },
+            'Navsari': { gu: 'નવસારી', hi: 'नवसारी' }, 'Gandevi': { gu: 'ગણદેવી', hi: 'गणदेवी' }, 'Chikhli': { gu: 'ચીખલી', hi: 'चिखली' },
+            'Panchmahal': { gu: 'પંચમહાલ', hi: 'पंचमहाल' }, 'Godhra': { gu: 'ગોધરા', hi: 'गोधरा' }, 'Halol': { gu: 'હાલોલ', hi: 'हालोल' },
+            'Patan': { gu: 'પાટણ', hi: 'पाटन' }, 'Sidhpur': { gu: 'સિદ્ધપુર', hi: 'सिद्धपुर' }, 'Harij': { gu: 'હારીજ', hi: 'हारीज' },
+            'Porbandar': { gu: 'પોરબંદર', hi: 'पोरबंदर' }, 'Ranavav': { gu: 'રાણાવાવ', hi: 'राणावाव' }, 'Kutiyana': { gu: 'કુતિયાણા', hi: 'कुतियाणा' },
+            'Rajkot': { gu: 'રાજકોટ', hi: 'राजकोट' }, 'Gondal': { gu: 'ગોંડલ', hi: 'गोंडल' }, 'Jetpur': { gu: 'જેતપુર', hi: 'जेतपुर' },
+            'Sabarkantha': { gu: 'સાબરકાંઠા', hi: 'साबरकांठा' }, 'Himmatnagar': { gu: 'હિંમતનગર', hi: 'हिम्मतनगर' }, 'Idar': { gu: 'ઈડર', hi: 'ईडर' }, 'Talod': { gu: 'તલોદ', hi: 'तलोद' },
+            'Surat': { gu: 'સુરત', hi: 'सूरत' }, 'Surat City': { gu: 'સુરત શહેર', hi: 'सूरत शहर' }, 'Bardoli': { gu: 'બારડોલી', hi: 'बारडोली' }, 'Kamrej': { gu: 'કામરેજ', hi: 'कामरेज' },
+            'Surendranagar': { gu: 'સુરેન્દ્રનગર', hi: 'सुरेंद्रनगर' }, 'Wadhwan': { gu: 'વઢવાણ', hi: 'वढवाण' }, 'Limbdi': { gu: 'લીંબડી', hi: 'लींबडी' },
+            'Tapi': { gu: 'તાપી', hi: 'तापी' }, 'Vyara': { gu: 'વ્યારા', hi: 'व्यारा' }, 'Nizar': { gu: 'નિઝર', hi: 'निझर' }, 'Songadh': { gu: 'સોનગઢ', hi: 'सोनगढ़' },
+            'Vadodara': { gu: 'વડોદરા', hi: 'वडोदरा' }, 'Dabhoi': { gu: 'ડભોઈ', hi: 'डभोई' }, 'Padra': { gu: 'પાદરા', hi: 'पादरा' },
+            'Valsad': { gu: 'વલસાડ', hi: 'वलसाड' }, 'Vapi': { gu: 'વાપી', hi: 'वापी' }, 'Pardi': { gu: 'પારડી', hi: 'पारडी' }
+        };
+
+        function tTerm(name) {
+            const lang = localStorage.getItem('agricare_lang') || 'en';
+            if (lang === 'en') return name;
+            return (transMap[name] && transMap[name][lang]) ? transMap[name][lang] : name;
         }
 
         const districtCityMap = {
@@ -378,7 +458,7 @@
             items.forEach(name => {
                 const div = document.createElement('div');
                 div.className = 'sd-item';
-                div.textContent = name;
+                div.textContent = tTerm(name);
                 div.onclick = () => onSelect(name);
                 listEl.appendChild(div);
             });
@@ -392,14 +472,14 @@
         function filterList(ddId, query) {
             const listEl = document.getElementById(ddId + '-list');
             const items = ddId === 'dd-district' ? districts : (districtCityMap[document.getElementById('district').value] || []);
-            renderList(listEl, items.filter(n => n.toLowerCase().includes(query.toLowerCase())),
+            renderList(listEl, items.filter(n => tTerm(n).toLowerCase().includes(query.toLowerCase()) || n.toLowerCase().includes(query.toLowerCase())),
                 name => selectItem(ddId, name));
         }
 
         function selectItem(ddId, name) {
             const hiddenId = ddId === 'dd-district' ? 'district' : 'city';
             document.getElementById(hiddenId).value = name;
-            document.getElementById(ddId + '-label').textContent = name;
+            document.getElementById(ddId + '-label').textContent = tTerm(name);
             document.getElementById(ddId + '-label').classList.remove('text-gray-400');
             document.getElementById(ddId).classList.remove('open');
             if (ddId === 'dd-district') {
@@ -414,16 +494,22 @@
         renderList(document.getElementById('dd-district-list'), districts, name => selectItem('dd-district', name));
 
         // init language list
-        const languages = [{ value: 'en', label: 'English' }, { value: 'gu', label: 'Gujarati' }, { value: 'hi', label: 'Hindi' }];
+        const languages = [
+            { value: 'en', en: 'English', gu: 'અંગ્રેજી', hi: 'अंग्रेज़ी' },
+            { value: 'gu', en: 'Gujarati', gu: 'ગુજરાતી', hi: 'गुजराती' },
+            { value: 'hi', en: 'Hindi', gu: 'હિન્દી', hi: 'हिंदी' }
+        ];
         (function() {
             const listEl = document.getElementById('dd-lang-list');
-            languages.forEach(lang => {
+            languages.forEach(langObj => {
                 const div = document.createElement('div');
                 div.className = 'sd-item';
-                div.textContent = lang.label;
+                const curLang = localStorage.getItem('agricare_lang') || 'en';
+                div.textContent = langObj[curLang] || langObj.en;
                 div.onclick = () => {
-                    document.getElementById('pref_lang').value = lang.value;
-                    document.getElementById('dd-lang-label').textContent = lang.label;
+                    document.getElementById('pref_lang').value = langObj.value;
+                    const cLang = localStorage.getItem('agricare_lang') || 'en';
+                    document.getElementById('dd-lang-label').textContent = langObj[cLang] || langObj.en;
                     document.getElementById('dd-lang-label').classList.remove('text-gray-400');
                     document.getElementById('dd-lang').classList.remove('open');
                 };
@@ -517,6 +603,29 @@
             const initialLang = localStorage.getItem('agricare_lang') || 'en';
             changeLang(initialLang);
         });
+
+        // Universal Scroll Progress Bar
+        document.addEventListener('scroll', function(e) {
+            let target = e.target;
+            if (target === document) target = document.documentElement;
+            
+            let winScroll = target.scrollTop;
+            let height = target.scrollHeight - target.clientHeight;
+            if (height <= 0) return;
+            
+            let scrolled = (winScroll / height) * 100;
+            const bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "9999";
+                bar.style.transition = "width 0.1s";
+            }
+        }, true);
     </script>
 </body>
 

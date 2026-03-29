@@ -124,19 +124,6 @@
             margin: 0 auto;
         }
 
-        /* Hide scrollbar for mobile menu */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 4px;
-        }
 
         .farm-hero {
             background:
@@ -605,7 +592,13 @@
                         };
                         const emoji = getEmoji(r.commodity);
 
-                        const escapeHtml = (v) => String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+                        const escapeHtml = (v) => String(v).replace(/[&<>"']/g, c => ({
+                            '&': '&amp;',
+                            '<': '&lt;',
+                            '>': '&gt;',
+                            '"': '&quot;',
+                            "'": '&#39;'
+                        })[c]);
                         let commodityName = escapeHtml(getLocalizedMarketName(r.commodity, lang));
                         let districtName = escapeHtml(getLocalizedMarketName(r.district, lang));
                         let modal = escapeHtml(String(r.modal));

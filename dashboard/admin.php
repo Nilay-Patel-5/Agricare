@@ -13,13 +13,13 @@
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .pulse-animation { animation: pulse 2s infinite; }
     </style>
 </head>
 <body class="bg-slate-50 overflow-hidden font-sans">
+    <div id="progressBar"></div>
     <div class="flex h-screen overflow-hidden">
         
         <?php include '_sidebar.php'; ?>
@@ -217,6 +217,29 @@
         
         loadOverview();
         setInterval(loadOverview, 300000); // 5 min refresh
+
+        // Universal Scroll Progress Bar
+        document.addEventListener('scroll', function(e) {
+            let target = e.target;
+            if (target === document) target = document.documentElement;
+            
+            let winScroll = target.scrollTop;
+            let height = target.scrollHeight - target.clientHeight;
+            if (height <= 0) return;
+            
+            let scrolled = (winScroll / height) * 100;
+            const bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "9999";
+                bar.style.transition = "width 0.1s";
+            }
+        }, true);
     </script>
 </body>
 </html>

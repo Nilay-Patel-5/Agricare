@@ -31,6 +31,7 @@
 </head>
 
 <body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div id="progressBar"></div>
 
     <div class="flex w-full h-screen bg-white overflow-hidden">
         <!-- Left Side: Image -->
@@ -440,6 +441,29 @@
             changeLang(initialLang);
             validatePhoneInput();
         });
+
+        // Universal Scroll Progress Bar
+        document.addEventListener('scroll', function(e) {
+            let target = e.target;
+            if (target === document) target = document.documentElement;
+            
+            let winScroll = target.scrollTop;
+            let height = target.scrollHeight - target.clientHeight;
+            if (height <= 0) return;
+            
+            let scrolled = (winScroll / height) * 100;
+            const bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "9999";
+                bar.style.transition = "width 0.1s";
+            }
+        }, true);
     </script>
 </body>
 

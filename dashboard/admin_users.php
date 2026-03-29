@@ -10,10 +10,11 @@
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .card { background: white; border-radius: 1.5rem; border: 1px solid #f1f5f9; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
     </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-slate-50 text-slate-700">
+<div id="progressBar"></div>
 
 <?php include '_sidebar.php'; ?>
 
@@ -159,6 +160,29 @@ function escHtml(v) {
 }
 
 loadUsers();
+
+// Universal Scroll Progress Bar
+document.addEventListener('scroll', function(e) {
+    let target = e.target;
+    if (target === document) target = document.documentElement;
+    
+    let winScroll = target.scrollTop;
+    let height = target.scrollHeight - target.clientHeight;
+    if (height <= 0) return;
+    
+    let scrolled = (winScroll / height) * 100;
+    const bar = document.getElementById("progressBar");
+    if (bar) {
+        bar.style.width = scrolled + "%";
+        bar.style.height = "5px";
+        bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+        bar.style.position = "fixed";
+        bar.style.top = "0";
+        bar.style.left = "0";
+        bar.style.zIndex = "9999";
+        bar.style.transition = "width 0.1s";
+    }
+}, true);
 </script>
 </body>
 </html>

@@ -125,19 +125,6 @@
             margin: 0 auto;
         }
 
-        /* Hide scrollbar for mobile menu */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 4px;
-        }
 
         .farm-hero {
             background:
@@ -310,7 +297,7 @@
                     <span id="displayLocation">Loading...</span>
                     <button onclick="resetLocation()" title="Change Location"
                         class="ml-1 text-xs font-bold text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full transition-all flex items-center gap-1">
-                        <i class="fas fa-pencil-alt text-xs"></i> Change
+                        <i class="fas fa-pencil-alt text-xs"></i> <span data-lang="btnChange">Change</span>
                     </button>
                 </div>
                 <h1 class="text-4xl font-black text-gray-900" data-lang="dashboardTitle">Weather Dashboard</h1>
@@ -491,6 +478,7 @@
                 cropRice: 'Rice (Dangar)',
                 cropSugarcane: 'Sugarcane',
                 btnForecast: 'Get Forecast',
+                btnChange: 'Change',
                 changeLoc: 'Change Location',
                 navHome: 'Home',
                 dashboardTitle: 'Weather Dashboard',
@@ -542,6 +530,7 @@
                 cropRice: 'ડાંગર',
                 cropSugarcane: 'શેરડી',
                 btnForecast: 'આગાહી મેળવો',
+                btnChange: 'બદલો',
                 changeLoc: 'સ્થાન બદલો',
                 navHome: 'મુખ્ય',
                 dashboardTitle: 'હવામાન ડેશબોર્ડ',
@@ -593,6 +582,7 @@
                 cropRice: 'धान',
                 cropSugarcane: 'गन्ना',
                 btnForecast: 'पूर्वानुमान प्राप्त करें',
+                btnChange: 'बदलें',
                 changeLoc: 'स्थान बदलें',
                 navHome: 'होम',
                 dashboardTitle: 'मौसम डैशबोर्ड',

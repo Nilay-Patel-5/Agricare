@@ -45,23 +45,7 @@
             border: 2px solid #10b981;
         }
 
-        /* Hide scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
-        }
         .timeline-badge {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
@@ -102,6 +86,7 @@
 </head>
 
 <body class="flex h-screen overflow-hidden">
+    <div id="progressBar"></div>
 
     <!-- Sidebar -->
     <aside class="w-72 bg-white border-r border-gray-100 flex flex-col hidden lg:flex">
@@ -197,26 +182,26 @@
 
                 <!-- Main Content: The Calendar -->
                 <div class="lg:col-span-3">
-                    <div
-                        class="flex justify-between items-center mb-6 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                        <div>
-                            <h2 class="text-2xl font-black text-emerald-800 tracking-tight" id="activeCropName">
-                                Loading...</h2>
-                            <p class="text-sm font-bold text-gray-500 mt-1 uppercase tracking-widest"
-                                id="activeCropSeason">Season</p>
-                        </div>
-                        <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-2xl shrink-0"
-                            id="activeCropIcon">
-                            🌾
-                        </div>
+                <div
+                    class="flex justify-between items-center mb-6 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                    <div>
+                        <h2 class="text-2xl font-black text-emerald-800 tracking-tight" id="activeCropName">
+                            Loading...</h2>
+                        <p class="text-sm font-bold text-gray-500 mt-1 uppercase tracking-widest"
+                            id="activeCropSeason">Season</p>
                     </div>
+                    <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+                        id="activeCropIcon">
+                        🌾
+                    </div>
+                </div>
 
-                    <div class="space-y-4" id="calendarGrid">
-                        <!-- Timeline will be populated here -->
-                    </div>
+                <div class="space-y-4" id="calendarGrid">
+                    <!-- Timeline will be populated here -->
                 </div>
             </div>
         </div>
+    </div>
 
         <!-- Module: Disease Detector -->
         <div id="module-disease" class="module-view hidden flex-1 overflow-y-auto px-6 lg:px-10 py-8">
@@ -360,10 +345,10 @@
             <!-- Filters -->
             <div class="space-y-6 mb-8">
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="filterSubsidies('All')" data-cat="All" class="subsidy-tab bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-95">All Schemes</button>
-                    <button onclick="filterSubsidies('Income Support')" data-cat="Income Support" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100">Income Support</button>
-                    <button onclick="filterSubsidies('Irrigation')" data-cat="Irrigation" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100">Irrigation</button>
-                    <button onclick="filterSubsidies('Equipment')" data-cat="Equipment" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100">Equipment</button>
+                    <button onclick="filterSubsidies('All')" data-cat="All" class="subsidy-tab bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-95" data-lang="cat_all">All Schemes</button>
+                    <button onclick="filterSubsidies('Income Support')" data-cat="Income Support" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_income">Income Support</button>
+                    <button onclick="filterSubsidies('Irrigation')" data-cat="Irrigation" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_irrigation">Irrigation</button>
+                    <button onclick="filterSubsidies('Equipment')" data-cat="Equipment" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_equipment">Equipment</button>
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-4">
@@ -611,6 +596,16 @@
                 chatAssistant: 'Chat Assistant',
                 askAgriCare: 'Ask AgriCare',
                 processTimeline: 'Process Timeline',
+                status: 'Status',
+                planned_op: 'Planned Operation',
+                duration: 'Duration',
+                days: 'Days',
+                impact: 'Impact',
+                high_yield: 'High Yield',
+                cat_all: 'All Schemes',
+                cat_income: 'Income Support',
+                cat_irrigation: 'Irrigation',
+                cat_equipment: 'Equipment',
                 day: 'Day'
             },
             gu: {
@@ -646,6 +641,16 @@
                 chatAssistant: 'ચેટ સહાયક',
                 askAgriCare: 'એગ્રીકેરને પૂછો',
                 processTimeline: 'પ્રક્રિયા સમયરેખા',
+                status: 'સ્થિતિ',
+                planned_op: 'આયોજિત કામગીરી',
+                duration: 'સમયગાળો',
+                days: 'દિવસો',
+                impact: 'અસર',
+                high_yield: 'વધુ ઉપજ',
+                cat_all: 'બધી યોજનાઓ',
+                cat_income: 'આવક સહાય',
+                cat_irrigation: 'સિંચાઈ',
+                cat_equipment: 'સાધનો',
                 day: 'દિવસ'
             },
             hi: {
@@ -681,6 +686,16 @@
                 chatAssistant: 'चैट सहायक',
                 askAgriCare: 'एग्रीकेयर से पूछें',
                 processTimeline: 'प्रक्रिया समयरेखा',
+                status: 'स्थिति',
+                planned_op: 'नियोजित कार्य',
+                duration: 'अवधि',
+                days: 'दिन',
+                impact: 'प्रभाव',
+                high_yield: 'उच्च उपज',
+                cat_all: 'सभी योजनाएं',
+                cat_income: 'आय सहायता',
+                cat_irrigation: 'सिंचाई',
+                cat_equipment: 'उपकरण',
                 day: 'दिन'
             }
         };
@@ -720,18 +735,35 @@
                 return;
             }
 
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative';
+            
+            const selectEl = document.createElement('select');
+            selectEl.className = 'w-full appearance-none bg-white border border-gray-200 text-gray-700 text-lg py-4 px-5 pr-12 rounded-2xl font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer hover:border-emerald-300 transition-colors';
+            
+            selectEl.onchange = (e) => {
+                activeCropIndex = parseInt(e.target.value);
+                renderCalendar();
+            };
+
             cropsData.forEach((crop, index) => {
-                const isActive = index === activeCropIndex;
-                const btn = document.createElement('button');
-                btn.className = `w-full text-left px-5 py-4 rounded-2xl font-bold transition-all flex items-center gap-4 ${isActive ? 'bg-emerald-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-emerald-50 border border-gray-100 shadow-sm'}`;
-                btn.innerHTML = `<span class="text-xl">${crop.icon}</span> <span class="text-sm">${crop[`name_${currentLang}`]}</span>`;
-                btn.onclick = () => {
-                    activeCropIndex = index;
-                    renderSidebar();
-                    renderCalendar();
-                };
-                container.appendChild(btn);
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = `${crop.icon} ${crop[`name_${currentLang}`]}`;
+                if (index === activeCropIndex) {
+                    opt.selected = true;
+                }
+                selectEl.appendChild(opt);
             });
+
+            wrapper.appendChild(selectEl);
+
+            const arrow = document.createElement('div');
+            arrow.className = 'pointer-events-none absolute inset-y-0 right-0 flex items-center pr-5 text-emerald-500';
+            arrow.innerHTML = '<i class="fas fa-chevron-down text-lg"></i>';
+            wrapper.appendChild(arrow);
+
+            container.appendChild(wrapper);
         }
 
         function renderCalendar() {
@@ -779,16 +811,16 @@
                         
                         <div class="grid md:grid-cols-3 gap-4">
                             <div class="bg-gray-50 p-4 rounded-2xl">
-                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
-                                <p class="text-sm font-bold text-gray-800">Planned Operation</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${translations[currentLang].status || 'Status'}</p>
+                                <p class="text-sm font-bold text-gray-800">${translations[currentLang].planned_op || 'Planned Operation'}</p>
                             </div>
                             <div class="bg-gray-50 p-4 rounded-2xl">
-                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Duration</p>
-                                <p class="text-sm font-bold text-gray-800">${activity.end_day - activity.start_day} Days</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${translations[currentLang].duration || 'Duration'}</p>
+                                <p class="text-sm font-bold text-gray-800">${activity.end_day - activity.start_day} ${translations[currentLang].days || 'Days'}</p>
                             </div>
                              <div class="bg-gray-50 p-4 rounded-2xl">
-                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Impact</p>
-                                <p class="text-sm font-bold text-emerald-600">High Yield</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${translations[currentLang].impact || 'Impact'}</p>
+                                <p class="text-sm font-bold text-emerald-600">${translations[currentLang].high_yield || 'High Yield'}</p>
                             </div>
                         </div>
                     </div>
@@ -1094,6 +1126,31 @@
             Ask AgriCare
         </span>
     </a>
+
+    <script>
+        // Universal Scroll Progress Bar
+        document.addEventListener('scroll', function(e) {
+            let target = e.target;
+            if (target === document) target = document.documentElement;
+            
+            let winScroll = target.scrollTop;
+            let height = target.scrollHeight - target.clientHeight;
+            if (height <= 0) return;
+            
+            let scrolled = (winScroll / height) * 100;
+            const bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "9999";
+                bar.style.transition = "width 0.1s";
+            }
+        }, true);
+    </script>
 </body>
 
 

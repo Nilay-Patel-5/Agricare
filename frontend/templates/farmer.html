@@ -31,19 +31,6 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 10px;
-        }
-
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
@@ -57,6 +44,7 @@
 </head>
 
 <body class="bg-emerald-50/30 overflow-hidden font-sans">
+    <div id="progressBar"></div>
 
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
@@ -709,6 +697,29 @@
                 setTimeout(() => toast.remove(), 500);
             }, 3000);
         }
+
+        // Universal Scroll Progress Bar
+        document.addEventListener('scroll', function(e) {
+            let target = e.target;
+            if (target === document) target = document.documentElement;
+            
+            let winScroll = target.scrollTop;
+            let height = target.scrollHeight - target.clientHeight;
+            if (height <= 0) return;
+            
+            let scrolled = (winScroll / height) * 100;
+            const bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "9999";
+                bar.style.transition = "width 0.1s";
+            }
+        }, true);
     </script>
 </body>
 

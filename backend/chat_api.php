@@ -214,7 +214,7 @@ Rules: Be brief, practical, and action-oriented. Use the provided farm data firs
     ];
 
     $provider = 'gemini';
-    $modelUsed = gemini_config()['text_model'] ?? 'gemini-2.5-flash';
+    $modelUsed = gemini_config()['text_model'] ?? 'gemini-1.5-flash';
     $response = gemini_text_create($conversation, $modelUsed);
     $reply = $response['ok'] ? gemini_extract_output_text($response['data']) : '';
 
