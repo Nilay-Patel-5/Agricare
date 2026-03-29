@@ -877,9 +877,9 @@
 
         stopSpeaking();
 
-        const user = getUserPayload();
+        const activeLang = window.CHAT_LANG || getUserPayload().pref_lang || 'en';
         const langMap = { en: 'en-IN', hi: 'hi-IN', gu: 'gu-IN' };
-        recognition.lang = langMap[user.pref_lang] || 'en-IN';
+        recognition.lang = langMap[activeLang] || 'en-IN';
         recognitionTranscript = '';
         try {
             recognition.start();

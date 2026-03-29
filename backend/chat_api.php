@@ -16,7 +16,7 @@ set_error_handler(static function (int $severity, string $message, string $file,
 
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/chat_context.php';
-require_once __DIR__ . '/groq_client.php';
+    // groq removed as per user request
 require_once __DIR__ . '/gemini_client.php';
 require_once __DIR__ . '/ai_common.php';
 
@@ -218,17 +218,7 @@ Rules: Be brief, practical, and action-oriented. Use the provided farm data firs
     $response = gemini_text_create($conversation, $modelUsed);
     $reply = $response['ok'] ? gemini_extract_output_text($response['data']) : '';
 
-    if (!$response['ok'] || $reply === '') {
-        $provider = 'groq';
-        $groqConfig = groq_config();
-        $modelUsed = $groqConfig['model'];
-        $response = groq_chat_create([
-            'model' => $modelUsed,
-            'stream' => false,
-            'messages' => $conversation,
-        ]);
-        $reply = $response['ok'] ? groq_extract_output_text($response['data']) : '';
-    }
+    // Fallback to Groq removed as per user request to strictly use Gemini
 
     if (!$response['ok']) {
         http_response_code($response['status'] ?: 502);

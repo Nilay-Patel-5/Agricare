@@ -18,10 +18,31 @@ function gemini_config(): array
     return $config;
 }
 
+function gemini_get_api_keys(array $config): array
+{
+    $keys = $config['api_key'] ?? '';
+    $keyArray = [];
+    if (is_string($keys)) {
+        if (strpos($keys, ',') !== false) {
+            $keyArray = array_filter(array_map('trim', explode(',', $keys)));
+        } else {
+            $keyArray = [trim($keys)];
+        }
+    } elseif (is_array($keys)) {
+        $keyArray = $keys;
+    }
+    if (!empty($keyArray)) {
+        shuffle($keyArray);
+    }
+    return $keyArray;
+}
+
 function gemini_text_create(array $messages, ?string $model = null): array
 {
     $config = gemini_config();
-    if (empty($config['api_key']) || $config['api_key'] === 'YOUR_GEMINI_API_KEY_HERE' || $config['api_key'] === '') {
+    $apiKeys = gemini_get_api_keys($config);
+
+    if (empty($apiKeys)) {
         return [
             'ok' => false,
             'status' => 401,
@@ -36,9 +57,7 @@ function gemini_text_create(array $messages, ?string $model = null): array
     foreach ($messages as $message) {
         $role = (string) ($message['role'] ?? 'user');
         $content = trim((string) ($message['content'] ?? ''));
-        if ($content === '') {
-            continue;
-        }
+        if ($content === '') continue;
 
         if ($role === 'system') {
             $systemInstruction = ['parts' => [['text' => $content]]];
@@ -64,57 +83,110 @@ function gemini_text_create(array $messages, ?string $model = null): array
     }
 
     $targetModel = $model ?: ($config['text_model'] ?? 'gemini-1.5-flash');
-    $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($targetModel) . ':generateContent?key=' . $config['api_key'];
+    $timeout = (int) ($config['timeout'] ?? 60);
+    $lastResult = null;
 
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST => true,
-        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-        CURLOPT_POSTFIELDS => json_encode($payload),
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => 0,
-        CURLOPT_TIMEOUT => (int) ($config['timeout'] ?? 60),
-    ]);
+    $fallbackModels = array_unique(array_filter([
+        $targetModel,
+        'gemini-2.5-flash',
+        'gemini-2.0-flash',
+        'gemini-flash-latest',
+        'gemini-2.0-flash-lite'
+    ]));
 
-    $response = curl_exec($ch);
-    $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-    $error = curl_error($ch);
+    foreach ($apiKeys as $apiKey) {
+        if ($apiKey === 'YOUR_GEMINI_API_KEY_HERE') continue;
 
-    if ($response === false || $error !== '') {
-        return [
-            'ok' => false,
-            'status' => 502,
-            'data' => null,
-            'error' => $error !== '' ? $error : 'Gemini request failed.',
-        ];
+        foreach ($fallbackModels as $currentModel) {
+            $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($currentModel) . ':generateContent?key=' . $apiKey;
+
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+                CURLOPT_POSTFIELDS => json_encode($payload),
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_TIMEOUT => $timeout,
+            ]);
+
+            $response = curl_exec($ch);
+            $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+
+            if ($response === false || $error !== '') {
+                $lastResult = [
+                    'ok' => false,
+                    'status' => 502,
+                    'data' => null,
+                    'error' => $error !== '' ? $error : 'Gemini request failed.',
+                ];
+                continue; // try next model
+            }
+
+            $data = json_decode($response, true);
+            if (!is_array($data)) {
+                $lastResult = [
+                    'ok' => false,
+                    'status' => $status ?: 502,
+                    'data' => null,
+                    'error' => 'Invalid JSON response from Gemini API.',
+                ];
+                continue; // try next model
+            }
+
+            if ($status === 429) {
+                // Rate limit hit. Could be burst (2 RPS) or per-model limit (15 RPM). 
+                // We sleep 1 second to avoid hitting simple burst limits simultaneously, then try another model/key
+                sleep(1);
+                $lastResult = [
+                    'ok' => false,
+                    'status' => 429,
+                    'data' => $data,
+                    'error' => 'Rate limit hit',
+                ];
+                continue; // try next model in fallback list!
+            }
+
+            if ($status < 200 || $status >= 300) {
+                $message = $data['error']['message'] ?? 'Gemini request failed.';
+                $lastResult = [
+                    'ok' => false,
+                    'status' => $status,
+                    'data' => $data,
+                    'error' => is_string($message) ? $message : 'Gemini request failed.',
+                ];
+                if (stripos($message, 'expired') !== false || stripos($message, 'invalid') !== false) {
+                    continue 2; // Jump to next API Key entirely if key is dead
+                }
+                continue; // try next model
+            }
+
+            // Success
+            return [
+                'ok' => true,
+                'status' => $status,
+                'data' => $data,
+                'error' => '',
+            ];
+        }
     }
 
-    $data = json_decode($response, true);
-    if (!is_array($data)) {
-        return [
-            'ok' => false,
-            'status' => $status ?: 502,
-            'data' => null,
-            'error' => 'Invalid JSON response from Gemini API.',
-        ];
-    }
-
-    if ($status < 200 || $status >= 300) {
-        $message = $data['error']['message'] ?? 'Gemini request failed.';
-        return [
-            'ok' => false,
-            'status' => $status,
-            'data' => $data,
-            'error' => is_string($message) ? $message : 'Gemini request failed.',
-        ];
+    // If all keys and models failed
+    $errorMsg = $lastResult['error'] ?? 'All Gemini API keys failed or were rate-limited.';
+    if (($lastResult['status'] ?? 0) === 429) {
+        $errorMsg = 'All AI keys and model fallbacks are currently rate-limited. Please wait 1 minute and try again.';
+    } elseif (stripos($errorMsg, 'expired') !== false || stripos($errorMsg, 'invalid') !== false) {
+        $errorMsg = 'CRITICAL: EVERY SINGLE API key you provided is either EXPIRED or INVALID in Google\'s system. Please generate brand new keys from Google AI Studio.';
     }
 
     return [
-        'ok' => true,
-        'status' => $status,
-        'data' => $data,
-        'error' => '',
+        'ok' => false,
+        'status' => $lastResult['status'] ?? 500,
+        'data' => $lastResult['data'] ?? null,
+        'error' => $errorMsg,
     ];
 }
 
@@ -152,7 +224,9 @@ function gemini_call_vision(string $apiKey, string $model, array $payload, int $
 function gemini_analyze_image(string $filePath, string $mimeType): string
 {
     $config = gemini_config();
-    if (empty($config['api_key']) || $config['api_key'] === 'YOUR_GEMINI_API_KEY_HERE' || $config['api_key'] === '') {
+    $apiKeys = gemini_get_api_keys($config);
+
+    if (empty($apiKeys)) {
         return 'Error: Gemini API key is missing. Please configure gemini.local.php.';
     }
 
@@ -184,55 +258,59 @@ function gemini_analyze_image(string $filePath, string $mimeType): string
         ]
     ];
 
-    // Fallback model chain: try each model in order if previous is rate-limited
     $primaryModel = $config['vision_model'] ?? 'gemini-2.5-flash';
     $fallbackModels = array_unique(array_filter([
         $primaryModel,
-        'gemini-2.5-flash',
         'gemini-2.0-flash',
-        'gemini-2.0-flash-lite',
+        'gemini-flash-latest',
+        'gemini-2.0-flash-lite'
     ]));
 
-    $apiKey = $config['api_key'];
     $timeout = (int) ($config['timeout'] ?? 60);
     $lastError = '';
 
-    foreach ($fallbackModels as $model) {
-        $result = gemini_call_vision($apiKey, $model, $payload, $timeout);
-        $status = $result['status'];
-        $response = $result['body'];
+    foreach ($apiKeys as $apiKey) {
+        if ($apiKey === 'YOUR_GEMINI_API_KEY_HERE') continue;
 
-        if ($status === 429) {
-            file_put_contents(__DIR__ . '/gemini_error.log', "Rate limit hit (429) on {$model}: " . $response . "\n", FILE_APPEND);
-            $lastError = '429';
-            continue; // try next model
+        foreach ($fallbackModels as $model) {
+            $result = gemini_call_vision($apiKey, $model, $payload, $timeout);
+            $status = $result['status'];
+            $response = $result['body'];
+
+            if ($status === 429) {
+                file_put_contents(__DIR__ . '/gemini_error.log', "Rate limit hit (429) on {$model} with key. Trying next key...\n", FILE_APPEND);
+                $lastError = '429';
+                continue 2; // Jump to the next API key instead of just next model
+            }
+
+            if ($status !== 200 || !$response) {
+                $lastError = 'Error: Gemini API request failed (Code ' . $status . ') on model ' . $model;
+                continue; // try next model
+            }
+
+            $data = json_decode($response, true);
+            if (!isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+                $finishReason = $data['candidates'][0]['finishReason'] ?? 'Unknown';
+                file_put_contents(__DIR__ . '/gemini_error.log', "Blocked on {$model} (Reason: {$finishReason}): " . $response . "\n", FILE_APPEND);
+                $lastError = "Error: Gemini model blocked response (Reason: {$finishReason})";
+                continue; // try next model
+            }
+
+            $identifiedContent = trim($data['candidates'][0]['content']['parts'][0]['text']);
+            if (strpos($identifiedContent, '</think>') !== false) {
+                $textParts = explode('</think>', $identifiedContent);
+                $identifiedContent = trim(end($textParts));
+            }
+
+            return trim(str_replace(['"', "'"], '', $identifiedContent), " .\t\n\r\0\x0B");
         }
-
-        if ($status !== 200 || !$response) {
-            $lastError = 'Error: Gemini API request failed (Code ' . $status . ') on model ' . $model;
-            continue;
-        }
-
-        $data = json_decode($response, true);
-        if (!isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-            $finishReason = $data['candidates'][0]['finishReason'] ?? 'Unknown';
-            file_put_contents(__DIR__ . '/gemini_error.log', "Blocked on {$model} (Reason: {$finishReason}): " . $response . "\n", FILE_APPEND);
-            $lastError = "Error: Gemini model blocked response (Reason: {$finishReason})";
-            continue;
-        }
-
-        $identifiedContent = trim($data['candidates'][0]['content']['parts'][0]['text']);
-        if (strpos($identifiedContent, '</think>') !== false) {
-            $textParts = explode('</think>', $identifiedContent);
-            $identifiedContent = trim(end($textParts));
-        }
-
-        return trim(str_replace(['"', "'"], '', $identifiedContent), " .\t\n\r\0\x0B");
     }
 
-    // All models failed
     if ($lastError === '429') {
-        return 'Error: All AI models are rate-limited. Please wait 60 seconds and try again.';
+        return 'Error: All configured API keys are rate-limited. Please wait 60 seconds and try again.';
+    }
+    if (stripos($lastError, 'expired') !== false || stripos($lastError, 'invalid') !== false) {
+        return 'CRITICAL ERROR: All of your configured API keys are expired or strictly invalid. You must generate brand new keys from Google AI Studio.';
     }
     return $lastError ?: 'Error: Gemini API request failed.';
 }
