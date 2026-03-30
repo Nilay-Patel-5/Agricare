@@ -2,42 +2,38 @@
 header('Content-Type: application/json');
 require_once __DIR__ . '/security_headers.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/demo_admin_data.php';
+require_once __DIR__ . '/subsidy_support.php';
 
 try {
-    $pdo = Database::getConnection();
-
     /* Read filters from frontend */
     $input = json_decode(file_get_contents("php://input"), true);
     $categoryFilter = $input['category'] ?? 'All';
     $search = $input['search'] ?? '';
+    $results = [];
 
-    $query = "SELECT * FROM subsidies WHERE 1=1";
-    $params = [];
-
-    if ($categoryFilter !== 'All') {
-        $query .= " AND category = :category";
-        $params['category'] = $categoryFilter;
+    try {
+        $pdo = Database::getConnection();
+        $results = subsidy_select_rows($pdo, (string) $categoryFilter, (string) $search);
+    } catch (Throwable $dbError) {
+        $results = [];
     }
 
-    if (!empty($search)) {
-        $query .= " AND (
-            name ILIKE :search OR 
-            name_gu ILIKE :search OR 
-            name_hi ILIKE :search OR 
-            description ILIKE :search OR 
-            description_gu ILIKE :search OR 
-            description_hi ILIKE :search
-        )";
-        $params['search'] = "%$search%";
+    if (!$results) {
+        $results = admin_demo_subsidies();
+        if ($categoryFilter !== 'All' && $categoryFilter !== '') {
+            $results = array_values(array_filter($results, static fn(array $row): bool => strcasecmp($row['category'] ?? '', (string) $categoryFilter) === 0));
+        }
+        if ($search !== '') {
+            $needle = mb_strtolower((string) $search);
+            $results = array_values(array_filter($results, static function (array $row) use ($needle): bool {
+                $haystack = mb_strtolower(($row['name'] ?? '') . ' ' . ($row['description'] ?? ''));
+                return str_contains($haystack, $needle);
+            }));
+        }
     }
 
-    $query .= " ORDER BY last_updated DESC";
-
-    $stmt = $pdo->prepare($query);
-    $stmt->execute($params);
-    $results = $stmt->fetchAll();
-
-    echo json_encode($results);
+    echo json_encode(array_values($results));
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);

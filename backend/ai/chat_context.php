@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../db.php';
 
 function chat_ensure_schema(PDO $pdo): void
 {
@@ -316,7 +316,7 @@ function chat_fetch_pesticide_recommendations(PDO $pdo, string $pestName): array
     try {
         // Try exact match first
         $stmt = $pdo->prepare("
-            SELECT p.name, p.brand, p.price_range, p.usage_instructions, m.effectiveness, m.pest_name as matched_pest
+            SELECT p.name_en as name, p.brand, p.price_range, p.usage_en as usage_instructions, m.effectiveness, m.pest_name as matched_pest
             FROM pesticides p
             JOIN pest_pesticide_mapping m ON p.id = m.pesticide_id
             WHERE m.pest_name ILIKE :pest

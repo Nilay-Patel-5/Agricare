@@ -223,4 +223,4 @@ plt.tight_layout()
 plt.savefig('training_plot.png', dpi=150)
 print("Training plot saved → training_plot.png")
 
-print("\n✅ Done! Run predict_api.py to start the Flask prediction server.")
+print("\nDone! The trained model can now be used by the local CLI predictor in ai/predict_cli.py.")

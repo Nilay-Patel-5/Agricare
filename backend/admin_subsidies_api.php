@@ -2,6 +2,7 @@
 require_once __DIR__ . '/security_headers.php';
 header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/subsidy_support.php';
 
 $user = json_decode($_COOKIE['agricare_user'] ?? '{}', true);
 if (($user['role'] ?? '') !== 'admin') {
@@ -10,7 +11,6 @@ if (($user['role'] ?? '') !== 'admin') {
     exit;
 }
 
-$pdo = Database::getConnection();
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
@@ -41,14 +41,8 @@ try {
         exit;
     }
 
-    $stmt = $pdo->prepare("
-        INSERT INTO subsidies (
-            name, category, description, benefits, eligibility, apply_link, status, last_updated
-        ) VALUES (
-            :name, :category, :description, :benefits, :eligibility, :apply_link, :status, CURRENT_TIMESTAMP
-        )
-    ");
-    $stmt->execute([
+    $pdo = Database::getConnection();
+    subsidy_insert_row($pdo, [
         'name' => $name,
         'category' => $category,
         'description' => $description,

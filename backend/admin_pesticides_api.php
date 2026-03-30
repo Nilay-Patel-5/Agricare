@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 require_once __DIR__ . '/security_headers.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/demo_admin_data.php';
 
 // Auth check: only admin role allowed
 $user = json_decode($_COOKIE['agricare_user'] ?? '{}', true);
@@ -11,26 +12,43 @@ if (($user['role'] ?? '') !== 'admin') {
     exit;
 }
 
-$pdo    = Database::getConnection();
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
     if ($method === 'GET') {
-        $stmt = $pdo->query("
-            SELECT m.id as mapping_id, m.pest_name, m.effectiveness,
-                   p.id as pesticide_id, p.name_en as name, p.brand, p.price_range, p.target_pests_en as target_pests, p.usage_en as usage_instructions
-            FROM pest_pesticide_mapping m
-            JOIN pesticides p ON m.pesticide_id = p.id
-            ORDER BY m.pest_name ASC, m.effectiveness DESC
-        ");
-        $mappings = $stmt->fetchAll();
+        try {
+            $pdo = Database::getConnection();
+            $stmt = $pdo->query("
+                SELECT m.id as mapping_id, m.pest_name, m.effectiveness,
+                       p.id as pesticide_id, p.name_en as name, p.brand, p.price_range, p.target_pests_en as target_pests, p.usage_en as usage_instructions
+                FROM pest_pesticide_mapping m
+                JOIN pesticides p ON m.pesticide_id = p.id
+                ORDER BY m.pest_name ASC, m.effectiveness DESC
+            ");
+            $mappings = $stmt->fetchAll();
 
-        $stmtAllP = $pdo->query("SELECT id, name_en as name, brand FROM pesticides ORDER BY name_en ASC");
-        $allPesticides = $stmtAllP->fetchAll();
+            $stmtAllP = $pdo->query("SELECT id, name_en as name, brand FROM pesticides ORDER BY name_en ASC");
+            $allPesticides = $stmtAllP->fetchAll();
+        } catch (Throwable $dbError) {
+            $mappings = [];
+            $allPesticides = [];
+        }
+
+        if (!$mappings) {
+            $mappings = admin_demo_pest_mappings();
+        }
+        if (!$allPesticides) {
+            $allPesticides = array_map(static fn(array $row): array => [
+                'id' => $row['id'],
+                'name' => $row['name'],
+                'brand' => $row['brand'],
+            ], admin_demo_pesticides());
+        }
 
         echo json_encode(['status' => 'success', 'mappings' => $mappings, 'pesticides' => $allPesticides]);
 
     } elseif ($method === 'POST') {
+        $pdo = Database::getConnection();
         $data   = json_decode(file_get_contents('php://input'), true);
         $action = $data['action'] ?? '';
 

@@ -212,7 +212,7 @@
                     <p class="text-gray-600 font-medium max-w-2xl" data-lang="disease_subtitle">Identify plant diseases
                         instantly using our advanced AI model.</p>
                 </div>
-                <!-- API Connectivity Marker -->
+                <!-- Local AI Status Marker -->
                 <div id="api-status"
                     class="bg-white px-4 py-2 rounded-xl flex items-center gap-3 border border-gray-100 shadow-sm">
                     <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" id="status-pulse"></div>
@@ -1044,14 +1044,23 @@
                         body: fd
                     });
 
-                    if (!res.ok) throw new Error("API Connection Error");
-                    const data = await res.json();
-                    
+                    // Always parse JSON first (even on error responses)
+                    let data;
+                    try {
+                        data = await res.json();
+                    } catch (parseErr) {
+                        throw new Error('Server returned invalid response. Check server logs.');
+                    }
+
                     if (data.error) {
-                        alert("AI Message: " + data.error);
+                        alert("⚠️ " + data.error);
                         analyzeBtn.disabled = false;
                         document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
                         return;
+                    }
+
+                    if (!res.ok) {
+                        throw new Error(data.error || 'Local model prediction failed');
                     }
 
                     showResults(data);

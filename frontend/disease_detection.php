@@ -244,7 +244,7 @@ exit;
                     </button>
                 </div>
 
-                <!-- API Connectivity Marker -->
+                <!-- Local AI Status Marker -->
                 <div id="api-status" class="glass-card p-6 rounded-2xl flex items-center gap-5 border border-gray-100">
                     <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center"
                         id="status-icon-box">
@@ -252,7 +252,7 @@ exit;
                     </div>
                     <div>
                         <p id="status-label" class="text-xs font-black uppercase tracking-widest text-emerald-600"
-                            data-lang="status_online">AI Engine Online</p>
+                            data-lang="status_online">Local AI Model Ready</p>
                         <p class="text-[10px] font-bold text-gray-400 uppercase">GPU ACCELERATED · VERSION 2.1.0</p>
                     </div>
                 </div>
@@ -429,8 +429,8 @@ exit;
                 file_types: "Supports JPG, PNG, WEBP",
                 remove_image: "Remove Image",
                 btn_analyze: "Analyze Health Now",
-                status_online: "AI Engine Online",
-                status_offline: "AI Engine Offline",
+                status_online: "Local AI Model Ready",
+                status_offline: "Local AI Model Offline",
                 awaiting_scan: "Awaiting Scanned Data",
                 empty_desc: "Diagnostic metrics will appear here once analysis is triggered.",
                 diagnosis_report: "Diagnosis Report",
@@ -608,11 +608,11 @@ exit;
                 const fd = new FormData();
                 fd.append('image', file);
                 const res = await fetch(AI_PREDICT_ENDPOINT, { method: 'POST', body: fd });
-                if (!res.ok) throw new Error("API Connection Error");
+                if (!res.ok) throw new Error("Local model prediction failed");
                 const data = await res.json();
                 showResults(data);
             } catch (err) {
-                alert("AI Server not responding. Please make sure predict_api.py is running.");
+                alert("Local AI prediction is not available. Please check the model file and Python setup in the ai folder.");
                 analyzeBtn.disabled = false;
                 document.getElementById('btn-text').textContent = translations[localStorage.getItem('agricare_lang') || 'en'].btn_analyze;
             }
