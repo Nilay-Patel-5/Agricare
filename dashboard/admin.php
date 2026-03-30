@@ -196,7 +196,7 @@
                                     </div>
                                     <div>
                                         <p class="font-bold text-slate-800 leading-tight">${u.name}</p>
-                                        <p class="text-[9px] text-slate-400">${u.email || ''}</p>
+                                        <p class="text-[9px] text-slate-400">${u.phone || ''}</p>
                                     </div>
                                 </div>
                             </td>

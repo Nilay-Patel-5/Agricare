@@ -114,7 +114,7 @@ function gemini_text_create(array $messages, ?string $model = null): array
             $response = curl_exec($ch);
             $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
             $error = curl_error($ch);
-            curl_close($ch);
+            // curl_close is omitted as it throws a deprecation warning in PHP 8.5+
 
             if ($response === false || $error !== '') {
                 $lastResult = [
@@ -217,7 +217,7 @@ function gemini_call_vision(string $apiKey, string $model, array $payload, int $
     ]);
     $response = curl_exec($ch);
     $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-    curl_close($ch);
+    // curl_close omitted
     return ['status' => $status, 'body' => $response];
 }
 

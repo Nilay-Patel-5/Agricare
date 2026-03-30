@@ -1,5 +1,6 @@
 <?php
-error_reporting(E_ALL);
+// Ignore deprecation warnings to prevent 500 errors in newer PHP versions
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', '0');
 
 if (!headers_sent()) {
@@ -7,6 +8,7 @@ if (!headers_sent()) {
 }
 
 set_error_handler(static function (int $severity, string $message, string $file, int $line): bool {
+    // Ignore if error has been suppressed with an @ or is outside our reporting level
     if (!(error_reporting() & $severity)) {
         return false;
     }
@@ -15,10 +17,10 @@ set_error_handler(static function (int $severity, string $message, string $file,
 });
 
 require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/chat_context.php';
-    // groq removed as per user request
-require_once __DIR__ . '/gemini_client.php';
-require_once __DIR__ . '/ai_common.php';
+require_once __DIR__ . '/ai/chat_context.php';
+require_once __DIR__ . '/ai/gemini.php';
+require_once __DIR__ . '/ai/common.php';
+require_once __DIR__ . '/ai/Detector.php';
 
 function chat_json_input(): array
 {
@@ -144,14 +146,21 @@ try {
     $pestResData = null; // structured data for frontend cards
 
     if (isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
-        // Use Google Gemini Vision (Free Tier) to identify crop diseases instantly
+        // Use the centralized AI Folder service for disease detection
         $mimeType = $_FILES['image']['type'] ?: 'image/jpeg';
         
-        $identifiedPest = gemini_analyze_image($_FILES['image']['tmp_name'], $mimeType);
+        $diagResult = DiseaseDetector::identify($_FILES['image']['tmp_name'], $mimeType);
         
-        file_put_contents(__DIR__ . '/vision_debug.log', "Gemini Identified: " . $identifiedPest . "\n", FILE_APPEND);
+        if (!isset($diagResult['error'])) {
+            $identifiedPest = $diagResult['label'] ?? 'Unknown';
+        } else {
+             file_put_contents(__DIR__ . '/vision_debug.log', "AI Folder Detection Error: " . $diagResult['error'] . "\n", FILE_APPEND);
+             $identifiedPest = ''; 
+        }
         
-        if ($identifiedPest !== '' && strpos($identifiedPest, 'Error:') === false && strpos($identifiedPest, 'Unknown') === false) {
+        file_put_contents(__DIR__ . '/vision_debug.log', "AI Decision: " . $identifiedPest . "\n", FILE_APPEND);
+        
+        if ($identifiedPest !== '' && strpos($identifiedPest, 'Unknown') === false && strpos(strtolower($identifiedPest), 'healthy') === false) {
             $commonName = chat_normalize_pest_name($identifiedPest);
             $pesticides = chat_fetch_pesticide_recommendations($pdo, $commonName);
             if (!$pesticides) {
@@ -216,18 +225,17 @@ Rules: Be brief, practical, and action-oriented. Use the provided farm data firs
     $provider = 'gemini';
     $modelUsed = gemini_config()['text_model'] ?? 'gemini-1.5-flash';
     $response = gemini_text_create($conversation, $modelUsed);
-    $reply = $response['ok'] ? gemini_extract_output_text($response['data']) : '';
-
-    // Fallback to Groq removed as per user request to strictly use Gemini
 
     if (!$response['ok']) {
         http_response_code($response['status'] ?: 502);
         echo json_encode([
-            'error' => $response['error'],
+            'error' => $response['error'] ?? 'Gemini API failed or hit rate limits.',
             'configured' => true,
         ]);
         exit;
     }
+
+    $reply = gemini_extract_output_text($response['data']);
 
     if ($reply === '') {
         http_response_code(502);

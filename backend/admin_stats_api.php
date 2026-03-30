@@ -14,23 +14,35 @@ if (($user['role'] ?? '') !== 'admin') {
 try {
     $pdo = Database::getConnection();
 
-    $farmers   = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'farmer'")->fetchColumn();
-    $subsidies = $pdo->query("SELECT COUNT(*) FROM subsidies")->fetchColumn();
-    $markets   = $pdo->query("SELECT COUNT(DISTINCT state) FROM market_prices")->fetchColumn();
-    $scans     = $pdo->query("SELECT COUNT(*) FROM ai_scans")->fetchColumn();
+    // Helper to safely count rows in a table (returns 0 if table missing)
+    function countTable($pdo, $sql) {
+        try {
+            return (int) $pdo->query($sql)->fetchColumn();
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
 
-    // Only expose non-PII fields
-    $stmt = $pdo->query("SELECT id, name, district, phone, role, created_at FROM users ORDER BY created_at DESC LIMIT 5");
-    $recentUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $farmers   = countTable($pdo, "SELECT COUNT(*) FROM users WHERE role = 'farmer'");
+    $subsidies = countTable($pdo, "SELECT COUNT(*) FROM subsidies");
+    $markets   = countTable($pdo, "SELECT COUNT(DISTINCT state) FROM market_prices");
+    $scans     = countTable($pdo, "SELECT COUNT(*) FROM ai_scans");
+
+    // Attempt to fetch recent users, fallback to empty array if fails
+    $recentUsers = [];
+    try {
+        $stmt = $pdo->query("SELECT id, name, district, phone, role, created_at FROM users ORDER BY created_at DESC LIMIT 5");
+        $recentUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {}
 
     echo json_encode([
-        'farmers'     => (int) $farmers,
-        'subsidies'   => (int) $subsidies,
-        'markets'     => (int) $markets,
-        'scans'       => (int) $scans,
+        'farmers'     => $farmers,
+        'subsidies'   => $subsidies,
+        'markets'     => $markets,
+        'scans'       => $scans,
         'recentUsers' => $recentUsers,
     ]);
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Server error.']);
+    echo json_encode(['error' => 'Server error: ' . $e->getMessage()]);
 }

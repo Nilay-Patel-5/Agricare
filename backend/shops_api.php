@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 require_once __DIR__ . '/security_headers.php';
 require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/chat_context.php';
+require_once __DIR__ . '/ai/chat_context.php';
 
 try {
     $pdo = Database::getConnection();

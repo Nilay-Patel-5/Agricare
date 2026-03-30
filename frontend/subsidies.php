@@ -374,8 +374,9 @@ exit;
                     body: JSON.stringify({ category: currentCategory, search: currentSearch })
                 });
                 const data = await res.json();
+                const subsidies = Array.isArray(data) ? data : [];
 
-                if (data.length === 0) {
+                if (subsidies.length === 0) {
                     area.innerHTML = `<div class="col-span-full py-20 text-center">
                         <i class="fas fa-search text-gray-300 text-6xl mb-4"></i>
                         <p class="text-gray-500 font-bold">No subsidies found matching your criteria.</p>
@@ -383,7 +384,7 @@ exit;
                     return;
                 }
 
-                area.innerHTML = data.map(sub => {
+                area.innerHTML = subsidies.map(sub => {
                     const name = currentLang === 'en' ? sub.name : (currentLang === 'gu' ? sub.name_gu : sub.name_hi);
                     const desc = currentLang === 'en' ? sub.description : (currentLang === 'gu' ? sub.description_gu : sub.description_hi);
                     const benefit = currentLang === 'en' ? sub.benefits : (currentLang === 'gu' ? sub.benefits_gu : sub.benefits_hi);
