@@ -314,4 +314,3 @@ function gemini_analyze_image(string $filePath, string $mimeType): string
     }
     return $lastError ?: 'Error: Gemini API request failed.';
 }
-
