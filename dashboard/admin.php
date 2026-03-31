@@ -175,7 +175,12 @@
     <script>
         async function loadOverview() {
             try {
-                const res = await fetch('../backend/admin_stats_api.php');
+                const userStr = localStorage.getItem('agricare_user') || '{}';
+                const res = await fetch('../backend/admin_stats_api.php', {
+                    headers: {
+                        'X-User-Data': userStr
+                    }
+                });
                 const data = await res.json();
                 
                 // Stats

@@ -4,7 +4,8 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/subsidy_support.php';
 
-$user = json_decode($_COOKIE['agricare_user'] ?? '{}', true);
+$userDataHeader = $_SERVER['HTTP_X_USER_DATA'] ?? '';
+$user = $userDataHeader ? json_decode($userDataHeader, true) : json_decode($_COOKIE['agricare_user'] ?? '{}', true);
 if (($user['role'] ?? '') !== 'admin') {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Forbidden.']);

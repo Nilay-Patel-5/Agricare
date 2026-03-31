@@ -59,6 +59,16 @@
             }
         }
 
+        .logo-aura {
+            animation: logo-pulse 2s infinite;
+        }
+
+        @keyframes logo-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); transform: scale(1); }
+            50% { box-shadow: 0 0 20px 10px rgba(16, 185, 129, 0); transform: scale(1.05); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
+        }
+
         .floating-farm {
             animation: float 6s ease-in-out infinite;
         }
@@ -146,7 +156,7 @@
             <div class="flex justify-between items-center">
                 <a href="index.php" class="flex items-center gap-4 group">
                     <div
-                        class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-yellow-400 via-orange-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-110 transition-all duration-300">
+                        class="w-14 h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-yellow-400 via-orange-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-110 transition-all duration-300 logo-aura">
                         <i class="fas fa-wheat-awn"></i>
                     </div>
                     <div class="flex flex-col">

@@ -30,6 +30,10 @@ function subsidy_select_rows(PDO $pdo, string $categoryFilter, string $search): 
     $statusColumn = subsidy_pick_column($columns, ['status']);
     $lastUpdatedColumn = subsidy_pick_column($columns, ['last_updated', 'updated_at', 'created_at']);
 
+    $benefitsColumn = subsidy_pick_column($columns, ['benefits', 'benefits_en']);
+    $eligibilityColumn = subsidy_pick_column($columns, ['eligibility', 'eligibility_en']);
+    $applyLinkColumn = subsidy_pick_column($columns, ['apply_link']);
+
     if ($nameColumn === null) {
         return [];
     }
@@ -39,9 +43,29 @@ function subsidy_select_rows(PDO $pdo, string $categoryFilter, string $search): 
         "{$nameColumn} AS name",
         ($categoryColumn ? "{$categoryColumn} AS category" : "'' AS category"),
         ($descriptionColumn ? "{$descriptionColumn} AS description" : "'' AS description"),
+        ($benefitsColumn ? "{$benefitsColumn} AS benefits" : "'' AS benefits"),
+        ($eligibilityColumn ? "{$eligibilityColumn} AS eligibility" : "'' AS eligibility"),
+        ($applyLinkColumn ? "{$applyLinkColumn} AS apply_link" : "'' AS apply_link"),
         ($statusColumn ? "{$statusColumn} AS status" : "'Live' AS status"),
         ($lastUpdatedColumn ? "{$lastUpdatedColumn} AS last_updated" : 'CURRENT_TIMESTAMP AS last_updated'),
     ];
+
+    foreach (['gu', 'hi'] as $lang) {
+        $n = subsidy_pick_column($columns, ["name_$lang", "title_$lang"]);
+        $selectParts[] = ($n ? "{$n} AS name_$lang" : "'' AS name_$lang");
+        
+        $c = subsidy_pick_column($columns, ["category_$lang"]);
+        $selectParts[] = ($c ? "{$c} AS category_$lang" : "'' AS category_$lang");
+        
+        $d = subsidy_pick_column($columns, ["description_$lang"]);
+        $selectParts[] = ($d ? "{$d} AS description_$lang" : "'' AS description_$lang");
+        
+        $b = subsidy_pick_column($columns, ["benefits_$lang"]);
+        $selectParts[] = ($b ? "{$b} AS benefits_$lang" : "'' AS benefits_$lang");
+        
+        $e = subsidy_pick_column($columns, ["eligibility_$lang"]);
+        $selectParts[] = ($e ? "{$e} AS eligibility_$lang" : "'' AS eligibility_$lang");
+    }
 
     $query = 'SELECT ' . implode(', ', $selectParts) . ' FROM subsidies WHERE 1=1';
     $params = [];

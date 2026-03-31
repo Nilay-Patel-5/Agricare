@@ -7,29 +7,39 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
 -------------------------------------------------------------------------------
--- 1. USERS TABLE
+-- 1. ADMINS TABLE
 -------------------------------------------------------------------------------
-DROP TABLE IF EXISTS users CASCADE;
-CREATE TABLE users (
+DROP TABLE IF EXISTS admins CASCADE;
+CREATE TABLE admins (
     id SERIAL PRIMARY KEY,
-    user_id UUID DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    password TEXT, -- Hashed password
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-------------------------------------------------------------------------------
+-- 2. FARMERS TABLE
+-------------------------------------------------------------------------------
+DROP TABLE IF EXISTS farmers CASCADE;
+CREATE TABLE farmers (
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE,
     phone VARCHAR(15) UNIQUE,
-    dob DATE,
-    role VARCHAR(20) NOT NULL DEFAULT 'farmer', -- 'farmer', 'admin', 'expert'
     district VARCHAR(50),
     city VARCHAR(50),
     pincode VARCHAR(10),
     pin TEXT, -- Hashed 6-digit PIN for farmers
-    password TEXT, -- Hashed password for admins
     pref_lang VARCHAR(5) DEFAULT 'en',
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone);
-CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_farmers_phone ON farmers(phone);
+CREATE INDEX IF NOT EXISTS idx_farmers_email ON farmers(email);
+
 
 -------------------------------------------------------------------------------
 -- 2. MARKET PRICES TABLE

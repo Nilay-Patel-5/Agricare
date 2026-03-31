@@ -595,6 +595,10 @@
                 view_details: 'View Details',
                 chatAssistant: 'Chat Assistant',
                 askAgriCare: 'Ask AgriCare',
+                benefit_label: 'Key Benefit',
+                eligibility_label: 'Eligibility',
+                live_status: 'Live',
+                upcoming_status: 'Upcoming',
                 processTimeline: 'Process Timeline',
                 status: 'Status',
                 planned_op: 'Planned Operation',
@@ -638,6 +642,9 @@
                 apply_now: 'અરજી કરો',
                 view_details: 'વિગતો જુઓ',
                 benefit_label: 'લાભ:',
+                eligibility_label: 'પાત્રતા:',
+                live_status: 'ચાલુ',
+                upcoming_status: 'આગામી',
                 chatAssistant: 'ચેટ સહાયક',
                 askAgriCare: 'એગ્રીકેરને પૂછો',
                 processTimeline: 'પ્રક્રિયા સમયરેખા',
@@ -683,6 +690,9 @@
                 apply_now: 'आवेदन करें',
                 view_details: 'विवरण देखें',
                 benefit_label: 'लाभ:',
+                eligibility_label: 'पात्रता:',
+                live_status: 'सक्रिय',
+                upcoming_status: 'आगामी',
                 chatAssistant: 'चैट सहायक',
                 askAgriCare: 'एग्रीकेयर से पूछें',
                 processTimeline: 'प्रक्रिया समयरेखा',
@@ -953,13 +963,13 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-16 -mt-16 opacity-50 transition-transform group-hover:scale-110"></div>
                     
                     <div class="flex justify-between items-start mb-6 relative z-10">
-                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">${s.category}</span>
+                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">${translations[currentLang][{'All': 'cat_all', 'Income Support': 'cat_income', 'Irrigation': 'cat_irrigation', 'Equipment': 'cat_equipment'}[s.category]] || s.category}</span>
                         <div class="flex items-center gap-1.5">
                             <span class="relative flex h-2 w-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </span>
-                            <span class="text-emerald-500 font-black text-[10px] tracking-tight uppercase">${s.status || 'Active'}</span>
+                            <span class="text-emerald-500 font-black text-[10px] tracking-tight uppercase">${s.status === 'Live' ? (translations[currentLang].live_status || 'Live') : (translations[currentLang].upcoming_status || s.status || 'Active')}</span>
                         </div>
                     </div>
 
@@ -968,7 +978,7 @@
                     
                     <div class="space-y-3 mb-8">
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
-                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Key Benefit</span>
+                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${translations[currentLang].benefit_label || 'Key Benefit'}</span>
                             <span class="text-xs font-bold text-gray-700">${s[`benefits_${currentLang}`] || s.benefits || '--'}</span>
                         </div>
                     </div>

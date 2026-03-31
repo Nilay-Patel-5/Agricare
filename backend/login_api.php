@@ -24,36 +24,34 @@ try {
     }
 
     if ($role === 'farmer') {
-        // Farmer Login: Uses Phone and 6-digit PIN
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE phone = ? AND role = 'farmer'");
+        // Farmer Login: Uses Phone and 6-digit PIN from farmers table
+        $stmt = $pdo->prepare("SELECT * FROM farmers WHERE phone = ?");
         $stmt->execute([$identifier]);
         $user = $stmt->fetch();
-
+ 
         if ($user && password_verify($password, $user['pin'])) {
             echo json_encode(['success' => true, 'user' => [
                 'id' => $user['id'],
-                'user_id' => $user['user_id'],
                 'name' => $user['name'],
                 'role' => 'farmer',
-                'pref_lang' => $user['pref_lang']
+                'pref_lang' => $user['pref_lang'] ?? 'en'
             ]]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid Phone number or PIN.']);
         }
 
     } else if ($role === 'admin') {
-        // Admin Login: Uses Email and Hashed Password
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? AND role = 'admin'");
+        // Admin Login: Uses Email and Hashed Password from admins table
+        $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = ?");
         $stmt->execute([$identifier]);
         $admin = $stmt->fetch();
-
+ 
         if ($admin && password_verify($password, $admin['password'])) {
             echo json_encode(['success' => true, 'user' => [
                 'id' => $admin['id'],
-                'user_id' => $admin['user_id'],
                 'name' => $admin['name'],
                 'role' => 'admin',
-                'pref_lang' => $admin['pref_lang']
+                'pref_lang' => 'en' // Default for admin
             ]]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid Admin credentials.']);

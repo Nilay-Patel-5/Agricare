@@ -123,7 +123,10 @@
 
     <script>
         async function loadData() {
-            const res = await fetch('../backend/admin_pesticides_api.php');
+            const userStr = localStorage.getItem('agricare_user') || '{}';
+            const res = await fetch('../backend/admin_pesticides_api.php', {
+                headers: { 'X-User-Data': userStr }
+            });
             const data = await res.json();
             
             const tbody = document.getElementById('mappingTable');
@@ -160,8 +163,13 @@
 
         async function deleteMapping(id) {
             if (!confirm("De-link this solution?")) return;
+            const userStr = localStorage.getItem('agricare_user') || '{}';
             const res = await fetch('../backend/admin_pesticides_api.php', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-Data': userStr
+                },
                 body: JSON.stringify({action: 'delete_mapping', id: id})
             });
             loadData();
@@ -174,8 +182,13 @@
             event.preventDefault();
             const formData = new FormData(event.target);
             const obj = Object.fromEntries(formData.entries());
+            const userStr = localStorage.getItem('agricare_user') || '{}';
             const res = await fetch('../backend/admin_pesticides_api.php', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-Data': userStr
+                },
                 body: JSON.stringify(obj)
             });
             const result = await res.json();

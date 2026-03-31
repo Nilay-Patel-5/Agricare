@@ -37,8 +37,8 @@ try {
     $city     = trim(strip_tags($data['city'] ?? ''));
     $pincode  = trim($data['pincode'] ?? '');
     $pref_lang = trim($data['pref_lang'] ?? '');
+    $pref_lang = trim($data['pref_lang'] ?? '');
     $pin      = trim($data['pin'] ?? '');
-    $dob      = !empty($data['dob']) ? trim($data['dob']) : null;
 
     // Role check
     if (($data['role'] ?? 'farmer') !== 'farmer') {
@@ -114,13 +114,8 @@ try {
         exit;
     }
 
-    // DOB: valid date format if provided
-    if ($dob !== null && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $dob)) {
-        $dob = null;
-    }
-
     // Duplicate check
-    $check = $pdo->prepare("SELECT id FROM users WHERE (phone IS NOT NULL AND phone = ?) OR (email IS NOT NULL AND email = ?)");
+    $check = $pdo->prepare("SELECT id FROM farmers WHERE (phone IS NOT NULL AND phone = ?) OR (email IS NOT NULL AND email = ?)");
     $check->execute([$phone, $email]);
     if ($check->fetch()) {
         http_response_code(409);
@@ -128,31 +123,28 @@ try {
         exit;
     }
 
-    // Insert
+    // Insert into farmers table
     $stmt = $pdo->prepare("
-        INSERT INTO users (user_id, name, email, phone, dob, role, district, city, pincode, pin, password, pref_lang)
-        VALUES (:uid, :name, :email, :phone, :dob, :role, :district, :city, :pincode, :pin, :pwd, :lang)
+        INSERT INTO farmers (name, email, phone, district, city, pincode, pin, pref_lang)
+        VALUES (:name, :email, :phone, :district, :city, :pincode, :pin, :lang)
     ");
     $result = $stmt->execute([
-        ':uid'      => null,
         ':name'     => $name,
         ':email'    => $email,
         ':phone'    => $phone,
-        ':dob'      => $dob,
-        ':role'     => 'farmer',
         ':district' => $district,
         ':city'     => $city,
         ':pincode'  => $pincode,
         ':pin'      => password_hash($pin, PASSWORD_DEFAULT),
-        ':pwd'      => null,
         ':lang'     => $pref_lang,
     ]);
-
+ 
     if ($result) {
         $newId = $pdo->lastInsertId();
-        $ustmt = $pdo->prepare("SELECT id, user_id, name, role, pref_lang FROM users WHERE id = ?");
+        $ustmt = $pdo->prepare("SELECT id, name, pref_lang FROM farmers WHERE id = ?");
         $ustmt->execute([$newId]);
         $userRow = $ustmt->fetch();
+        if ($userRow) $userRow['role'] = 'farmer'; // Add virtual role for client
         echo json_encode(['success' => true, 'message' => 'Registration successful!', 'user' => $userRow]);
     } else {
         http_response_code(500);

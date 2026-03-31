@@ -64,7 +64,7 @@ function chat_load_user_profile(PDO $pdo, ?int $userId, array $clientProfile): a
         return $profile;
     }
 
-    $stmt = $pdo->prepare("SELECT id, name, role, pref_lang, district, city FROM users WHERE id = :id LIMIT 1");
+    $stmt = $pdo->prepare("SELECT id, name, pref_lang, district, city FROM farmers WHERE id = :id LIMIT 1");
     $stmt->execute(['id' => $userId]);
     $dbUser = $stmt->fetch();
 

@@ -3,8 +3,12 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/security_headers.php';
 require_once __DIR__ . '/db.php';
 
+require_once __DIR__ . '/demo_admin_data.php';
+
 // Auth check: only admin role allowed
-$user = json_decode($_COOKIE['agricare_user'] ?? '{}', true);
+$userDataHeader = $_SERVER['HTTP_X_USER_DATA'] ?? '';
+$user = $userDataHeader ? json_decode($userDataHeader, true) : json_decode($_COOKIE['agricare_user'] ?? '{}', true);
+
 if (($user['role'] ?? '') !== 'admin') {
     http_response_code(403);
     echo json_encode(['error' => 'Forbidden.']);
@@ -23,20 +27,25 @@ try {
         }
     }
 
-    $farmers   = countTable($pdo, "SELECT COUNT(*) FROM users WHERE role = 'farmer'");
+    $farmers   = countTable($pdo, "SELECT COUNT(*) FROM farmers");
+    $admins    = countTable($pdo, "SELECT COUNT(*) FROM admins");
     $subsidies = countTable($pdo, "SELECT COUNT(*) FROM subsidies");
-    $markets   = countTable($pdo, "SELECT COUNT(DISTINCT state) FROM market_prices");
+    if ($subsidies === 0) {
+        $subsidies = count(admin_demo_subsidies());
+    }
+    $markets   = countTable($pdo, "SELECT COUNT(DISTINCT market) FROM market_prices");
     $scans     = countTable($pdo, "SELECT COUNT(*) FROM ai_scans");
 
     // Attempt to fetch recent users, fallback to empty array if fails
     $recentUsers = [];
     try {
-        $stmt = $pdo->query("SELECT id, name, district, phone, role, created_at FROM users ORDER BY created_at DESC LIMIT 5");
+        $stmt = $pdo->query("SELECT id, name, district, phone, created_at FROM farmers ORDER BY created_at DESC LIMIT 5");
         $recentUsers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {}
 
     echo json_encode([
         'farmers'     => $farmers,
+        'admins'      => $admins,
         'subsidies'   => $subsidies,
         'markets'     => $markets,
         'scans'       => $scans,

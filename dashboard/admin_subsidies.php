@@ -243,9 +243,13 @@
             try {
                 const formData = new FormData(e.target);
                 const obj = Object.fromEntries(formData.entries());
+                const userStr = localStorage.getItem('agricare_user') || '{}';
                 const res = await fetch('../backend/admin_subsidies_api.php', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-User-Data': userStr
+                    },
                     body: JSON.stringify(obj)
                 });
                 const result = await res.json();

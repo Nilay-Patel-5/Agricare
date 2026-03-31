@@ -35,10 +35,6 @@
             </div>
             
             <div class="flex items-center gap-6">
-                <div class="relative">
-                    <i class="fas fa-bell text-gray-400 text-xl hover:text-emerald-600 cursor-pointer transition-colors"></i>
-                </div>
-                
                 <div class="flex items-center gap-3 pl-6 border-l border-gray-200">
                     <div class="text-right hidden md:block">
                         <p class="text-sm font-bold text-gray-800 leading-tight">System Admin</p>
@@ -157,7 +153,8 @@
                 });
                 const data = await res.json();
                 
-                allMarketData = Array.isArray(data) ? data : [];
+                // The API returns { success: true, rows: [...] }
+                allMarketData = (data && data.rows) ? data.rows : [];
                 
                 // Update stats
                 const markets = [...new Set(allMarketData.map(m => m.market).filter(Boolean))];

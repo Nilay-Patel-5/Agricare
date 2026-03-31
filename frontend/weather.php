@@ -772,9 +772,9 @@
             // Open-Meteo API — free, no API key, same data as Google Weather
             try {
                 const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-                    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m` +
-                    `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max` +
-                    `&timezone=Asia%2FKolkata&forecast_days=7`;
+                    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,cloud_cover` +
+                    `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum` +
+                    `&timezone=Asia%2FKolkata&forecast_days=7&models=best_match`;
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Weather fetch failed');
                 return await response.json();
@@ -898,9 +898,12 @@
             const t = (en, gu, hi) => lang === 'gu' ? gu : (lang === 'hi' ? hi : en);
 
             // General Rules
-            if (rainPercent > 0 || current.condition.text.toLowerCase().includes('rain') || current.condition.text.toLowerCase().includes('shower')) {
+            // General Rules - Thresholded for Accuracy
+            const isRaining = rainPercent >= 30 || current.condition.text.toLowerCase().includes('rain') || current.condition.text.toLowerCase().includes('shower');
+            
+            if (isRaining) {
                 rules.push({
-                    text: t("Rain expected. Postpone irrigation.", "વરસાદની આગાહી છે. પિયત મુલતવી રાખો.", "बारिश की उम्मीद है। सिंचाई स्थगित करें।"),
+                    text: t("Rain expected (Prob: " + rainPercent + "%). Postpone irrigation.", "વરસાદની આગાહી છે (" + rainPercent + "%). પિયત મુલતવી રાખો.", "बारिश की उम्मीद है (" + rainPercent + "%। सिंचाई स्थगित करें।"),
                     type: "warning"
                 });
             } else {
