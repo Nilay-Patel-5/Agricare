@@ -23,14 +23,20 @@ function chat_ensure_schema(PDO $pdo): void
     // Create cache directory if not exists
     $cacheDir = __DIR__ . '/cache';
     if (!is_dir($cacheDir)) {
-        @mkdir($cacheDir, 0755, true);
+        if (!@mkdir($cacheDir, 0755, true) && !is_dir($cacheDir)) {
+             // If mkdir fails, we might be in a read-only area or similar, 
+             // but usually it works.
+        }
     }
 }
 
-function chat_cache_get(string $key, int $ttl = 3600): ?array
+function chat_cache_get(string $key, int $ttlSeconds = 3600): ?array
 {
+    // Skip cache for real-time troubleshooting
+    return null;
+
     $file = __DIR__ . '/cache/' . md5($key) . '.json';
-    if (file_exists($file) && (time() - filemtime($file) < $ttl)) {
+    if (file_exists($file) && (time() - filemtime($file) < $ttlSeconds)) {
         $content = file_get_contents($file);
         return json_decode($content, true);
     }
@@ -193,22 +199,23 @@ function chat_fetch_market_snapshot(PDO $pdo, string $district, string $crop): a
         $sql = "
             SELECT commodity, district, market, modal_price, arrival_date
             FROM market_prices
-            WHERE state ILIKE 'gujarat'
+            WHERE TRIM(state) ILIKE 'gujarat'
         ";
         $params = [];
 
         if ($district !== '') {
-            $sql .= " AND district ILIKE :district";
-            $params['district'] = '%' . $district . '%';
+            $sql .= " AND (district ILIKE :district OR TRIM(district) ILIKE :district)";
+            $params['district'] = '%' . trim($district) . '%';
         }
 
         if ($crop !== '') {
-            $sql .= " AND commodity ILIKE :commodity";
-            $params['commodity'] = '%' . $crop . '%';
+            $sql .= " AND (commodity ILIKE :commodity OR TRIM(commodity) ILIKE :commodity)";
+            $params['commodity'] = '%' . trim($crop) . '%';
         }
 
-        // Sorting by id DESC is much faster than to_date conversion on all rows.
-        $sql .= " ORDER BY id DESC LIMIT 5";
+        // Sorting by ID DESC as a proxy for insertion order is usually safe, 
+        // but let's make it more explicit if date is properly formatted DD/MM/YYYY.
+        $sql .= " ORDER BY to_date(arrival_date, 'DD/MM/YYYY') DESC, id DESC LIMIT 5";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
@@ -216,6 +223,7 @@ function chat_fetch_market_snapshot(PDO $pdo, string $district, string $crop): a
         chat_cache_set($cacheKey, $rows);
         return $rows;
     } catch (Throwable $e) {
+        error_log("ChatContext Market Error: " . $e->getMessage());
         return [];
     }
 }
@@ -231,11 +239,12 @@ function chat_fetch_subsidy_snapshot(PDO $pdo, string $crop): array
     try {
         if ($crop !== '') {
             $stmt = $pdo->prepare("
-                SELECT category, name, benefits, apply_link
+                SELECT category_en as category, title_en as name, benefits_en as benefits, apply_link
                 FROM subsidies
-                WHERE name ILIKE :crop
-                   OR description ILIKE :crop
-                   OR benefits ILIKE :crop
+                WHERE title_en ILIKE :crop
+                   OR description_en ILIKE :crop
+                   OR benefits_en ILIKE :crop
+                   OR category_en ILIKE :crop
                 ORDER BY last_updated DESC NULLS LAST
                 LIMIT 5
             ");
@@ -246,7 +255,7 @@ function chat_fetch_subsidy_snapshot(PDO $pdo, string $crop): array
         }
 
         $stmt = $pdo->query("
-            SELECT category, name, benefits, apply_link
+            SELECT category_en as category, title_en as name, benefits_en as benefits, apply_link
             FROM subsidies
             ORDER BY last_updated DESC NULLS LAST
             LIMIT 5
@@ -255,6 +264,7 @@ function chat_fetch_subsidy_snapshot(PDO $pdo, string $crop): array
         chat_cache_set($cacheKey, $rows);
         return $rows;
     } catch (Throwable $e) {
+        error_log("ChatContext Subsidy Error: " . $e->getMessage());
         return [];
     }
 }
@@ -379,7 +389,7 @@ function chat_normalize_pest_name(string $raw): string
     return trim($clean);
 }
 
-function chat_context_block(array $profile, array $marketRows, array $subsidyRows, array $cropSchedule, string $identifiedPest = ''): string
+function chat_context_block(array $profile, array $marketRows, array $subsidyRows, array $cropSchedule, array $shopRows = [], string $identifiedPest = ''): string
 {
     $profileLines = [
         'Farmer profile:',
@@ -408,16 +418,17 @@ function chat_context_block(array $profile, array $marketRows, array $subsidyRow
                 $pestLines[] = sprintf("- %s (%s) | Effectiveness: %s | Price: %s", $p['name'], $p['brand'], $p['effectiveness'], $p['price_range']);
             }
         }
-        
-        $shops = chat_fetch_local_shops($pdo, $profile['district']);
-        if ($shops) {
-            $pestLines[] = "Nearby Shops to buy these:";
-            foreach ($shops as $s) {
-                $address = ($s['address'] ?? '') . ', ' . ($s['city'] ?? '');
-                $mapUrl = "https://www.google.com/maps/search/?api=1&query=" . urlencode($address);
-                $pestLines[] = sprintf("- %s | Ph: %s | Addr: %s | VIEW ON GOOGLE MAPS: %s", $s['name'], $s['phone'], $s['address'], $mapUrl);
-            }
+    }
+
+    $shopLines = ['Nearby agriculture shops:'];
+    if ($shopRows) {
+        foreach ($shopRows as $s) {
+            $address = trim(($s['address'] ?? '') . ' ' . ($s['city'] ?? ''));
+            $mapUrl = "https://www.google.com/maps/search/?api=1&query=" . urlencode(($s['name'] ?? '') . ' ' . $address);
+            $shopLines[] = sprintf("- %s | Ph: %s | Addr: %s | VIEW ON GOOGLE MAPS: %s", $s['name'], $s['phone'], $s['address'], $mapUrl);
         }
+    } else {
+        $shopLines[] = '- No shop data found in your district.';
     }
 
     $marketLines = ['Recent market prices:'];
@@ -462,5 +473,5 @@ function chat_context_block(array $profile, array $marketRows, array $subsidyRow
         $scheduleLines[] = '- No crop schedule loaded for the selected crop.';
     }
 
-    return implode("\n", array_merge($profileLines, [''], $pestLines, [''], $marketLines, [''], $subsidyLines, [''], $scheduleLines));
+    return implode("\n", array_merge($profileLines, [''], $pestLines, [''], $shopLines, [''], $marketLines, [''], $subsidyLines, [''], $scheduleLines));
 }

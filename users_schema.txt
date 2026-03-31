@@ -1,0 +1,214 @@
+﻿USERS SCHEMA:
+Array
+(
+    [0] => Array
+        (
+            [column_name] => instance_id
+            [data_type] => uuid
+        )
+
+    [1] => Array
+        (
+            [column_name] => id
+            [data_type] => uuid
+        )
+
+    [2] => Array
+        (
+            [column_name] => aud
+            [data_type] => character varying
+        )
+
+    [3] => Array
+        (
+            [column_name] => role
+            [data_type] => character varying
+        )
+
+    [4] => Array
+        (
+            [column_name] => email
+            [data_type] => character varying
+        )
+
+    [5] => Array
+        (
+            [column_name] => encrypted_password
+            [data_type] => character varying
+        )
+
+    [6] => Array
+        (
+            [column_name] => email_confirmed_at
+            [data_type] => timestamp with time zone
+        )
+
+    [7] => Array
+        (
+            [column_name] => invited_at
+            [data_type] => timestamp with time zone
+        )
+
+    [8] => Array
+        (
+            [column_name] => confirmation_token
+            [data_type] => character varying
+        )
+
+    [9] => Array
+        (
+            [column_name] => confirmation_sent_at
+            [data_type] => timestamp with time zone
+        )
+
+    [10] => Array
+        (
+            [column_name] => recovery_token
+            [data_type] => character varying
+        )
+
+    [11] => Array
+        (
+            [column_name] => recovery_sent_at
+            [data_type] => timestamp with time zone
+        )
+
+    [12] => Array
+        (
+            [column_name] => email_change_token_new
+            [data_type] => character varying
+        )
+
+    [13] => Array
+        (
+            [column_name] => email_change
+            [data_type] => character varying
+        )
+
+    [14] => Array
+        (
+            [column_name] => email_change_sent_at
+            [data_type] => timestamp with time zone
+        )
+
+    [15] => Array
+        (
+            [column_name] => last_sign_in_at
+            [data_type] => timestamp with time zone
+        )
+
+    [16] => Array
+        (
+            [column_name] => raw_app_meta_data
+            [data_type] => jsonb
+        )
+
+    [17] => Array
+        (
+            [column_name] => raw_user_meta_data
+            [data_type] => jsonb
+        )
+
+    [18] => Array
+        (
+            [column_name] => is_super_admin
+            [data_type] => boolean
+        )
+
+    [19] => Array
+        (
+            [column_name] => created_at
+            [data_type] => timestamp with time zone
+        )
+
+    [20] => Array
+        (
+            [column_name] => updated_at
+            [data_type] => timestamp with time zone
+        )
+
+    [21] => Array
+        (
+            [column_name] => phone
+            [data_type] => text
+        )
+
+    [22] => Array
+        (
+            [column_name] => phone_confirmed_at
+            [data_type] => timestamp with time zone
+        )
+
+    [23] => Array
+        (
+            [column_name] => phone_change
+            [data_type] => text
+        )
+
+    [24] => Array
+        (
+            [column_name] => phone_change_token
+            [data_type] => character varying
+        )
+
+    [25] => Array
+        (
+            [column_name] => phone_change_sent_at
+            [data_type] => timestamp with time zone
+        )
+
+    [26] => Array
+        (
+            [column_name] => confirmed_at
+            [data_type] => timestamp with time zone
+        )
+
+    [27] => Array
+        (
+            [column_name] => email_change_token_current
+            [data_type] => character varying
+        )
+
+    [28] => Array
+        (
+            [column_name] => email_change_confirm_status
+            [data_type] => smallint
+        )
+
+    [29] => Array
+        (
+            [column_name] => banned_until
+            [data_type] => timestamp with time zone
+        )
+
+    [30] => Array
+        (
+            [column_name] => reauthentication_token
+            [data_type] => character varying
+        )
+
+    [31] => Array
+        (
+            [column_name] => reauthentication_sent_at
+            [data_type] => timestamp with time zone
+        )
+
+    [32] => Array
+        (
+            [column_name] => is_sso_user
+            [data_type] => boolean
+        )
+
+    [33] => Array
+        (
+            [column_name] => deleted_at
+            [data_type] => timestamp with time zone
+        )
+
+    [34] => Array
+        (
+            [column_name] => is_anonymous
+            [data_type] => boolean
+        )
+
+)

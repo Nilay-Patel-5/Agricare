@@ -5,11 +5,11 @@ require_once __DIR__ . '/env.php';
 class Database
 {
     private static $defaultConfig = [
-        'host' => 'db.fnfqrectniyjpkyfkmal.supabase.co',
+        'host' => 'aws-1-ap-south-1.pooler.supabase.com',
         'db'   => 'postgres',
-        'user' => 'postgres',
+        'user' => 'postgres.fnfqrectniyjpkyfkmal',
         'pass' => 'nrpsupabase7',
-        'port' => '5432',
+        'port' => '6543',
         'sslmode' => 'require',
     ];
 
