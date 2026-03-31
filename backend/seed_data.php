@@ -161,14 +161,16 @@ $subsidies = [
 ];
 
 $insertS = $pdo->prepare("
-    INSERT INTO subsidies (name, category, description, benefits, eligibility, apply_link, status, last_updated)
-    VALUES (:name, :category, :description, :benefits, :eligibility, :apply_link, :status, CURRENT_TIMESTAMP)
+    INSERT INTO subsidies (title_en, category_en, description_en, benefits_en, apply_link, status, last_updated)
+    VALUES (:name, :category, :description, :benefits, :apply_link, :status, CURRENT_TIMESTAMP)
     ON CONFLICT DO NOTHING
 ");
 
 foreach ($subsidies as $s) {
     try {
-        $insertS->execute($s);
+        $data = $s;
+        unset($data['eligibility']); // Not in DB schema
+        $insertS->execute($data);
         $results[] = "✅ Subsidy: {$s['name']}";
     } catch (Exception $e) {
         $results[] = "⚠️ Skip subsidy {$s['name']}: " . $e->getMessage();

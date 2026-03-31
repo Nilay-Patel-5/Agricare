@@ -8,17 +8,18 @@ function grok_config(): array
     }
 
     $config = [
-        'api_key' => getenv('GROK_API_KEY') ?: '',
-        'base_url' => getenv('GROK_BASE_URL') ?: 'https://api.x.ai/v1',
-        'model' => getenv('GROK_MODEL') ?: 'grok-beta',
-        'timeout' => (int) (getenv('GROK_TIMEOUT') ?: 60),
+        'api_key' => getenv('GROQ_API_KEY') ?: (getenv('GROK_API_KEY') ?: ''),
+        'base_url' => getenv('GROQ_BASE_URL') ?: (getenv('GROK_BASE_URL') ?: 'https://api.groq.com/openai/v1'),
+        'model' => getenv('GROQ_MODEL') ?: (getenv('GROK_MODEL') ?: 'llama-3.1-8b-instant'),
+        'timeout' => (int) (getenv('GROQ_TIMEOUT') ?: (getenv('GROK_TIMEOUT') ?: 60)),
     ];
 
-    $localConfigFile = __DIR__ . '/grok.local.php';
-    if (file_exists($localConfigFile)) {
-        $localConfig = require $localConfigFile;
-        if (is_array($localConfig)) {
-            $config = array_merge($config, array_filter($localConfig, static fn($value) => $value !== null && $value !== ''));
+    foreach ([__DIR__ . '/groq.local.php', __DIR__ . '/grok.local.php'] as $localConfigFile) {
+        if (file_exists($localConfigFile)) {
+            $localConfig = require $localConfigFile;
+            if (is_array($localConfig)) {
+                $config = array_merge($config, array_filter($localConfig, static fn($value) => $value !== null && $value !== ''));
+            }
         }
     }
 
@@ -33,7 +34,7 @@ function grok_chat_create(array $payload): array
             'ok' => false,
             'status' => 401,
             'data' => null,
-            'error' => 'Grok API key is not configured. Please add it to grok.local.php.',
+            'error' => 'Groq API key is not configured. Please add it to groq.local.php or set GROQ_API_KEY.',
         ];
     }
 
@@ -86,7 +87,7 @@ function grok_chat_create(array $payload): array
             'ok' => false,
             'status' => $status,
             'data' => $data,
-            'error' => is_string($message) ? $message : 'Grok request failed.',
+            'error' => is_string($message) ? $message : 'Groq request failed.',
         ];
     }
 

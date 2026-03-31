@@ -1,0 +1,94 @@
+﻿PESTICIDES SCHEMA:
+Array
+(
+    [0] => Array
+        (
+            [column_name] => id
+            [data_type] => integer
+        )
+
+    [1] => Array
+        (
+            [column_name] => name_en
+            [data_type] => character varying
+        )
+
+    [2] => Array
+        (
+            [column_name] => name_gu
+            [data_type] => character varying
+        )
+
+    [3] => Array
+        (
+            [column_name] => name_hi
+            [data_type] => character varying
+        )
+
+    [4] => Array
+        (
+            [column_name] => brand
+            [data_type] => character varying
+        )
+
+    [5] => Array
+        (
+            [column_name] => category
+            [data_type] => character varying
+        )
+
+    [6] => Array
+        (
+            [column_name] => price_range
+            [data_type] => character varying
+        )
+
+    [7] => Array
+        (
+            [column_name] => usage_en
+            [data_type] => text
+        )
+
+    [8] => Array
+        (
+            [column_name] => usage_gu
+            [data_type] => text
+        )
+
+    [9] => Array
+        (
+            [column_name] => usage_hi
+            [data_type] => text
+        )
+
+    [10] => Array
+        (
+            [column_name] => target_pests_en
+            [data_type] => text
+        )
+
+    [11] => Array
+        (
+            [column_name] => target_pests_gu
+            [data_type] => text
+        )
+
+    [12] => Array
+        (
+            [column_name] => target_pests_hi
+            [data_type] => text
+        )
+
+    [13] => Array
+        (
+            [column_name] => image_url
+            [data_type] => text
+        )
+
+    [14] => Array
+        (
+            [column_name] => created_at
+            [data_type] => timestamp with time zone
+        )
+
+)

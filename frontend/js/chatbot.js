@@ -62,17 +62,13 @@
             const data = await res.json();
             loadingEl.remove();
 
-            if (data.shops && data.shops.length > 0) {
-                renderShopResult({
-                    pest_name: pest || 'Agricultural Shops Near You',
-                    pesticides: data.pesticides || [],
-                    shops: data.shops,
-                    map_embed_src: data.map_embed_src || null,
-                    gps
-                });
-            } else {
-                renderMessage('assistant', '⚠️ No shops found in your district. Please update your profile with the correct district.');
-            }
+            renderShopResult({
+                pest_name: pest || 'Agricultural Shops Near You',
+                pesticides: data.pesticides || [],
+                shops: data.shops || [],
+                map_embed_src: data.map_embed_src || null,
+                gps
+            });
         } catch (e) {
             loadingEl.remove();
             renderMessage('assistant', 'Could not fetch shop data. Please try again.');

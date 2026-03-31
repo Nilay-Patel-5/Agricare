@@ -19,6 +19,7 @@ set_error_handler(static function (int $severity, string $message, string $file,
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/ai/chat_context.php';
 require_once __DIR__ . '/ai/gemini.php';
+require_once __DIR__ . '/ai/grok.php';
 require_once __DIR__ . '/ai/common.php';
 require_once __DIR__ . '/ai/Detector.php';
 
@@ -44,18 +45,20 @@ function chat_detect_intents(string $message, bool $hasImage): array
 {
     $text = mb_strtolower($message);
 
-    $market = preg_match('/\b(market|mandi|price|prices|rate|rates|apmc|sell|selling)\b/u', $text) === 1;
-    $subsidy = preg_match('/\b(subsidy|subsidies|scheme|schemes|loan|grant|benefit|benefits|irrigation)\b/u', $text) === 1;
-    $schedule = preg_match('/\b(schedule|calendar|task|tasks|when|sow|plant|watering|fertilizer|spray|harvest)\b/u', $text) === 1;
-    $pesticide = $hasImage || preg_match('/\b(pest|disease|pesticide|pesticides|insect|fungus|fungal|spray|treatment)\b/u', $text) === 1;
+    $market = preg_match('/\b(market|mandi|price|prices|rate|rates|apmc|sell|selling|મંડી|ભાવ|मंडी)\b/u', $text) === 1;
+    $subsidy = preg_match('/\b(subsidy|subsidies|scheme|schemes|loan|grant|benefit|benefits|irrigation|સબસિડી|યોજના|योजना)\b/u', $text) === 1;
+    $schedule = preg_match('/\b(schedule|calendar|task|tasks|when|sow|plant|watering|fertilizer|spray|harvest|પત્રક|कैलेंडर)\b/u', $text) === 1;
+    $pesticide = $hasImage || preg_match('/\b(pest|disease|pesticide|pesticides|insect|fungus|fungal|spray|treatment|જીવાત|રોગ|कीट)\b/u', $text) === 1;
+    $shop = preg_match('/\b(shop|shops|store|stores|buy|purchase|dealer|agri-shop|agriculture shop|locate|near me|nearby|દુકાન|માર્કેટ|દુકાનો|दुकान)\b/u', $text) === 1;
 
-    $general = !$market && !$subsidy && !$schedule && !$pesticide;
+    $general = !$market && !$subsidy && !$schedule && !$pesticide && !$shop;
 
     return [
         'market' => $market || $general,
         'subsidy' => $subsidy || $general,
         'schedule' => $schedule || $general,
         'pesticide' => $pesticide || $general,
+        'shop' => $shop || $general,
     ];
 }
 
@@ -137,10 +140,58 @@ try {
 
     $profile = chat_load_user_profile($pdo, $userId, $clientProfile);
     $history = chat_fetch_recent_history($pdo, $userId, $sessionKey, 6);
+    
+    // Keyword-based override for better search relevance
+    $searchDistrict = (string)($profile['district'] ?? '');
+    $searchCrop = (string)($profile['crop'] ?? '');
+    
+    $districts = ['ahmedabad', 'surat', 'rajkot', 'vadodara', 'bhavnagar', 'amreli', 'junagadh', 'mehsana', 'anand', 'kutch', 'dahod', 'gandhinagar'];
+    $normalizedMsg = mb_strtolower($message);
+    foreach ($districts as $d) {
+        if (strpos($normalizedMsg, $d) !== false) {
+            $searchDistrict = $d;
+            break;
+        }
+    }
+    
+    // Simple crop keywords
+    $crops = ['wheat', 'cotton', 'groundnut', 'tomato', 'potato', 'onion', 'mango', 'banana', 'chilli'];
+    foreach ($crops as $c) {
+        if (strpos($normalizedMsg, $c) !== false) {
+            $searchCrop = $c;
+            break;
+        }
+    }
+    
+    // Subsidy specific keywords
+    $subsidyKeyword = null;
+    if (strpos($normalizedMsg, 'irrigation') !== false || strpos($normalizedMsg, 'drip') !== false) {
+        $subsidyKeyword = 'irrigation';
+    } elseif (strpos($normalizedMsg, 'tractor') !== false || strpos($normalizedMsg, 'machine') !== false) {
+        $subsidyKeyword = 'mechanization';
+    }
+
     $intents = chat_detect_intents($message, isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name']));
-    $marketRows = $intents['market'] ? chat_fetch_market_snapshot($pdo, $profile['district'], $profile['crop']) : [];
-    $subsidyRows = $intents['subsidy'] ? chat_fetch_subsidy_snapshot($pdo, $profile['crop']) : [];
-    $cropSchedule = $intents['schedule'] ? chat_fetch_crop_schedule($pdo, $profile['crop']) : [];
+    
+    $isTodayReq = (strpos($normalizedMsg, 'today') !== false || strpos($normalizedMsg, 'નવીનતમ') !== false || strpos($normalizedMsg, 'આજે') !== false);
+
+    $marketRows = $intents['market'] ? chat_fetch_market_snapshot($pdo, $searchDistrict, $searchCrop) : [];
+    
+    // Prioritize today's data if specifically requested and latest isn't today
+    if ($isTodayReq && $marketRows) {
+        $todayStr = '31/03/2026';
+        usort($marketRows, function($a, $b) use ($todayStr) {
+            $dateA = $a['arrival_date'] ?? '';
+            $dateB = $b['arrival_date'] ?? '';
+            if ($dateA === $todayStr && $dateB !== $todayStr) return -1;
+            if ($dateA !== $todayStr && $dateB === $todayStr) return 1;
+            return 0;
+        });
+    }
+
+    $subsidyRows = $intents['subsidy'] ? chat_fetch_subsidy_snapshot($pdo, $subsidyKeyword ?: $searchCrop) : [];
+    $cropSchedule = $intents['schedule'] ? chat_fetch_crop_schedule($pdo, $searchCrop) : [];
+    $shopRows = $intents['shop'] ? chat_fetch_local_shops($pdo, $searchDistrict) : [];
 
     $identifiedPest = '';
     $pestResData = null; // structured data for frontend cards
@@ -183,7 +234,7 @@ try {
         }
     }
 
-    $contextBlock = chat_context_block($profile, $marketRows, $subsidyRows, $cropSchedule, $identifiedPest);
+    $contextBlock = chat_context_block($profile, $marketRows, $subsidyRows, $cropSchedule, $shopRows, $identifiedPest);
 
     $userMessageForStore = $message;
     if ($identifiedPest !== '') {
@@ -225,21 +276,45 @@ Rules: Be brief, practical, and action-oriented. Use the provided farm data firs
     $provider = 'gemini';
     $modelUsed = gemini_config()['text_model'] ?? 'gemini-1.5-flash';
     $response = gemini_text_create($conversation, $modelUsed);
+    $reply = $response['ok'] ? gemini_extract_output_text($response['data']) : '';
+    $providerErrors = [];
 
     if (!$response['ok']) {
-        http_response_code($response['status'] ?: 502);
-        echo json_encode([
-            'error' => $response['error'] ?? 'Gemini API failed or hit rate limits.',
-            'configured' => true,
-        ]);
-        exit;
+        $providerErrors[] = 'Gemini: ' . ($response['error'] ?? 'request failed');
+    } elseif ($reply === '') {
+        $providerErrors[] = 'Gemini: empty reply';
     }
 
-    $reply = gemini_extract_output_text($response['data']);
+    if (!$response['ok'] || $reply === '') {
+        $groqPayload = [
+            'model' => grok_config()['model'] ?? 'llama-3.1-8b-instant',
+            'messages' => $conversation,
+            'temperature' => 0.3,
+            'max_tokens' => 1024,
+        ];
+        $groqResponse = grok_chat_create($groqPayload);
+
+        if ($groqResponse['ok']) {
+            $groqReply = grok_extract_output_text($groqResponse['data']);
+            if ($groqReply !== '') {
+                $provider = 'groq';
+                $modelUsed = $groqPayload['model'];
+                $response = $groqResponse;
+                $reply = $groqReply;
+            } else {
+                $providerErrors[] = 'Groq: empty reply';
+            }
+        } else {
+            $providerErrors[] = 'Groq: ' . ($groqResponse['error'] ?? 'request failed');
+        }
+    }
 
     if ($reply === '') {
         http_response_code(502);
-        echo json_encode(['error' => 'AI provider returned an empty reply.']);
+        echo json_encode([
+            'error' => 'AI providers failed. ' . implode(' | ', $providerErrors),
+            'configured' => true,
+        ]);
         exit;
     }
 

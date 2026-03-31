@@ -263,8 +263,8 @@
                 nearbyShopsTitle: 'Nearby Shops',
                 searchMoreShops: '🔍 Search More Shops on Google Maps',
                 findShopsMsg: 'Find nearby agricultural shops 🗺️',
-                mandiPrompt: 'Show recent mandi price guidance for my crop and district.',
-                subsidyPrompt: 'Which subsidy can help with drip irrigation for my farm?',
+                mandiPrompt: 'Show me today\'s mandi prices for my area.',
+                subsidyPrompt: 'Show me the latest government subsidies and schemes.',
             },
             gu: {
                 newChat: 'નવી ચેટ',
@@ -291,8 +291,8 @@
                 nearbyShopsTitle: 'નજીકની દુકાનો',
                 searchMoreShops: '🔍 Google Maps પર વધુ દુકાન શોધો',
                 findShopsMsg: 'નજીકની કૃષિ દુકાનો શોધો 🗺️',
-                mandiPrompt: 'મારા પાક અને જિલ્લા માટે તાજેતરના મંડી ભાવ બતાવો.',
-                subsidyPrompt: 'ટપક સિંચાઈ માટે કઈ સબસિડી મારી ખેતી માટે ઉપયોગી?',
+                mandiPrompt: 'મારા વિસ્તાર માટે આજના મંડી ભાવ બતાવો.',
+                subsidyPrompt: 'સરકારી સબસિડી અને યોજનાઓની નવીનતમ માહિતી આપો.',
             },
             hi: {
                 newChat: 'नई चैट',
@@ -319,8 +319,8 @@
                 nearbyShopsTitle: 'नजदीकी दुकानें',
                 searchMoreShops: '🔍 Google Maps पर अधिक दुकानें खोजें',
                 findShopsMsg: 'नजदीकी कृषि दुकानें खोजें 🗺️',
-                mandiPrompt: 'मेरी फसल और जिले के लिए हालिया मंडी भाव दिखाएं।',
-                subsidyPrompt: 'ड्रिप सिंचाई के लिए कौन सी सब्सिडी मेरी खेती में मदद करेगी?',
+                mandiPrompt: 'मेरे क्षेत्र के लिए आज के मंडी भाव दिखाएं।',
+                subsidyPrompt: 'नवीनतम सरकारी सब्सिडी और योजनाओं की जानकारी दें।',
             }
         };
 
