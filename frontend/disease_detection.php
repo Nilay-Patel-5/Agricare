@@ -563,8 +563,12 @@ exit;
             }
             lucide.createIcons();
         }
-        setInterval(checkApi, 10000);
         checkApi();
+        setInterval(() => {
+            if (!document.hidden) {
+                checkApi();
+            }
+        }, 60000);
 
         // Files
         dropZone.onclick = () => fileInput.click();

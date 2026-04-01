@@ -179,7 +179,7 @@ try {
     
     // Prioritize today's data if specifically requested and latest isn't today
     if ($isTodayReq && $marketRows) {
-        $todayStr = '31/03/2026';
+        $todayStr = (new DateTime('now', new DateTimeZone('Asia/Kolkata')))->format('d/m/Y');
         usort($marketRows, function($a, $b) use ($todayStr) {
             $dateA = $a['arrival_date'] ?? '';
             $dateB = $b['arrival_date'] ?? '';

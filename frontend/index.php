@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <title>AgriCare | Gujarat's Smart Farming Platform</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="output.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
@@ -142,6 +145,12 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+        }
+
+        @media (max-width: 1024px) {
+            .farm-hero {
+                background-attachment: scroll;
+            }
         }
     </style>
 </head>
@@ -450,7 +459,7 @@
     <script src="js/translations.js"></script>
     <script>
         // 2. Language Switcher Logic
-        function changeLang(lang) {
+        function changeLang(lang, refreshTicker = true) {
             localStorage.setItem('agricare_lang', lang);
             // Remove active classes from all buttons
             document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -479,7 +488,7 @@
             if (lang === 'hi') body.classList.add('hi-text');
 
             // Re-render the Live Mandi Ticker so crop/district translations switch immediately
-            if (document.getElementById('mandiTicker')) {
+            if (refreshTicker && document.getElementById('mandiTicker')) {
                 fetchMandiTicker();
             }
         }
@@ -638,12 +647,16 @@
 
         // Initialize fetching on load and automatically refresh every 5 minutes
         document.addEventListener('DOMContentLoaded', () => {
-            fetchMandiTicker();
-            setInterval(fetchMandiTicker, 5 * 60 * 1000);
-
             const urlParams = new URLSearchParams(window.location.search);
             const initialLang = urlParams.get('lang') || localStorage.getItem('agricare_lang') || 'en';
-            changeLang(initialLang);
+            changeLang(initialLang, false);
+            fetchMandiTicker();
+
+            setInterval(() => {
+                if (!document.hidden) {
+                    fetchMandiTicker();
+                }
+            }, 5 * 60 * 1000);
         });
     </script>
 </body>

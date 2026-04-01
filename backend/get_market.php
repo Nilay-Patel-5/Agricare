@@ -6,6 +6,26 @@ require_once __DIR__ . '/sync_market.php';
 
 try {
     date_default_timezone_set('Asia/Kolkata');
+    $rawInput = file_get_contents("php://input");
+    $input = json_decode($rawInput ?: '[]', true);
+    if (!is_array($input)) {
+        $input = [];
+    }
+    
+    // Simple Cache Logic
+    $cachePath = __DIR__ . '/cache/get_market_cache.json';
+    $cacheTtl = 600; // 10 minutes cache
+    
+    // Check if we can serve from cache
+    if (file_exists($cachePath) && (time() - filemtime($cachePath)) < $cacheTtl) {
+        // Only serve cache if no specific filters are applied
+        if (empty($input['districts']) && empty($input['markets']) && empty($input['commodities'])) {
+            header('X-Cache: HIT');
+            readfile($cachePath);
+            exit;
+        }
+    }
+
     $pdo = Database::getConnection();
     $today = date('d/m/Y');
     $syncMetaPath = __DIR__ . '/last_market_sync.json';
@@ -20,7 +40,7 @@ try {
 
     $latestLocalDate = $pdo->query("SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY id DESC LIMIT 1")->fetchColumn();
     $lastSyncTs = !empty($syncMeta['synced_at']) ? strtotime((string) $syncMeta['synced_at']) : 0;
-    $shouldSync = $latestLocalDate !== $today || !$lastSyncTs || (time() - $lastSyncTs) > 1800;
+    $shouldSync = ($latestLocalDate !== $today || !$lastSyncTs || (time() - $lastSyncTs) > 3600); // 1 hour sync gate
 
     if ($shouldSync) {
         try {
@@ -36,15 +56,10 @@ try {
         }
     }
 
-    /* Read filters from frontend */
-    $input = json_decode(file_get_contents("php://input"), true);
     $districts = $input['districts'] ?? [];
     $markets = $input['markets'] ?? [];
     $commodities = $input['commodities'] ?? [];
 
-    // Get the latest arrival date first. 
-    // Optimization: Sort by ID desc and take the arrival_date from the most recent record.
-    // This is much faster than MAX(to_date(...)) on all rows.
     $dateQuery = "SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY id DESC LIMIT 1";
     $dateStmt = $pdo->prepare($dateQuery);
     $dateStmt->execute();
@@ -52,7 +67,6 @@ try {
 
     $latestDate = $latestDateResult['arrival_date'] ?? null;
 
-    // Query for latest date data only
     $query = "SELECT * FROM market_prices WHERE state ILIKE 'gujarat'";
     $params = [];
 
@@ -94,14 +108,12 @@ try {
         $query .= " AND (" . implode(" OR ", array_map(fn($p) => "commodity ILIKE $p", $placeholders)) . ")";
     }
 
-    // Optimization: Sort by id DESC instead of converting strings to dates.
     $query .= " ORDER BY id DESC LIMIT 500";
 
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);
     $data = $stmt->fetchAll();
 
-    /* Prepare result for table */
     $result = [];
     foreach ($data as $row) {
         $result[] = [
@@ -115,14 +127,36 @@ try {
         ];
     }
 
-    echo json_encode([
+    $response = [
         'success' => true,
         'target_date' => $latestDate,
         'today' => $today,
         'synced_at' => $syncMeta['synced_at'] ?? null,
         'rows' => $result,
-    ]);
+    ];
+
+    $jsonOutput = json_encode($response);
+    
+    // Save to cache if no filters applied
+    if (empty($districts) && empty($markets) && empty($commodities)) {
+        $cacheDir = dirname($cachePath);
+        if (!is_dir($cacheDir)) {
+            @mkdir($cacheDir, 0777, true);
+        }
+        @file_put_contents($cachePath, $jsonOutput);
+    }
+    
+    header('X-Cache: MISS');
+    echo $jsonOutput;
+
 } catch (Exception $e) {
+    if (!empty($cachePath) && file_exists($cachePath)) {
+        header('X-Cache: STALE');
+        readfile($cachePath);
+        exit;
+    }
+
     http_response_code(500);
     echo json_encode(['error' => $e->getMessage()]);
 }
+

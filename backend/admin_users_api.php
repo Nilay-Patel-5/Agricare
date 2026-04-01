@@ -11,10 +11,11 @@ if (($user['role'] ?? '') !== 'admin') {
     exit;
 }
 
-$pdo    = Database::getConnection();
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
+    $pdo = Database::getConnection();
+
     if ($method === 'GET') {
         // Fetch Farmers only for the Registry UI
         $stmtFarmers = $pdo->query("SELECT id, name, email, phone, district, city, pref_lang, created_at FROM farmers ORDER BY created_at DESC");

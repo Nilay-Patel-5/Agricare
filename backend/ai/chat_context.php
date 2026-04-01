@@ -35,7 +35,7 @@ function chat_cache_get(string $key, int $ttlSeconds = 3600): ?array
     // Skip cache for real-time troubleshooting
     return null;
 
-    $file = __DIR__ . '/cache/' . md5($key) . '.json';
+    $file = dirname(__DIR__) . '/cache/' . md5($key) . '.json';
     if (file_exists($file) && (time() - filemtime($file) < $ttlSeconds)) {
         $content = file_get_contents($file);
         return json_decode($content, true);
@@ -45,8 +45,13 @@ function chat_cache_get(string $key, int $ttlSeconds = 3600): ?array
 
 function chat_cache_set(string $key, array $data): void
 {
-    $file = __DIR__ . '/cache/' . md5($key) . '.json';
-    file_put_contents($file, json_encode($data));
+    $cacheDir = dirname(__DIR__) . '/cache';
+    if (!is_dir($cacheDir)) {
+        @mkdir($cacheDir, 0777, true);
+    }
+
+    $file = $cacheDir . '/' . md5($key) . '.json';
+    @file_put_contents($file, json_encode($data));
 }
 
 function chat_normalize_profile(array $clientProfile): array
@@ -193,9 +198,50 @@ function chat_fetch_market_snapshot(PDO $pdo, string $district, string $crop): a
         return $cached;
     }
 
+    $marketCachePath = dirname(__DIR__) . '/cache/get_market_cache.json';
+    if (is_file($marketCachePath)) {
+        $marketPayload = json_decode((string) file_get_contents($marketCachePath), true);
+        $rows = is_array($marketPayload['rows'] ?? null) ? $marketPayload['rows'] : [];
+
+        if ($rows) {
+            $districtNeedle = mb_strtolower(trim($district));
+            $cropNeedle = mb_strtolower(trim($crop));
+
+            $filtered = array_values(array_filter($rows, static function (array $row) use ($districtNeedle, $cropNeedle): bool {
+                $districtMatch = $districtNeedle === '' || str_contains(mb_strtolower((string) ($row['district'] ?? '')), $districtNeedle);
+                $cropMatch = $cropNeedle === '' || str_contains(mb_strtolower((string) ($row['commodity'] ?? '')), $cropNeedle);
+                return $districtMatch && $cropMatch;
+            }));
+
+            usort($filtered, static function (array $a, array $b): int {
+                $dateA = DateTime::createFromFormat('d/m/Y', (string) ($a['arrival_date'] ?? ''));
+                $dateB = DateTime::createFromFormat('d/m/Y', (string) ($b['arrival_date'] ?? ''));
+                $tsA = $dateA ? $dateA->getTimestamp() : 0;
+                $tsB = $dateB ? $dateB->getTimestamp() : 0;
+
+                if ($tsA === $tsB) {
+                    return ((int) ($b['modal'] ?? 0)) <=> ((int) ($a['modal'] ?? 0));
+                }
+
+                return $tsB <=> $tsA;
+            });
+
+            $normalizedRows = array_map(static fn(array $row): array => [
+                'commodity' => (string) ($row['commodity'] ?? ''),
+                'district' => (string) ($row['district'] ?? ''),
+                'market' => (string) ($row['market'] ?? ''),
+                'modal_price' => (string) ($row['modal'] ?? ''),
+                'arrival_date' => (string) ($row['arrival_date'] ?? ''),
+            ], array_slice($filtered, 0, 5));
+
+            if ($normalizedRows) {
+                chat_cache_set($cacheKey, $normalizedRows);
+                return $normalizedRows;
+            }
+        }
+    }
+
     try {
-        // Optimized query: avoid to_date on all rows for sorting. 
-        // We use arrival_date filter if possible, otherwise we sort by ID desc as a proxy for latest.
         $sql = "
             SELECT commodity, district, market, modal_price, arrival_date
             FROM market_prices
@@ -213,8 +259,6 @@ function chat_fetch_market_snapshot(PDO $pdo, string $district, string $crop): a
             $params['commodity'] = '%' . trim($crop) . '%';
         }
 
-        // Sorting by ID DESC as a proxy for insertion order is usually safe, 
-        // but let's make it more explicit if date is properly formatted DD/MM/YYYY.
         $sql .= " ORDER BY to_date(arrival_date, 'DD/MM/YYYY') DESC, id DESC LIMIT 5";
 
         $stmt = $pdo->prepare($sql);

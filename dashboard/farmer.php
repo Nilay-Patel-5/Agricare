@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../backend/demo_admin_data.php';
+$dashboardSubsidyFallback = admin_demo_subsidies();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -907,18 +911,34 @@
         });
 
         // --- Subsidies Logic ---
+        const subsidyFallbackData = <?php echo json_encode($dashboardSubsidyFallback, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
         let allSubsidies = [];
         async function fetchSubsidies() {
             const container = document.getElementById('subsidiesList');
             container.innerHTML = `<div class="col-span-full py-20 text-center"><i class="fas fa-spinner fa-spin text-3xl text-emerald-500 mb-4"></i><p class="text-gray-500 font-bold">Fetching latest schemes...</p></div>`;
 
             try {
-                const res = await fetch('../backend/get_subsidies.php');
-                allSubsidies = await res.json();
+                const res = await fetch('../backend/get_subsidies.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ category: 'All', search: '' })
+                });
+                if (!res.ok) {
+                    throw new Error(`Subsidy request failed with status ${res.status}`);
+                }
+
+                const contentType = res.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    throw new Error('Subsidy response was not JSON');
+                }
+
+                const data = await res.json();
+                allSubsidies = Array.isArray(data) && data.length ? data : subsidyFallbackData;
                 renderSubsidies(allSubsidies);
             } catch (err) {
                 console.error("Failed to load subsidies", err);
-                container.innerHTML = `<div class="col-span-full py-10 text-center text-red-500">Failed to connect to subsidy database.</div>`;
+                allSubsidies = subsidyFallbackData;
+                renderSubsidies(allSubsidies);
             }
         }
 
@@ -1128,8 +1148,12 @@
                 if (pulse) pulse.className = "w-3 h-3 rounded-full bg-orange-400";
             }
         }
-        setInterval(checkApi, 10000);
         checkApi();
+        setInterval(() => {
+            if (!document.hidden) {
+                checkApi();
+            }
+        }, 60000);
 
         document.addEventListener('DOMContentLoaded', () => {
             updateUserInfo();
