@@ -128,9 +128,9 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 <i class="fas fa-hand-holding-dollar w-5 text-center"></i>
                 <span data-lang="subsidies">Government Subsidies</span>
             </a>
-            <a href="../frontend/chatbot.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
-                <i class="fas fa-comments w-5 text-center"></i>
-                <span data-lang="chatAssistant">Chat Assistant</span>
+            <a href="profile.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
+                <i class="fas fa-user-circle w-5 text-center"></i>
+                <span data-lang="profile">My Profile</span>
             </a>
         </nav>
 
@@ -155,12 +155,12 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 </h2>
             </div>
 
-            <div class="flex items-center gap-4">
-                <p id="userNameDisplay" class="text-sm font-bold text-gray-800">Farmer User</p>
-                <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold border-2 border-white shadow-sm">
+            <a href="profile.php" class="flex items-center gap-4 group hover:bg-emerald-50 py-1.5 px-3 rounded-2xl transition-all border border-transparent hover:border-emerald-100">
+                <p id="userNameDisplay" class="text-sm font-bold text-gray-800 group-hover:text-emerald-700">Farmer User</p>
+                <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold border-2 border-white shadow-sm group-hover:scale-110 transition-transform">
                     <i class="fas fa-user"></i>
                 </div>
-            </div>
+            </a>
         </header>
 
         <!-- Scrollable Dashboard Content -->
@@ -578,6 +578,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 disease: 'Disease Detector',
                 subsidies: 'Govt Subsidies',
                 logout: 'Logout',
+                profile: 'My Profile',
                 headerTitle: 'Seasonal Activity Plan',
                 headerDesc: 'Select your crop to view detailed month-by-month guidance for sowing, irrigation, fertilizer management, and harvesting.',
                 selectCrop: 'Select Crop',
@@ -626,6 +627,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 disease: 'રોગ નિદાન',
                 subsidies: 'સરકારી સબસિડી',
                 logout: 'લોગઆઉટ',
+                profile: 'મારી પ્રોફાઇલ',
                 headerTitle: 'મોસમી પ્રવૃત્તિ યોજના',
                 headerDesc: 'વાવણી, સિંચાઈ, ખાતર વ્યવસ્થાપન અને લણણી માટે વિગતવાર મહિના મુજબનું માર્ગદર્શન જોવા માટે તમારો પાક પસંદ કરો.',
                 selectCrop: 'પાક પસંદ કરો',
@@ -674,6 +676,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 disease: 'रोग पहचान',
                 subsidies: 'सरकारी सब्सिडी',
                 logout: 'लॉगआउट',
+                profile: 'मेरी प्रोफाइल',
                 headerTitle: 'मौसमी गतिविधि योजना',
                 headerDesc: 'बुवाई, सिंचाई, उर्वरक प्रबंधन और कटाई के लिए विस्तृत महीनेवार मार्गदर्शन देखने के लिए अपनी फसल का चयन करें।',
                 selectCrop: 'फसल चुनें',
