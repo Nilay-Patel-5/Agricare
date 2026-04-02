@@ -189,7 +189,7 @@ CREATE INDEX IF NOT EXISTS idx_shops_district ON shops(district);
 DROP TABLE IF EXISTS chat_messages CASCADE;
 CREATE TABLE chat_messages (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    user_id INTEGER,
     session_key VARCHAR(120) NOT NULL,
     role VARCHAR(20) NOT NULL, -- 'user', 'assistant'
     message TEXT NOT NULL,

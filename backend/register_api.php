@@ -32,6 +32,7 @@ try {
     // Sanitize & extract
     $name     = trim(strip_tags($data['full_name'] ?? $data['name'] ?? ''));
     $email    = trim($data['email'] ?? '');
+    if ($email === '') $email = null;
     $phone    = trim($data['phone_no'] ?? $data['phone'] ?? '');
     $district = trim(strip_tags($data['district'] ?? ''));
     $city     = trim(strip_tags($data['city'] ?? ''));
@@ -48,7 +49,7 @@ try {
     }
 
     // Required fields
-    if (!$name || !$email || !$phone || !$district || !$city || !$pincode || !$pref_lang || !$pin) {
+    if (!$name || !$phone || !$district || !$city || !$pincode || !$pref_lang || !$pin) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'All fields are required.']);
         exit;
@@ -66,7 +67,7 @@ try {
     }
 
     // Email
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 100) {
+    if ($email && (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 100)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Please enter a valid email address.']);
         exit;
@@ -115,8 +116,14 @@ try {
     }
 
     // Duplicate check
-    $check = $pdo->prepare("SELECT id FROM farmers WHERE (phone IS NOT NULL AND phone = ?) OR (email IS NOT NULL AND email = ?)");
-    $check->execute([$phone, $email]);
+    $sql = "SELECT id FROM farmers WHERE phone = ?";
+    $params = [$phone];
+    if ($email !== null) {
+        $sql .= " OR email = ?";
+        $params[] = $email;
+    }
+    $check = $pdo->prepare($sql);
+    $check->execute($params);
     if ($check->fetch()) {
         http_response_code(409);
         echo json_encode(['success' => false, 'message' => 'Phone or email already registered.']);

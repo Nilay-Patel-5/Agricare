@@ -39,6 +39,7 @@ try {
         // Update profile
         $name      = trim(strip_tags($data['name'] ?? ''));
         $email     = trim($data['email'] ?? '');
+        if ($email === '') $email = null;
         $phone     = trim($data['phone'] ?? '');
         $district  = trim(strip_tags($data['district'] ?? ''));
         $city      = trim(strip_tags($data['city'] ?? ''));
@@ -47,9 +48,9 @@ try {
         $pin       = trim($data['pin'] ?? '');
 
         // Basic Validation (reusing logic from register_api.php)
-        if (!$name || !$email || !$phone || !$district || !$city || !$pincode || !$pref_lang) {
+        if (!$name || !$phone || !$district || !$city || !$pincode || !$pref_lang) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'All fields except PIN are required.']);
+            echo json_encode(['success' => false, 'message' => 'All fields except PIN and Email are required.']);
             exit;
         }
 
@@ -68,8 +69,17 @@ try {
         }
 
         // Duplicate check (excluding current user)
-        $check = $pdo->prepare("SELECT id FROM farmers WHERE ((phone = ?) OR (email = ?)) AND id != ?");
-        $check->execute([$phone, $email, $userId]);
+        $sqlC = "SELECT id FROM farmers WHERE (phone = ?";
+        $paramsC = [$phone];
+        if ($email !== null) {
+            $sqlC .= " OR email = ?";
+            $paramsC[] = $email;
+        }
+        $sqlC .= ") AND id != ?";
+        $paramsC[] = $userId;
+
+        $check = $pdo->prepare($sqlC);
+        $check->execute($paramsC);
         if ($check->fetch()) {
             http_response_code(409);
             echo json_encode(['success' => false, 'message' => 'Phone or email already registered by another user.']);
