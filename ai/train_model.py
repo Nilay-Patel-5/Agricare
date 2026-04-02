@@ -32,13 +32,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # ============================================================
-# 1. CONFIGURATION  (matches the YouTube tutorial exactly)
+# 1. CONFIGURATION  (Updated to local nested dataset)
 # ============================================================
-DATASET_TRAIN_PATH  = 'dataset/train'   # training images directory
-DATASET_VALID_PATH  = 'dataset/valid'   # validation images directory
-IMAGE_SIZE          = (128, 128)         # 128x128 as used in the video
+DATASET_TRAIN_PATH  = 'Disease Detection/New Plant Diseases Dataset(Augmented)/New Plant Diseases Dataset(Augmented)/train'
+DATASET_VALID_PATH  = 'Disease Detection/New Plant Diseases Dataset(Augmented)/New Plant Diseases Dataset(Augmented)/valid'
+IMAGE_SIZE          = (128, 128)
 BATCH_SIZE          = 32
-NUM_CLASSES         = 38                 # 38 disease/healthy categories
+NUM_CLASSES         = 38
 EPOCHS              = 10
 MODEL_SAVE_PATH     = 'plant_disease_model.keras'
 
@@ -173,12 +173,18 @@ model.compile(
 # ============================================================
 print("\n[3/5] Training the model...")
 
+# Callbacks for better training
+callbacks = [
+    tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+]
+
 history = model.fit(
     train_generator,
     steps_per_epoch=train_generator.samples // BATCH_SIZE,
     validation_data=valid_generator,
     validation_steps=valid_generator.samples // BATCH_SIZE,
     epochs=EPOCHS,
+    callbacks=callbacks,
     verbose=1
 )
 

@@ -54,7 +54,22 @@ try {
     $apiConfidence = $result['confidence'] ?? 0.0;
     $apiInfo = $result['info'] ?? [];
 
-    if ($identifiedPest === 'Unknown' || $identifiedPest === 'Healthy' || (strpos(strtolower($identifiedPest), 'healthy') !== false)) {
+    // Handle unknown/low confidence results
+    if ($result['disease'] === 'unknown' || $identifiedPest === 'Unknown') {
+        echo json_encode([
+            'label' => $identifiedPest,
+            'plant' => $identifiedPlant,
+            'confidence' => $apiConfidence,
+            'info' => [
+                'desc' => $apiInfo['desc'] ?? 'Disease not found.',
+                'irrigation' => $apiInfo['irrigation'] ?? 'N/A',
+                'treatment' => $apiInfo['treatment'] ?? 'Please try again with a clearer photo.'
+            ]
+        ]);
+        exit;
+    }
+
+    if ($identifiedPest === 'Healthy' || (strpos(strtolower($identifiedPest), 'healthy') !== false)) {
         echo json_encode([
             'label' => $identifiedPest,
             'plant' => $identifiedPlant,

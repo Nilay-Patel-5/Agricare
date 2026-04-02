@@ -207,8 +207,24 @@ def build_response(model, image_path: str) -> dict:
 
     top_index = int(top_indices[0])
     class_name = CLASS_NAMES[top_index]
-    display_name = DISPLAY_LABELS.get(class_name, class_name.replace("___", " "))
     confidence = float(predictions[top_index]) * 100.0
+
+    # Handle unknown/wrong images based on confidence threshold
+    if confidence < 50.0:
+        return {
+            "disease": "unknown",
+            "label": "Disease not found please try again",
+            "plant": "Unknown",
+            "confidence": round(confidence, 2),
+            "info": {
+                "desc": "The AI could not confidently identify a plant disease in this image.",
+                "irrigation": "N/A",
+                "treatment": "Please ensure the leaf is well-lit and centered in the frame, then try again."
+            },
+            "top3": []
+        }
+
+    display_name = DISPLAY_LABELS.get(class_name, class_name.replace("___", " "))
     plant_name = display_name.split(" ")[0]
 
     top3 = []
