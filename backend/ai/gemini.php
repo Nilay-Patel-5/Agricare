@@ -98,7 +98,8 @@ function gemini_text_create(array $messages, ?string $model = null): array
         if ($apiKey === 'YOUR_GEMINI_API_KEY_HERE') continue;
 
         foreach ($fallbackModels as $currentModel) {
-            $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($currentModel) . ':generateContent?key=' . $apiKey;
+            $cleanModel = ltrim($currentModel, 'models/');
+            $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($cleanModel) . ':generateContent?key=' . $apiKey;
 
             $ch = curl_init($url);
             curl_setopt_array($ch, [
@@ -204,7 +205,8 @@ function gemini_extract_output_text(array $responseData): string
 
 function gemini_call_vision(string $apiKey, string $model, array $payload, int $timeout): array
 {
-    $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($model) . ':generateContent?key=' . $apiKey;
+    $cleanModel = ltrim($model, 'models/');
+    $url = 'https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($cleanModel) . ':generateContent?key=' . $apiKey;
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,

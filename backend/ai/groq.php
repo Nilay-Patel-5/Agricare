@@ -1,6 +1,6 @@
 <?php
 
-function grok_config(): array
+function groq_config(): array
 {
     static $config = null;
     if ($config !== null) {
@@ -8,13 +8,13 @@ function grok_config(): array
     }
 
     $config = [
-        'api_key' => getenv('GROQ_API_KEY') ?: (getenv('GROK_API_KEY') ?: ''),
-        'base_url' => getenv('GROQ_BASE_URL') ?: (getenv('GROK_BASE_URL') ?: 'https://api.groq.com/openai/v1'),
-        'model' => getenv('GROQ_MODEL') ?: (getenv('GROK_MODEL') ?: 'llama-3.1-8b-instant'),
-        'timeout' => (int) (getenv('GROQ_TIMEOUT') ?: (getenv('GROK_TIMEOUT') ?: 60)),
+        'api_key' => getenv('GROQ_API_KEY') ?: '',
+        'base_url' => getenv('GROQ_BASE_URL') ?: 'https://api.groq.com/openai/v1',
+        'model' => getenv('GROQ_MODEL') ?: 'llama-3.1-8b-instant',
+        'timeout' => (int) (getenv('GROQ_TIMEOUT') ?: 60),
     ];
 
-    foreach ([__DIR__ . '/groq.local.php', __DIR__ . '/grok.local.php'] as $localConfigFile) {
+    foreach ([__DIR__ . '/groq.local.php'] as $localConfigFile) {
         if (file_exists($localConfigFile)) {
             $localConfig = require $localConfigFile;
             if (is_array($localConfig)) {
@@ -26,15 +26,15 @@ function grok_config(): array
     return $config;
 }
 
-function grok_chat_create(array $payload): array
+function groq_chat_create(array $payload): array
 {
-    $config = grok_config();
+    $config = groq_config();
     if (empty($config['api_key'])) {
         return [
             'ok' => false,
             'status' => 401,
             'data' => null,
-            'error' => 'Groq API key is not configured. Please add it to groq.local.php or set GROQ_API_KEY.',
+            'error' => 'Groq API key is not configured. Please add it to groq.local.php or set sensations GROQ_API_KEY.',
         ];
     }
 
@@ -67,7 +67,7 @@ function grok_chat_create(array $payload): array
             'ok' => false,
             'status' => 502,
             'data' => null,
-            'error' => $error !== '' ? $error : 'Grok request failed.',
+            'error' => $error !== '' ? $error : 'Groq request failed.',
         ];
     }
 
@@ -77,12 +77,12 @@ function grok_chat_create(array $payload): array
             'ok' => false,
             'status' => $status ?: 502,
             'data' => null,
-            'error' => 'Invalid JSON response from Grok API.',
+            'error' => 'Invalid JSON response from Groq API.',
         ];
     }
 
     if ($status < 200 || $status >= 300) {
-        $message = $data['error']['message'] ?? ($data['error'] ?? 'Grok request failed.');
+        $message = $data['error']['message'] ?? ($data['error'] ?? 'Groq request failed.');
         return [
             'ok' => false,
             'status' => $status,
@@ -99,7 +99,7 @@ function grok_chat_create(array $payload): array
     ];
 }
 
-function grok_extract_output_text(array $responseData): string
+function groq_extract_output_text(array $responseData): string
 {
     $message = $responseData['choices'][0]['message']['content'] ?? '';
     return is_string($message) ? trim($message) : '';
