@@ -232,3 +232,17 @@ CREATE TABLE weather_cache (
 );
 
 CREATE INDEX IF NOT EXISTS idx_weather_cache_city ON weather_cache(city);
+
+-------------------------------------------------------------------------------
+-- 12. AI SCANS TABLE
+-------------------------------------------------------------------------------
+DROP TABLE IF EXISTS ai_scans CASCADE;
+CREATE TABLE ai_scans (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES farmers(id) ON DELETE CASCADE,
+    pest_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_scans_user_id ON ai_scans(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_scans_created_at ON ai_scans(created_at);

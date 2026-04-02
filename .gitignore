@@ -10,6 +10,7 @@ node_modules/
 # AI / ML (IMPORTANT)
 # =========================
 ai/dataset/
+ai/Disease Detection/
 ai/*.keras
 ai/*.h5
 ai/*.ipynb
