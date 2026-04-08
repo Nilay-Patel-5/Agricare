@@ -865,6 +865,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
 
         function logout() {
             sessionStorage.removeItem('agricare_user');
+            localStorage.removeItem('agricare_user');
             window.location.href = '../frontend/login.php';
         }
 

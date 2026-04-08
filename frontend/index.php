@@ -67,9 +67,20 @@
         }
 
         @keyframes logo-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); transform: scale(1); }
-            50% { box-shadow: 0 0 20px 10px rgba(16, 185, 129, 0); transform: scale(1.05); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 20px 10px rgba(16, 185, 129, 0);
+                transform: scale(1.05);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+                transform: scale(1);
+            }
         }
 
         .floating-farm {
@@ -340,7 +351,7 @@
 
     <section id="market" class="bg-gray-900 border-y-4 border-emerald-500 overflow-hidden relative py-4">
         <div
-            class="absolute top-0 left-0 bg-red-600 text-white px-4 py-1 font-bold text-xs z-20 uppercase tracking-widest shadow-lg transform -skew-x-12 ml-4 mt-[-4px]">
+            class="absolute top-0 left-0 bg-red-600 text-white px-4 py-1 font-bold text-xs z-20 uppercase tracking-widest shadow-lg transform -skew-x-12 ml-4 mt-[-4px]" data-lang="liveMandi">
             Live Mandi
         </div>
 
@@ -426,9 +437,9 @@
                     <h4 class="text-xl font-bold mb-6 border-l-4 border-emerald-500 pl-4" data-lang="solutions">
                         Solutions</h4>
                     <ul class="space-y-4 text-gray-400">
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_advisory">Crop
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_advisory">Crop
                                 Advisory</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
                                 Disease Identification</a></li>
                         <li><a href="market.php" class="hover:text-emerald-400 transition-colors"
                                 data-lang="sol_market">Market

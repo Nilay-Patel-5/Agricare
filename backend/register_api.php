@@ -55,26 +55,26 @@ try {
         exit;
     }
 
-    // Full name: Indian format with at least first and last name, only letters and spaces
+    // Advanced Full Name Validation: At least 2 words, each 2+ letters, exact spacing
     if (
-        strlen($name) < 3 ||
-        strlen($name) > 60 ||
-        !preg_match('/^[\p{L}]+(?:\s+[\p{L}]+)+$/u', $name)
+        mb_strlen($name, 'UTF-8') < 3 ||
+        mb_strlen($name, 'UTF-8') > 50 ||
+        !preg_match('/^[\p{L}]{2,}(?:\s[\p{L}]{2,})+$/u', $name)
     ) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Full name must be in Indian name format using only letters and spaces, like "Garv Patel".']);
+        echo json_encode(['success' => false, 'message' => 'Name must contain at least a first and last name (each 2+ chars), using only valid letters and spaces.']);
         exit;
     }
 
-    // Email
-    if ($email && (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 100)) {
+    // Email Validation: Pattern Match & Limit
+    if ($email && (strlen($email) < 5 || strlen($email) > 100 || !preg_match('/^[a-zA-Z0-9._]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/', $email))) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Please enter a valid email address.']);
         exit;
     }
 
     // Phone: exactly 10 digits
-    if (!preg_match('/^\d{10}$/', $phone)) {
+    if (!preg_match('/^[6-9]\d{9}$/', $phone)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Phone number must be exactly 10 digits.']);
         exit;
@@ -94,11 +94,59 @@ try {
         exit;
     }
 
-    // Pincode: exactly 6 digits
+    // Pincode: exactly 6 digits & Regional Validation Check
     if (!preg_match('/^\d{6}$/', $pincode)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Pincode must be exactly 6 digits.']);
         exit;
+    }
+    
+    // Cross-verify District boundaries with Pincode natively securely via Cache or API
+    $cacheFile = __DIR__ . "/cache/pincodes/$pincode.json";
+    $pincodeLookupDistricts = [];
+    $isPincodeVerified = false;
+    
+    if (file_exists($cacheFile)) {
+        $cacheData = file_get_contents($cacheFile);
+        if ($cacheData) {
+            $parsed = json_decode($cacheData, true);
+            if ($parsed && isset($parsed['districts'])) {
+                $pincodeLookupDistricts = $parsed['districts'];
+            }
+        }
+    } else {
+        // Fallback live check
+        $ctx = stream_context_create(['http' => ['timeout' => 4]]); // fast timeout
+        $apiUrl = "https://api.postalpincode.in/pincode/" . $pincode;
+        $response = @file_get_contents($apiUrl, false, $ctx);
+        if ($response) {
+            $data = json_decode($response, true);
+            if (isset($data[0]['Status']) && $data[0]['Status'] === 'Success' && isset($data[0]['PostOffice'])) {
+                foreach ($data[0]['PostOffice'] as $po) {
+                    if (!empty($po['District']) && !in_array($po['District'], $pincodeLookupDistricts)) {
+                        $pincodeLookupDistricts[] = $po['District'];
+                    }
+                }
+                if (!is_dir(__DIR__ . '/cache/pincodes')) mkdir(__DIR__ . '/cache/pincodes', 0755, true);
+                file_put_contents($cacheFile, json_encode(['districts' => $pincodeLookupDistricts]));
+            }
+        }
+    }
+    
+    // If the lookup was totally empty, we skip the mismatch lockout so we don't accidentally block legitimate folks when the Indian Postal server burns down.
+    if (!empty($pincodeLookupDistricts)) {
+        $pincodeMatch = false;
+        foreach($pincodeLookupDistricts as $d) {
+            if (stripos($d, $district) !== false || stripos($district, $d) !== false) {
+                $pincodeMatch = true;
+                break;
+            }
+        }
+        if (!$pincodeMatch) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Pincode operates under a different geographical district.']);
+            exit;
+        }
     }
 
     // Preferred language

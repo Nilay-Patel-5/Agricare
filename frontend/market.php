@@ -382,9 +382,9 @@
                     <h4 class="text-xl font-bold mb-6 border-l-4 border-emerald-500 pl-4" data-lang="solutions">
                         Solutions</h4>
                     <ul class="space-y-4 text-gray-400">
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_advisory">Crop
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_advisory">Crop
                                 Advisory</a></li>
-                        <li><a href="#" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
                                 Disease Identification</a></li>
                         <li><a href="market.php" class="hover:text-emerald-400 transition-colors"
                                 data-lang="sol_market">Market

@@ -12,10 +12,19 @@ if (!$data || !is_array($data)) {
 }
 
 try {
+    session_start();
+
+    $captchaVal = $data['captcha'] ?? '';
+    if (empty($_SESSION['captcha_code']) || strcasecmp($_SESSION['captcha_code'], $captchaVal) !== 0) {
+        unset($_SESSION['captcha_code']);
+        echo json_encode(['success' => false, 'message' => 'Invalid CAPTCHA code. Please try again.']);
+        exit;
+    }
+    unset($_SESSION['captcha_code']); // Clear it once used successfully
+
     $pdo = Database::getConnection();
 
-    $role = $data['role'] ?? 'farmer';
-    $identifier = $data['identifier'] ?? ''; // Phone or Email
+    $identifier = trim($data['identifier'] ?? ''); // Phone or Email
     $password = $data['password'] ?? '';     // PIN or Password
 
     if (!$identifier || !$password) {
@@ -23,41 +32,49 @@ try {
         exit;
     }
 
-    if ($role === 'farmer') {
-        // Farmer Login: Uses Phone and 6-digit PIN from farmers table
-        $stmt = $pdo->prepare("SELECT * FROM farmers WHERE phone = ?");
-        $stmt->execute([$identifier]);
-        $user = $stmt->fetch();
- 
-        if ($user && password_verify($password, $user['pin'])) {
-            echo json_encode(['success' => true, 'user' => [
-                'id' => $user['id'],
-                'name' => $user['name'],
-                'role' => 'farmer',
-                'pref_lang' => $user['pref_lang'] ?? 'en'
-            ]]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Invalid Phone number or PIN.']);
-        }
+    $isAuthenticated = false;
+    $userData = null;
 
-    } else if ($role === 'admin') {
-        // Admin Login: Uses Email and Hashed Password from admins table
-        $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = ?");
-        $stmt->execute([$identifier]);
-        $admin = $stmt->fetch();
- 
-        if ($admin && password_verify($password, $admin['password'])) {
-            echo json_encode(['success' => true, 'user' => [
-                'id' => $admin['id'],
-                'name' => $admin['name'],
-                'role' => 'admin',
-                'pref_lang' => 'en' // Default for admin
-            ]]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Invalid Admin credentials.']);
+    if (preg_match('/^[0-9]+$/', $identifier)) {
+        // Numeric input -> try authenticating as Farmer
+        if (preg_match('/^[6-9]\d{9}$/', $identifier)) {
+             $stmt = $pdo->prepare("SELECT * FROM farmers WHERE phone = ?");
+             $stmt->execute([$identifier]);
+             $user = $stmt->fetch();
+             
+             if ($user && password_verify($password, $user['pin'])) {
+                 $isAuthenticated = true;
+                 $userData = [
+                     'id' => $user['id'],
+                     'name' => $user['name'],
+                     'role' => 'farmer',
+                     'pref_lang' => $user['pref_lang'] ?? 'en'
+                 ];
+             }
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid role selected.']);
+        // Text input -> try authenticating as Admin
+        if (preg_match('/^[a-zA-Z0-9._]+@agricare\.admin$/', $identifier)) {
+             $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = ?");
+             $stmt->execute([$identifier]);
+             $admin = $stmt->fetch();
+             
+             if ($admin && password_verify($password, $admin['password'])) {
+                 $isAuthenticated = true;
+                 $userData = [
+                     'id' => $admin['id'],
+                     'name' => $admin['name'],
+                     'role' => 'admin',
+                     'pref_lang' => 'en'
+                 ];
+             }
+        }
+    }
+
+    if ($isAuthenticated) {
+        echo json_encode(['success' => true, 'user' => $userData]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Invalid credentials.']);
     }
 
 } catch (Exception $e) {
