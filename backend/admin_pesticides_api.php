@@ -5,11 +5,10 @@ require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/demo_admin_data.php';
 
 // Auth check: only admin role allowed
-$userDataHeader = $_SERVER['HTTP_X_USER_DATA'] ?? '';
-$user = $userDataHeader ? json_decode($userDataHeader, true) : json_decode($_COOKIE['agricare_user'] ?? '{}', true);
-if (($user['role'] ?? '') !== 'admin') {
+session_start();
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] ?? '') !== 'admin') {
     http_response_code(403);
-    echo json_encode(['error' => 'Forbidden.']);
+    echo json_encode(['error' => 'Forbidden. Admin access required.']);
     exit;
 }
 
@@ -61,9 +60,26 @@ try {
                 echo json_encode(['status' => 'error', 'message' => 'Name and brand are required.']);
                 exit;
             }
-            $stmt = $pdo->prepare("INSERT INTO pesticides (name_en, name_gu, name_hi, brand, target_pests_en, price_range, usage_en) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$name, $name, $name, $brand, trim($data['target_pests'] ?? ''), trim($data['price_range'] ?? ''), trim($data['usage_instructions'] ?? '')]);
-            echo json_encode(['status' => 'success', 'message' => 'Pesticide added.']);
+            $stmt = $pdo->prepare("
+                INSERT INTO pesticides (name_en, name_gu, name_hi, brand, target_pests_en, price_range, usage_en)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                RETURNING id, name_en as name, brand
+            ");
+            $stmt->execute([
+                $name,
+                $name,
+                $name,
+                $brand,
+                trim($data['target_pests'] ?? ''),
+                trim($data['price_range'] ?? ''),
+                trim($data['usage_instructions'] ?? '')
+            ]);
+            $created = $stmt->fetch();
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Pesticide added.',
+                'pesticide' => $created
+            ]);
 
         } elseif ($action === 'add_mapping') {
             $pestName      = trim($data['pest_name'] ?? '');
@@ -99,5 +115,5 @@ try {
     }
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Server error.']);
+    echo json_encode(['status' => 'error', 'message' => 'Server error: ' . $e->getMessage()]);
 }

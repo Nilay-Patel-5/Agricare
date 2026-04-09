@@ -199,7 +199,13 @@ try {
         $ustmt = $pdo->prepare("SELECT id, name, pref_lang FROM farmers WHERE id = ?");
         $ustmt->execute([$newId]);
         $userRow = $ustmt->fetch();
-        if ($userRow) $userRow['role'] = 'farmer'; // Add virtual role for client
+        if ($userRow) {
+            $userRow['role'] = 'farmer'; // Add virtual role for client
+            session_start();
+            $_SESSION['user_id'] = $userRow['id'];
+            $_SESSION['user_name'] = $userRow['name'];
+            $_SESSION['user_role'] = 'farmer';
+        }
         echo json_encode(['success' => true, 'message' => 'Registration successful!', 'user' => $userRow]);
     } else {
         http_response_code(500);

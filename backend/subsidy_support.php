@@ -147,3 +147,17 @@ function subsidy_insert_row(PDO $pdo, array $data): void
     $stmt = $pdo->prepare("INSERT INTO subsidies ({$columnSql}) VALUES ({$placeholders})");
     $stmt->execute($payload);
 }
+
+function subsidy_delete_row(PDO $pdo, int $id): void
+{
+    if ($id <= 0) {
+        throw new RuntimeException('Valid subsidy id is required.');
+    }
+
+    $stmt = $pdo->prepare('DELETE FROM subsidies WHERE id = :id');
+    $stmt->execute(['id' => $id]);
+
+    if ($stmt->rowCount() < 1) {
+        throw new RuntimeException('Subsidy not found.');
+    }
+}

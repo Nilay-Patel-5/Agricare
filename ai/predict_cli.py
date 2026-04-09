@@ -1,23 +1,27 @@
-import argparse
-import json
 import os
 import sys
+import json
+import argparse
 import numpy as np
+
+# Set Keras backend to tensorflow
+os.environ["KERAS_BACKEND"] = "tensorflow"
+# Suppress Keras/TF logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import keras
 from PIL import Image
 
-# Import TensorFlow components
-# We use this structure to handle potential environment issues gracefully
+# Import TensorFlow components for TFLite
 try:
     import tensorflow as tf
 except ImportError:
-    print(json.dumps({"error": "TensorFlow is not installed. Please run 'pip install tensorflow'"}))
-    sys.exit(1)
+    # If TF is not here, we can still use Keras for .keras models
+    tf = None
 
-# Configuration for the new optimized architecture (MobileNetV2)
+# Configuration
 MODEL_BASE_NAME = "plant_disease_model"
-IMAGE_SIZE = (224, 224) # MobileNetV2 standard input size
-
-# Paths
+IMAGE_SIZE = (224, 224) 
 DIR_PATH = os.path.dirname(__file__)
 KERAS_MODEL_PATH = os.path.join(DIR_PATH, f"{MODEL_BASE_NAME}.keras")
 TFLITE_MODEL_PATH = os.path.join(DIR_PATH, f"{MODEL_BASE_NAME}.tflite")
@@ -38,10 +42,6 @@ CLASS_NAMES = [
     'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
     'Tomato___healthy'
 ]
-
-# (Omitting DISPLAY_LABELS and DISEASE_INFO for brevity in this rewrite, 
-# but I should keep them for the final logic. 
-# Actually, I will include them to ensure the script remains feature-complete.)
 
 DISPLAY_LABELS = {
     "Apple___Apple_scab": "Apple Scab", "Apple___Black_rot": "Apple Black Rot",
@@ -65,37 +65,52 @@ DISPLAY_LABELS = {
     "Tomato___Tomato_mosaic_virus": "Tomato Mosaic Virus", "Tomato___healthy": "Tomato Healthy"
 }
 
-def get_disease_info(label):
-    # Simplified version for now to keep JSON clean. 
-    # Can be expanded with the rich metadata from previous version.
-    return {
-        "desc": f"Identified as {DISPLAY_LABELS.get(label, label)}",
-        "treatment": "Consult local agri-expert for specific medicine.",
-        "irrigation": "Check soil moisture and reduce foliar water."
+def get_disease_info(disease_name):
+    # Basic info mapping
+    info = {
+        "desc": f"Identified as {DISPLAY_LABELS.get(disease_name, disease_name.replace('___', ' '))}",
+        "irrigation": "Maintain standard irrigation and check soil moisture.",
+        "treatment": "Consult an agricultural expert for specific pesticide recommendations.",
+        "fertilizer": "Use balanced fertilizer suitable for the plant type."
     }
+    
+    if "healthy" in disease_name.lower():
+        info["desc"] = "The plant appears to be healthy."
+        info["treatment"] = "No treatment necessary. Continue normal care."
+    elif "Late_blight" in disease_name:
+        info["desc"] = "A serious disease caused by a water mold. Causes dark, water-soaked spots."
+        info["treatment"] = "Apply fungicides containing chlorothalonil or copper."
+    elif "Early_blight" in disease_name:
+        info["desc"] = "Common fungal disease. Causes bullseye-shaped spots on leaves."
+        info["treatment"] = "Use copper-based fungicides and remove infected lower leaves."
+    elif "Bacterial_spot" in disease_name:
+        info["desc"] = "Small, water-soaked spots on leaves that turn brown."
+        info["treatment"] = "Copper sprays can help manage the spread."
+    elif "Powdery_mildew" in disease_name:
+        info["desc"] = "White, powdery fungal growth on the surface of leaves."
+        info["treatment"] = "Apply sulfur-based fungicides or neem oil."
+    
+    return info
 
 def predict_tflite(image_path):
-    # Ultra-Fast TFLite Inference
+    if tf is None:
+        raise ImportError("TensorFlow required for TFLite inference.")
     interpreter = tf.lite.Interpreter(model_path=TFLITE_MODEL_PATH)
     interpreter.allocate_tensors()
-
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-
-    # Preprocess
+    
     img = Image.open(image_path).convert('RGB').resize(IMAGE_SIZE)
     img_array = np.array(img, dtype=np.float32) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
-
+    
     interpreter.set_tensor(input_details[0]['index'], img_array)
     interpreter.invoke()
-
-    output_data = interpreter.get_tensor(output_details[0]['index'])[0]
-    return output_data
+    return interpreter.get_tensor(output_details[0]['index'])[0]
 
 def predict_keras(image_path):
-    # Standard Keras Inference
-    model = tf.keras.models.load_model(KERAS_MODEL_PATH)
+    # Use keras.models.load_model (Keras 3) to avoid InputLayer errors
+    model = keras.models.load_model(KERAS_MODEL_PATH)
     img = Image.open(image_path).convert('RGB').resize(IMAGE_SIZE)
     img_array = np.array(img, dtype=np.float32) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
@@ -110,10 +125,11 @@ def main():
     args = parser.parse_args()
 
     if args.health:
+        ready = os.path.exists(KERAS_MODEL_PATH) or os.path.exists(TFLITE_MODEL_PATH)
         print(json.dumps({
-            "status": "online" if (os.path.exists(KERAS_MODEL_PATH) or os.path.exists(TFLITE_MODEL_PATH)) else "offline",
-            "tflite_ready": os.path.exists(TFLITE_MODEL_PATH),
-            "keras_ready": os.path.exists(KERAS_MODEL_PATH)
+            "status": "healthy" if ready else "error",
+            "keras_ready": os.path.exists(KERAS_MODEL_PATH),
+            "tflite_ready": os.path.exists(TFLITE_MODEL_PATH)
         }))
         return
 
@@ -122,37 +138,42 @@ def main():
         return
 
     try:
-        # Prefer TFLite for speed, fallback to Keras
-        if os.path.exists(TFLITE_MODEL_PATH):
+        if os.path.exists(TFLITE_MODEL_PATH) and tf is not None:
             predictions = predict_tflite(args.image)
             engine = "TFLite"
         elif os.path.exists(KERAS_MODEL_PATH):
             predictions = predict_keras(args.image)
             engine = "Keras"
         else:
-            print(json.dumps({"error": "No model file found (.keras or .tflite). Please run training script."}))
+            print(json.dumps({"error": "No model file found."}))
             return
 
         top_idx = np.argmax(predictions)
         label = CLASS_NAMES[top_idx]
         confidence = float(predictions[top_idx])
+        
+        # Format Top 3 for frontend compatibility
+        top_indices = predictions.argsort()[-3:][::-1]
+        results_top3 = []
+        for idx in top_indices:
+            name = CLASS_NAMES[idx]
+            results_top3.append({
+                "class_name": name,
+                "label": DISPLAY_LABELS.get(name, name.replace('___', ' ')),
+                "confidence": float(predictions[idx] * 100)
+            })
 
-        # Confidence logic
-        if confidence < 0.3: # 30% threshold
-            print(json.dumps({
-                "label": "Unknown / Unclear",
-                "confidence": round(confidence, 2),
-                "error": "The image is too unclear for confident diagnosis."
-            }))
-            return
+        best_match = results_top3[0]
+        plant_name = best_match['class_name'].split('___')[0] if '___' in best_match['class_name'] else "Detected"
 
         result = {
-            "label": DISPLAY_LABELS.get(label, label),
-            "plant": DISPLAY_LABELS.get(label, label).split(' ')[0],
-            "confidence": round(confidence, 4),
+            "label": best_match['label'],
+            "plant": plant_name,
+            "confidence": best_match['confidence'],
             "disease": label,
             "engine": engine,
-            "info": get_disease_info(label)
+            "info": get_disease_info(label),
+            "top3": results_top3
         }
         print(json.dumps(result))
 

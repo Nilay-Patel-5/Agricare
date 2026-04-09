@@ -4,11 +4,10 @@ header('Content-Type: application/json');
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/subsidy_support.php';
 
-$userDataHeader = $_SERVER['HTTP_X_USER_DATA'] ?? '';
-$user = $userDataHeader ? json_decode($userDataHeader, true) : json_decode($_COOKIE['agricare_user'] ?? '{}', true);
-if (($user['role'] ?? '') !== 'admin') {
+session_start();
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] ?? '') !== 'admin') {
     http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Forbidden.']);
+    echo json_encode(['success' => false, 'message' => 'Forbidden. Admin access required.']);
     exit;
 }
 
@@ -28,6 +27,22 @@ try {
         exit;
     }
 
+    $pdo = Database::getConnection();
+    $action = trim((string) ($data['action'] ?? 'add'));
+
+    if ($action === 'delete') {
+        $id = filter_var($data['id'] ?? null, FILTER_VALIDATE_INT);
+        if (!$id) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Valid subsidy id is required.']);
+            exit;
+        }
+
+        subsidy_delete_row($pdo, (int) $id);
+        echo json_encode(['success' => true, 'message' => 'Subsidy deleted successfully.']);
+        exit;
+    }
+
     $name = trim((string) ($data['name'] ?? ''));
     $category = trim((string) ($data['category'] ?? ''));
     $description = trim((string) ($data['description'] ?? ''));
@@ -42,7 +57,6 @@ try {
         exit;
     }
 
-    $pdo = Database::getConnection();
     subsidy_insert_row($pdo, [
         'name' => $name,
         'category' => $category,
@@ -55,6 +69,13 @@ try {
 
     echo json_encode(['success' => true, 'message' => 'Subsidy added successfully.']);
 } catch (Throwable $e) {
+    $message = $e->getMessage();
+    if ($message === 'Subsidy not found.' || $message === 'Valid subsidy id is required.') {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => $message]);
+        exit;
+    }
+
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Server error.']);
+    echo json_encode(['success' => false, 'message' => 'Server error: ' . $message]);
 }

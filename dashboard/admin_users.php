@@ -10,6 +10,7 @@
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .card { background: white; border-radius: 1.5rem; border: 1px solid #f1f5f9; }
+        #searchInput::placeholder { color: #94a3b8; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-slate-50 text-slate-700">
@@ -38,9 +39,11 @@
         <!-- Search & Filter Bar -->
         <div class="card p-4 mb-6 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
             <div class="relative flex-1 sm:flex-none sm:w-80">
-                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <span class="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-4 text-slate-400">
+                    <i class="fas fa-search text-sm"></i>
+                </span>
                 <input id="searchInput" type="text" placeholder="Search farmers by name, phone, district, email..."
-                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    class="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm leading-6 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                     oninput="filterTable()">
             </div>
             <div class="flex gap-2 items-center flex-wrap">
