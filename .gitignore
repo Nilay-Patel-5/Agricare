@@ -11,6 +11,7 @@ node_modules/
 # =========================
 ai/dataset/
 ai/Disease Detection/
+ai/data/
 ai/*.keras
 ai/*.h5
 ai/*.ipynb

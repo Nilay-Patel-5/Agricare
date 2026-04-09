@@ -332,8 +332,10 @@ require_once __DIR__ . '/../backend/db.php';
         }
 
         async function fetchProfile() {
-            const userData = JSON.parse(sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user') || '{}');
-            if (!userData.id) {
+            const userStr = sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user');
+            const userData = userStr ? JSON.parse(userStr) : null;
+            
+            if (!userData || !userData.id) {
                 window.location.href = '../frontend/login.php';
                 return;
             }
@@ -393,14 +395,24 @@ require_once __DIR__ . '/../backend/db.php';
 
                 if (data.success) {
                     userProfile = { ...userProfile, ...payload };
-                    if (payload.pin) delete userProfile.pin; // Clean up local copy
+                    if (payload.pin) delete userProfile.pin;
                     
-                    // Sync with storage
-                    const userData = JSON.parse(localStorage.getItem('agricare_user') || '{}');
-                    userData.name = payload.name;
-                    userData.pref_lang = payload.pref_lang;
-                    localStorage.setItem('agricare_user', JSON.stringify(userData));
-                    sessionStorage.setItem('agricare_user', JSON.stringify(userData));
+                    // Sync with storage properly - merge with existing to avoid losing id/role
+                    const currentStr = sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user');
+                    const currentData = currentStr ? JSON.parse(currentStr) : {};
+                    
+                    const updatedData = { 
+                        ...currentData, 
+                        name: payload.name, 
+                        pref_lang: payload.pref_lang,
+                        district: payload.district,
+                        city: payload.city
+                    };
+                    
+                    if (localStorage.getItem('agricare_user')) {
+                        localStorage.setItem('agricare_user', JSON.stringify(updatedData));
+                    }
+                    sessionStorage.setItem('agricare_user', JSON.stringify(updatedData));
                     
                     currentLang = payload.pref_lang;
                     localStorage.setItem('agricare_lang', currentLang);

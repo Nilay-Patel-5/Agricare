@@ -48,7 +48,9 @@ try {
                      'id' => $user['id'],
                      'name' => $user['name'],
                      'role' => 'farmer',
-                     'pref_lang' => $user['pref_lang'] ?? 'en'
+                     'pref_lang' => $user['pref_lang'] ?? 'en',
+                     'district' => $user['district'],
+                     'city' => $user['city']
                  ];
              }
         }

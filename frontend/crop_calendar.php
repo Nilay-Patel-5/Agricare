@@ -81,6 +81,11 @@
                 Select your crop to view detailed month-by-month guidance for sowing, irrigation, fertilizer management,
                 and harvesting.
             </p>
+            <div id="districtIndicator" class="mt-4 inline-flex items-center gap-2 bg-emerald-100 px-4 py-2 rounded-full text-emerald-800 font-bold text-sm">
+                <i class="fas fa-location-dot"></i>
+                <span data-lang="showingFor">Showing crops for:</span>
+                <span id="activeDistrictName">Loading location...</span>
+            </div>
         </div>
 
         <div class="grid lg:grid-cols-4 gap-8">
@@ -117,40 +122,8 @@
     </main>
 
     <script>
-        // Data Configuration
-        const cropsData = {
-            wheat: {
-                id: 'wheat',
-                icon: '🌾',
-                season: { en: 'Rabi (Winter)', gu: 'રવિ (શિયાળુ)', hi: 'रबी (सर्दियों)' },
-                name: { en: 'Wheat', gu: 'ઘઉં', hi: 'गेहूँ' },
-                schedule: {
-                    10: { type: 'prepare', icon: 'tractor', color: 'orange', text: { en: 'Field Preparation & Sowing', gu: 'ખેતરની તૈયારી અને વાવણી', hi: 'खेत की तैयारी एवं बुवाई' } },
-                    11: { type: 'water', icon: 'tint', color: 'blue', text: { en: 'First Irrigation (CRI Stage)', gu: 'પ્રથમ પિયત (CRI તબક્કો)', hi: 'पहली सिंचाई (CRI अवस्था)' } },
-                    12: { type: 'fertilizer', icon: 'leaf', color: 'emerald', text: { en: 'Top Dressing Nitrogen', gu: 'નાઈટ્રોજન ખાતર આપવું', hi: 'यूरिया का छिड़काव' } },
-                    0: { type: 'care', icon: 'bug', color: 'purple', text: { en: 'Weed & Pest Control', gu: 'નીંદણ અને જીવાત નિયંત્રણ', hi: 'खरपतवार एवं कीट नियंत्रण' } },
-                    1: { type: 'water', icon: 'tint', color: 'blue', text: { en: 'Flowering Stage Irrigation', gu: 'ફૂલ અવસ્થાએ પિયત', hi: 'फूल आने पर सिंचाई' } },
-                    2: { type: 'harvest', icon: 'sun', color: 'amber', text: { en: 'Grain Filling', gu: 'દાણા ભરવાનો સમય', hi: 'दाना भरने का समय' } },
-                    3: { type: 'harvest', icon: 'scythe', color: 'red', text: { en: 'Harvesting', gu: 'લણણી', hi: 'कटाई' } }
-                }
-            },
-            cotton: {
-                id: 'cotton',
-                icon: '☁️',
-                season: { en: 'Kharif (Monsoon)', gu: 'ખરીફ (ચોમાસુ)', hi: 'खरीफ (मानसून)' },
-                name: { en: 'Cotton', gu: 'કપાસ', hi: 'कपास' },
-                schedule: {
-                    4: { type: 'prepare', icon: 'tractor', color: 'orange', text: { en: 'Deep Ploughing & Prep', gu: 'ઊંડી ખેડ અને તૈયારી', hi: 'गहरी जुताई और तैयारी' } },
-                    5: { type: 'prepare', icon: 'seedling', color: 'emerald', text: { en: 'Pre-monsoon Sowing', gu: 'ચોમાસા પહેલા વાવણી', hi: 'मानसून पूर्व बुवाई' } },
-                    6: { type: 'care', icon: 'leaf', color: 'emerald', text: { en: 'Weeding & Thinning', gu: 'નીંદણ અને પારવણી', hi: 'खरपतवार नियंत्रण' } },
-                    7: { type: 'fertilizer', icon: 'flask', color: 'purple', text: { en: 'Fertilizer Application', gu: 'ખાતરનો ઉપયોગ', hi: 'उर्वरक का प्रयोग' } },
-                    8: { type: 'care', icon: 'bug', color: 'red', text: { en: 'Pest Scouting (Bollworm)', gu: 'જીવાત નિરીક્ષણ (ઇયળ)', hi: 'कीट निरीक्षण (इल्ली)' } },
-                    9: { type: 'water', icon: 'tint', color: 'blue', text: { en: 'Square & Boll Formation', gu: 'ઝીંડવા બેસવાનો સમય', hi: 'टिंडे बनने का समय' } },
-                    10: { type: 'harvest', icon: 'box', color: 'amber', text: { en: 'First Picking', gu: 'પ્રથમ વીણી', hi: 'पहली चुनाई' } },
-                    11: { type: 'harvest', icon: 'box', color: 'amber', text: { en: 'Second Picking', gu: 'બીજી વીણી', hi: 'दूसरी चुनाई' } }
-                }
-            }
-        };
+        // Data Configuration (Initially empty, will be populated by API)
+        let cropsData = {};
 
         const monthNames = {
             en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -160,12 +133,11 @@
 
         const translations = {
             en: {
-                title: 'Crop Calendar',
-                homeBtn: 'Back to Home',
-                headerTitle: 'Seasonal Activity Plan',
-                headerDesc: 'Select your crop to view detailed month-by-month guidance for sowing, irrigation, fertilizer management, and harvesting.',
                 selectCrop: 'Select Crop',
-                noActivity: 'Rest Period / Field Prep'
+                noActivity: 'Rest Period / Field Prep',
+                showingFor: 'Showing crops for:',
+                allGujarat: 'All Gujarat',
+                locationSeparator: ', '
             },
             gu: {
                 title: 'પાક કેલેન્ડર',
@@ -173,7 +145,10 @@
                 headerTitle: 'મોસમી પ્રવૃત્તિ યોજના',
                 headerDesc: 'વાવણી, સિંચાઈ, ખાતર વ્યવસ્થાપન અને લણણી માટે વિગતવાર મહિના મુજબનું માર્ગદર્શન જોવા માટે તમારો પાક પસંદ કરો.',
                 selectCrop: 'પાક પસંદ કરો',
-                noActivity: 'આરામનો સમય / ખેતરની તૈયારી'
+                noActivity: 'આરામનો સમય / ખેતરની તૈયારી',
+                showingFor: 'પાક આના માટે:',
+                allGujarat: 'સમગ્ર ગુજરાત',
+                locationSeparator: ', '
             },
             hi: {
                 title: 'फसल कैलेंडर',
@@ -181,19 +156,80 @@
                 headerTitle: 'मौसमी गतिविधि योजना',
                 headerDesc: 'बुवाई, सिंचाई, उर्वरक प्रबंधन और कटाई के लिए विस्तृत महीनेवार मार्गदर्शन देखने के लिए अपनी फसल का चयन करें।',
                 selectCrop: 'फसल चुनें',
-                noActivity: 'आराम की अवधि / खेत की तैयारी'
+                noActivity: 'आराम की अवधि / खेत की तैयारी',
+                showingFor: 'फ़सल इनके लिए:',
+                allGujarat: 'संपूर्ण गुजरात',
+                locationSeparator: ', '
             }
         };
 
         let currentLang = localStorage.getItem('agricare_lang') || 'en';
-        let activeCrop = 'wheat';
+        let activeCrop = '';
+        let userDistrict = '';
+        let userCity = '';
+
+        async function fetchCrops() {
+            const userStr = localStorage.getItem('agricare_user') || sessionStorage.getItem('agricare_user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                userDistrict = user.district || '';
+                userCity = user.city || '';
+            }
+
+            const districtLabel = document.getElementById('activeDistrictName');
+            let locationText = userDistrict || translations[currentLang].allGujarat;
+            if (userCity) {
+                locationText += (translations[currentLang].locationSeparator || ', ') + userCity;
+            }
+            districtLabel.innerText = locationText;
+
+            try {
+                const response = await fetch(`../backend/get_crops.php?district=${encodeURIComponent(userDistrict)}&city=${encodeURIComponent(userCity)}`);
+                const data = await response.json();
+
+                if (data.error) throw new Error(data.error);
+
+                // Transform API data to local cropsData format
+                cropsData = {};
+                data.forEach(crop => {
+                    const scheduleObj = {};
+                    crop.schedule.forEach(s => {
+                        scheduleObj[s.month_index] = {
+                            icon: s.activity_icon,
+                            color: s.activity_color,
+                            text: { en: s.task_en, gu: s.task_gu, hi: s.task_hi }
+                        };
+                    });
+
+                    cropsData[crop.id] = {
+                        id: crop.id,
+                        icon: crop.icon,
+                        season: { en: crop.season_en, gu: crop.season_gu || crop.season_en, hi: crop.season_hi || crop.season_en },
+                        name: { en: crop.name_en, gu: crop.name_gu, hi: crop.name_hi },
+                        schedule: scheduleObj
+                    };
+                });
+
+                if (Object.keys(cropsData).length > 0) {
+                    activeCrop = Object.keys(cropsData)[0];
+                    renderSidebar();
+                    renderCalendar();
+                } else {
+                    document.getElementById('activeCropName').innerText = 'No crops found for your location';
+                }
+
+            } catch (err) {
+                console.error("Failed to fetch crops:", err);
+                document.getElementById('activeCropName').innerText = 'Error loading crops';
+            }
+        }
 
         function renderSidebar() {
             const container = document.getElementById('cropSelector');
             container.innerHTML = '';
 
             Object.values(cropsData).forEach(crop => {
-                const isActive = crop.id === activeCrop;
+                const isActive = String(crop.id) === String(activeCrop);
                 const btn = document.createElement('button');
                 btn.className = `w-full text-left px-6 py-4 rounded-2xl font-bold transition-all flex items-center gap-4 ${isActive ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'bg-white text-gray-600 hover:bg-emerald-50 border border-gray-100'}`;
                 btn.innerHTML = `<span class="text-2xl">${crop.icon}</span> <span>${crop.name[currentLang]}</span>`;
@@ -286,6 +322,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             changeLang(currentLang);
+            fetchCrops();
         });
     </script>
 </body>

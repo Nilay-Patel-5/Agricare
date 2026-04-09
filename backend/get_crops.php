@@ -6,9 +6,45 @@ require_once __DIR__ . '/db.php';
 try {
     $pdo = Database::getConnection();
     
-    // Fetch all crops and their schedules in one (or two) efficient calls
-    $stmt = $pdo->query("SELECT * FROM crops ORDER BY id");
+    $district = trim($_GET['district'] ?? '');
+    $city = trim($_GET['city'] ?? '');
+    
+    // Base query
+    $query = "SELECT * FROM crops";
+    $params = [];
+    
+    if (!empty($district)) {
+        // Find crops that are active in the market for this district (and city if provided)
+        $query .= " WHERE EXISTS (
+            SELECT 1 FROM market_prices 
+            WHERE district ILIKE :district ";
+        
+        $params['district'] = '%' . $district . '%';
+
+        if (!empty($city)) {
+            $query .= " AND market ILIKE :market ";
+            $params['market'] = '%' . $city . '%';
+        }
+
+        $query .= " AND (
+                commodity ILIKE '%' || name_en || '%' OR 
+                name_en ILIKE '%' || commodity || '%' OR
+                commodity ILIKE '%' || name_gu || '%' OR
+                commodity ILIKE '%' || name_hi || '%'
+            )
+        )";
+    }
+    
+    $query .= " ORDER BY id";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
     $crops = $stmt->fetchAll();
+
+    // If no crops found for district, fallback to general popular crops
+    if (empty($crops) && !empty($district)) {
+        $stmt = $pdo->query("SELECT * FROM crops ORDER BY id LIMIT 15");
+        $crops = $stmt->fetchAll();
+    }
 
     // Fetch ALL schedules at once to avoid N+1 problem
     $stmtAllScheds = $pdo->query("SELECT * FROM crop_schedules ORDER BY crop_id, month_index");

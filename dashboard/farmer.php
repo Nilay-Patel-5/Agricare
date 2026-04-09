@@ -729,8 +729,17 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
         }
 
         async function fetchCrops() {
+            const userStr = sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user');
+            let district = '';
+            let city = '';
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                district = user.district || '';
+                city = user.city || '';
+            }
+
             try {
-                const response = await fetch('../backend/get_crops.php');
+                const response = await fetch(`../backend/get_crops.php?district=${encodeURIComponent(district)}&city=${encodeURIComponent(city)}`);
                 const data = await response.json();
                 cropsData = Array.isArray(data) ? data : [];
                 activeCropIndex = 0;

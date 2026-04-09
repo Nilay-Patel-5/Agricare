@@ -164,6 +164,63 @@
         .slider-dropdown.open .sd-trigger .sd-arrow {
             transform: rotate(180deg);
         }
+
+        .success-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .success-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 2.5rem;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-modal.show .success-content {
+            transform: scale(1);
+        }
+
+        .success-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background: #ecfdf5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: #10b981;
+            font-size: 2.5rem;
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
     </style>
 
 </head>
@@ -526,9 +583,10 @@
                 submitBtn: 'Create Account',
 
                 heroTitle: 'Join AgriCare',
-
-                heroSubtitle: 'Create your farmer account to access weather updates, market prices, and crop guidance.'
-
+                heroSubtitle: 'Create your farmer account to access weather updates, market prices, and crop guidance.',
+                regSuccessTitle: 'Account Created!',
+                regSuccessMsg: 'Account is created successfully!! Now you can login to dashboard...',
+                loginNowBtn: 'Login Now'
             },
 
             gu: {
@@ -578,9 +636,10 @@
                 submitBtn: 'ખાતું બનાવો',
 
                 heroTitle: 'એગ્રીકેરમાં જોડાઓ',
-
-                heroSubtitle: 'હવામાનની જાણકારી, બજારના ભાવ અને પાક માર્ગદર્શન મેળવવા માટે તમારું ખેડૂત ખાતું બનાવો.'
-
+                heroSubtitle: 'હવામાનની જાણકારી, બજારના ભાવ અને પાક માર્ગદર્શન મેળવવા માટે તમારું ખેડૂત ખાતું બનાવો.',
+                regSuccessTitle: 'ખાતું બની ગયું!',
+                regSuccessMsg: 'ખાતું સફળતાપૂર્વક બનાવવામાં આવ્યું છે!! હવે તમે ડેશબોર્ડમાં લોગિન કરી શકો છો...',
+                loginNowBtn: 'લોગિન કરો'
             },
 
             hi: {
@@ -1422,7 +1481,19 @@ let isEmailRegistered = false;
 
             }
 
-
+            function showSuccessModal() {
+                const modal = document.getElementById('successModal');
+                modal.classList.add('show');
+                
+                // Ensure text is fresh (though changeLang does it)
+                const lang = localStorage.getItem('agricare_lang') || 'en';
+                const t = translations[lang];
+                
+                modal.querySelectorAll('[data-lang]').forEach(el => {
+                    const key = el.getAttribute('data-lang');
+                    if (t[key]) el.textContent = t[key];
+                });
+            }
 
             function handleRegister(event) {
 
@@ -1520,9 +1591,7 @@ let isEmailRegistered = false;
 
                         }
 
-                        alert(`Account created successfully.\nWelcome ${data.user.name}`);
-
-                        window.location.href = 'login.php';
+                        showSuccessModal();
 
                     })
 
@@ -1594,6 +1663,22 @@ let isEmailRegistered = false;
 
             }, true);
     </script>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="success-modal">
+        <div class="success-content glass-card">
+            <div class="success-icon-wrapper">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="text-2xl font-black text-gray-900 mb-2" data-lang="regSuccessTitle">Account Created!</h3>
+            <p class="text-gray-600 font-medium mb-8 leading-relaxed" id="successMsg" data-lang="regSuccessMsg">Account is created successfully!! Now you can login to dashboard...</p>
+            <button onclick="window.location.href='login.php'" 
+                class="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all active:scale-95"
+                data-lang="loginNowBtn">
+                Login Now
+            </button>
+        </div>
+    </div>
 
 </body>
 

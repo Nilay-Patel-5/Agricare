@@ -1,181 +1,115 @@
 """
-Plant Disease Detection - CNN Model Training Script
-====================================================
-Based on: SPOTLESS TECH YouTube Playlist
-URL: https://youtube.com/playlist?list=PLvz5lCwTgdXDNcXEVwwHsb9DwjNXZGsoy
-
-DATASET: New Plant Diseases Dataset
-Source:  https://www.kaggle.com/datasets/vipoooool/new-plant-diseases-dataset
-Author:  vipoooool on Kaggle
-Classes: 38 (healthy & diseased categories across 14 crop species)
-
-SETUP INSTRUCTIONS:
-1. pip install tensorflow==2.15.0 scikit-learn numpy matplotlib seaborn pandas pillow
-2. Download dataset from Kaggle (see URL above)
-3. Extract into: ai/dataset/  (folder structure: ai/dataset/train/, ai/dataset/valid/)
-4. Run: python train_model.py
-5. Model saved as: ai/plant_disease_model.keras
+AgriCare - Advanced AI Disease Detection Training
+=================================================
+Optimized Version: MobileNetV2 + TFLite Quantization + Checkpoint/Resume
+Target: High Accuracy + Ultra Fast Output
 """
 
 import os
+import json
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import (
-    Conv2D, MaxPool2D, Flatten, Dense, Dropout, BatchNormalization
-)
-from sklearn.metrics import classification_report, confusion_matrix
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
+from tensorflow.keras.optimizers import Adam
 import matplotlib
-matplotlib.use('Agg')  # Non-interactive backend for saving plots
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 # ============================================================
-# 1. CONFIGURATION  (Updated to local nested dataset)
+# 1. CONFIGURATION
 # ============================================================
-DATASET_TRAIN_PATH  = 'Disease Detection/New Plant Diseases Dataset(Augmented)/New Plant Diseases Dataset(Augmented)/train'
-DATASET_VALID_PATH  = 'Disease Detection/New Plant Diseases Dataset(Augmented)/New Plant Diseases Dataset(Augmented)/valid'
-IMAGE_SIZE          = (128, 128)
+DATASET_TRAIN_PATH  = 'ai/data/train'
+DATASET_VALID_PATH  = 'ai/data/valid'
+IMAGE_SIZE          = (224, 224) 
 BATCH_SIZE          = 32
 NUM_CLASSES         = 38
-EPOCHS              = 10
-MODEL_SAVE_PATH     = 'plant_disease_model.keras'
+EPOCHS              = 15         
+LEARNING_RATE       = 0.0001     
+MODEL_SAVE_PATH     = 'ai/plant_disease_model.keras'
+CHECKPOINT_PATH     = 'ai/checkpoint_best.keras'
+TFLITE_SAVE_PATH    = 'ai/plant_disease_model.tflite'
 
 # ============================================================
-# 2. CLASS LABELS  (38 classes – PlantVillage / New Plant Diseases Dataset)
+# 2. DATA PREPARATION
 # ============================================================
-CLASS_NAMES = [
-    'Apple___Apple_scab',
-    'Apple___Black_rot',
-    'Apple___Cedar_apple_rust',
-    'Apple___healthy',
-    'Blueberry___healthy',
-    'Cherry_(including_sour)___Powdery_mildew',
-    'Cherry_(including_sour)___healthy',
-    'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot',
-    'Corn_(maize)___Common_rust_',
-    'Corn_(maize)___Northern_Leaf_Blight',
-    'Corn_(maize)___healthy',
-    'Grape___Black_rot',
-    'Grape___Esca_(Black_Measles)',
-    'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
-    'Grape___healthy',
-    'Orange___Haunglongbing_(Citrus_greening)',
-    'Peach___Bacterial_spot',
-    'Peach___healthy',
-    'Pepper,_bell___Bacterial_spot',
-    'Pepper,_bell___healthy',
-    'Potato___Early_blight',
-    'Potato___Late_blight',
-    'Potato___healthy',
-    'Raspberry___healthy',
-    'Soybean___healthy',
-    'Squash___Powdery_mildew',
-    'Strawberry___Leaf_scorch',
-    'Strawberry___healthy',
-    'Tomato___Bacterial_spot',
-    'Tomato___Early_blight',
-    'Tomato___Late_blight',
-    'Tomato___Leaf_Mold',
-    'Tomato___Septoria_leaf_spot',
-    'Tomato___Spider_mites Two-spotted_spider_mite',
-    'Tomato___Target_Spot',
-    'Tomato___Tomato_Yellow_Leaf_Curl_Virus',
-    'Tomato___Tomato_mosaic_virus',
-    'Tomato___healthy',
-]
+print("[1/7] Preparing data generators...")
 
-# ============================================================
-# 3. DATA PREPROCESSING  (rescale only – no augmentation on valid)
-# ============================================================
-print("[1/5] Preparing data generators...")
-
-train_datagen = ImageDataGenerator(rescale=1.0 / 255)
+train_datagen = ImageDataGenerator(
+    rescale=1.0 / 255,
+    rotation_range=20,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    shear_range=0.1,
+    zoom_range=0.1,
+    horizontal_flip=True,
+    fill_mode='nearest'
+)
 valid_datagen = ImageDataGenerator(rescale=1.0 / 255)
 
 train_generator = train_datagen.flow_from_directory(
-    DATASET_TRAIN_PATH,
-    target_size=IMAGE_SIZE,
-    batch_size=BATCH_SIZE,
-    class_mode='categorical',
-    shuffle=True
+    DATASET_TRAIN_PATH, target_size=IMAGE_SIZE, batch_size=BATCH_SIZE, class_mode='categorical', shuffle=True
 )
-
 valid_generator = valid_datagen.flow_from_directory(
-    DATASET_VALID_PATH,
-    target_size=IMAGE_SIZE,
-    batch_size=BATCH_SIZE,
-    class_mode='categorical',
-    shuffle=False
-)
-
-print(f"  Training samples  : {train_generator.samples}")
-print(f"  Validation samples: {valid_generator.samples}")
-print(f"  Classes found     : {len(train_generator.class_indices)}")
-
-# ============================================================
-# 4. MODEL ARCHITECTURE  (Custom CNN – exactly as shown in the video)
-#    Input  → 128x128x3
-#    Hidden → Conv2D → MaxPool → Conv2D → MaxPool → Conv2D → MaxPool
-#    Dense  → 1500 neurons (ReLU) → Dropout(0.4)
-#    Output → 38 neurons (Softmax)
-# ============================================================
-print("\n[2/5] Building CNN model architecture...")
-
-model = Sequential([
-    # Block 1
-    Conv2D(32, (3, 3), padding='same', activation='relu', input_shape=(128, 128, 3)),
-    MaxPool2D(2, 2),
-
-    # Block 2
-    Conv2D(64, (3, 3), padding='same', activation='relu'),
-    MaxPool2D(2, 2),
-
-    # Block 3
-    Conv2D(64, (3, 3), padding='same', activation='relu'),
-    MaxPool2D(2, 2),
-
-    # Block 4
-    Conv2D(64, (3, 3), padding='same', activation='relu'),
-    MaxPool2D(2, 2),
-
-    # Block 5
-    Conv2D(64, (3, 3), padding='same', activation='relu'),
-    MaxPool2D(2, 2),
-
-    # Block 6
-    Conv2D(64, (3, 3), padding='same', activation='relu'),
-    MaxPool2D(2, 2),
-
-    # Fully-connected head (1500 neurons as in the tutorial)
-    Flatten(),
-    Dense(1500, activation='relu'),
-    Dropout(0.4),
-
-    # Output layer – 38 disease classes
-    Dense(NUM_CLASSES, activation='softmax')
-])
-
-model.summary()
-
-# ============================================================
-# 5. COMPILE
-# ============================================================
-model.compile(
-    optimizer='adam',
-    loss='categorical_crossentropy',
-    metrics=['accuracy']
+    DATASET_VALID_PATH, target_size=IMAGE_SIZE, batch_size=BATCH_SIZE, class_mode='categorical', shuffle=False
 )
 
 # ============================================================
-# 6. TRAIN
+# 3. BUILD OR RESUME MODEL
 # ============================================================
-print("\n[3/5] Training the model...")
+if os.path.exists(CHECKPOINT_PATH):
+    print(f"\n[2/7] Resuming training from existing checkpoint: {CHECKPOINT_PATH}")
+    model = load_model(CHECKPOINT_PATH)
+else:
+    print("\n[2/7] Building a new MobileNetV2 architecture...")
+    base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+    base_model.trainable = False
+    x = base_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(512, activation='relu')(x)
+    x = Dropout(0.5)(x)
+    output = Dense(NUM_CLASSES, activation='softmax')(x)
+    model = Model(inputs=base_model.input, outputs=output)
+    model.compile(optimizer=Adam(learning_rate=LEARNING_RATE), loss='categorical_crossentropy', metrics=['accuracy'])
 
-# Callbacks for better training
+# ============================================================
+# 4. TRAINING WITH CALLBACKS
+# ============================================================
+print("\n[3/7] Training in progress...")
+
 callbacks = [
-    tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+    # Save weights every 500 steps (so we don't lose progress mid-epoch)
+    tf.keras.callbacks.ModelCheckpoint(
+        filepath=CHECKPOINT_PATH,
+        monitor='accuracy',
+        save_best_only=False,
+        save_weights_only=False,
+        save_freq=500,
+        verbose=1
+    ),
+    # Also save the BEST weights per epoch
+    tf.keras.callbacks.ModelCheckpoint(
+        filepath='ai/best_model_accuracy.keras',
+        monitor='val_accuracy',
+        save_best_only=True,
+        verbose=1
+    ),
+    # Stop early if accuracy stops improving
+    tf.keras.callbacks.EarlyStopping(
+        monitor='val_accuracy', 
+        patience=4, 
+        restore_best_weights=True,
+        verbose=1
+    ),
+    # Reduce heating by reducing learning rate if stuck
+    tf.keras.callbacks.ReduceLROnPlateau(
+        monitor='val_loss', 
+        factor=0.2, 
+        patience=2, 
+        min_lr=1e-7
+    )
 ]
 
 history = model.fit(
@@ -189,44 +123,47 @@ history = model.fit(
 )
 
 # ============================================================
-# 7. EVALUATE & SAVE
+# 5. SAVE FINAL MODELS
 # ============================================================
-print("\n[4/5] Evaluating model...")
-
-val_loss, val_acc = model.evaluate(valid_generator)
-print(f"  Validation Accuracy : {val_acc * 100:.2f}%")
-print(f"  Validation Loss     : {val_loss:.4f}")
-
-# Save model
+print("\n[4/7] Saving final model formats...")
 model.save(MODEL_SAVE_PATH)
-print(f"\n[5/5] Model saved → {MODEL_SAVE_PATH}")
+print(f"  Saved Keras model → {MODEL_SAVE_PATH}")
 
 # ============================================================
-# 8. GENERATE TRAINING PLOTS
+# 6. TFLITE CONVERSION
 # ============================================================
-fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-fig.suptitle('Plant Disease CNN – Training Results', fontsize=14, fontweight='bold')
+print("\n[5/7] Converting to Ultra-Fast TFLite Format...")
+try:
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    tflite_model = converter.convert()
+    with open(TFLITE_SAVE_PATH, 'wb') as f:
+        f.write(tflite_model)
+    print(f"  Saved TFLite model → {TFLITE_SAVE_PATH}")
+except Exception as e:
+    print(f"  TFLITE ERROR: {str(e)}")
 
-# Accuracy
-axes[0].plot(history.history['accuracy'],     label='Train Accuracy',      color='#22c55e', linewidth=2)
-axes[0].plot(history.history['val_accuracy'], label='Validation Accuracy',  color='#f97316', linewidth=2)
-axes[0].set_title('Model Accuracy')
-axes[0].set_xlabel('Epoch')
-axes[0].set_ylabel('Accuracy')
-axes[0].legend()
-axes[0].grid(True, alpha=0.3)
+# ============================================================
+# 7. EVALUATE & PLOT
+# ============================================================
+print("\n[6/7] Evaluating...")
+val_loss, val_acc = model.evaluate(valid_generator)
+print(f"  Final Validation Accuracy: {val_acc * 100:.2f}%")
 
-# Loss
-axes[1].plot(history.history['loss'],     label='Train Loss',      color='#22c55e', linewidth=2)
-axes[1].plot(history.history['val_loss'], label='Validation Loss',  color='#f97316', linewidth=2)
-axes[1].set_title('Model Loss')
-axes[1].set_xlabel('Epoch')
-axes[1].set_ylabel('Loss')
-axes[1].legend()
-axes[1].grid(True, alpha=0.3)
-
+print("\n[7/7] Generating training results plot...")
+plt.figure(figsize=(12, 5))
+plt.subplot(1, 2, 1)
+plt.plot(history.history['accuracy'], label='Train Acc')
+plt.plot(history.history['val_accuracy'], label='Val Acc')
+plt.title('Accuracy')
+plt.legend()
+plt.subplot(1, 2, 2)
+plt.plot(history.history['loss'], label='Train Loss')
+plt.plot(history.history['val_loss'], label='Val Loss')
+plt.title('Loss')
+plt.legend()
 plt.tight_layout()
-plt.savefig('training_plot.png', dpi=150)
-print("Training plot saved → training_plot.png")
+plt.savefig('ai/ai_training_results.png')
+print("  Results saved → ai/ai_training_results.png")
 
-print("\nDone! The trained model can now be used by the local CLI predictor in ai/predict_cli.py.")
+print("\nSUCCESS: Training complete. System ready for inference.")
