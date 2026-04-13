@@ -58,6 +58,12 @@ Thumbs.db
 # Tailwind generated file
 frontend/output.css
 
+# = :========================
+# Backend Temporary Files
+# =========================
+backend/cache/
+backend/last_market_sync.json
+
 # VS Code settings
 .vscode/
 

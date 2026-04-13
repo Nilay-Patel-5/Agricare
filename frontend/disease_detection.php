@@ -611,6 +611,7 @@ exit;
             try {
                 const fd = new FormData();
                 fd.append('image', file);
+                fd.append('lang', localStorage.getItem('agricare_lang') || 'en');
                 const res = await fetch(AI_PREDICT_ENDPOINT, { method: 'POST', body: fd });
                 if (!res.ok) throw new Error("Local model prediction failed");
                 const data = await res.json();
@@ -629,12 +630,19 @@ exit;
             // Show user image in results
             document.getElementById('result-image-preview').src = previewImg.src;
 
-            document.getElementById('disease-name').textContent = data.label;
-            const plantName = data.plant || data.plant_type || 'Plant';
-            document.getElementById('plant-type').textContent = plantName + " SPECIES";
-            document.getElementById('disease-desc').textContent = data.info.desc;
-            document.getElementById('irrigation-text').textContent = data.info.irrigation;
-            document.getElementById('treatment-text').textContent = data.info.treatment;
+            const currentLang = localStorage.getItem('agricare_lang') || 'en';
+            
+            // Translate Label and Plant if possible
+            const translatedLabel = (translations[currentLang] && translations[currentLang][data.label]) ? translations[currentLang][data.label] : data.label;
+            const translatedPlant = (translations[currentLang] && translations[currentLang][data.plant]) ? translations[currentLang][data.plant] : (data.plant || 'Detected');
+
+            document.getElementById('disease-name').textContent = translatedLabel;
+            document.getElementById('plant-type').textContent = translatedPlant + " SPECIES";
+            
+            // Translate Info fields if they are keys, otherwise show as is
+            document.getElementById('disease-desc').textContent = (translations[currentLang] && translations[currentLang][data.info.desc]) ? translations[currentLang][data.info.desc] : data.info.desc;
+            document.getElementById('irrigation-text').textContent = (translations[currentLang] && translations[currentLang][data.info.irrigation]) ? translations[currentLang][data.info.irrigation] : data.info.irrigation;
+            document.getElementById('treatment-text').textContent = (translations[currentLang] && translations[currentLang][data.info.treatment]) ? translations[currentLang][data.info.treatment] : data.info.treatment;
 
             const conf = data.confidence.toFixed(1);
             document.getElementById('confidence-text').textContent = conf + "%";
@@ -646,9 +654,10 @@ exit;
             topDiv.innerHTML = '';
             if (data.top3) {
                 data.top3.forEach((item, i) => {
+                    const translatedTopLabel = (translations[currentLang] && translations[currentLang][item.label]) ? translations[currentLang][item.label] : item.label;
                     topDiv.innerHTML += `
                         <div class="flex items-center justify-between p-3 rounded-xl bg-gray-100/50">
-                            <span class="text-xs font-bold text-gray-700">${item.label}</span>
+                            <span class="text-xs font-bold text-gray-700">${translatedTopLabel}</span>
                             <span class="text-xs font-black text-emerald-600">${item.confidence.toFixed(1)}%</span>
                         </div>
                     `;

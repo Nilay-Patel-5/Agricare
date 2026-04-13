@@ -21,7 +21,7 @@ except ImportError:
 
 # Configuration
 MODEL_BASE_NAME = "plant_disease_model"
-IMAGE_SIZE = (224, 224) 
+IMAGE_SIZE = (128, 128) 
 DIR_PATH = os.path.dirname(__file__)
 KERAS_MODEL_PATH = os.path.join(DIR_PATH, f"{MODEL_BASE_NAME}.keras")
 TFLITE_MODEL_PATH = os.path.join(DIR_PATH, f"{MODEL_BASE_NAME}.tflite")
@@ -175,6 +175,19 @@ def main():
             "info": get_disease_info(label),
             "top3": results_top3
         }
+
+        # Safeguard: If confidence is less than 50%, suppress result advice
+        if result['confidence'] < 50.0:
+            result['label'] = "Unknown"
+            result['plant'] = "Unknown"
+            result['disease'] = "unknown"
+            result['info'] = {
+                "desc": "Disease not found. Please provide a clearer image of the plant leaf.",
+                "irrigation": "N/A",
+                "treatment": "N/A",
+                "fertilizer": "N/A"
+            }
+
         print(json.dumps(result))
 
     except Exception as e:

@@ -49,21 +49,31 @@ try {
         ai_json_error("AI System could not process your request. " . $result['error']);
     }
 
+    $lang = $_POST['lang'] ?? 'en';
     $identifiedPest = $result['label'] ?? 'Unknown';
     $identifiedPlant = $result['plant'] ?? 'Detected';
     $apiConfidence = $result['confidence'] ?? 0.0;
     $apiInfo = $result['info'] ?? [];
 
+    // Localized fallback strings for "Unknown" case
+    $localizedUnknown = [
+        'en' => ['label' => 'Disease not found', 'plant' => 'Unknown', 'desc' => 'No disease could be identified. Please ensure the photo is clear and contains a plant leaf.'],
+        'gu' => ['label' => 'રોગ મળ્યો નથી', 'plant' => 'અજ્ઞાત', 'desc' => 'કોઈ રોગની ઓળખ થઈ શકી નથી. કૃપા કરીને ખાતરી કરો કે ફોટો સ્પષ્ટ છે અને તેમાં છોડનું પાન છે.'],
+        'hi' => ['label' => 'रोग नहीं मिला', 'plant' => 'अज्ञात', 'desc' => 'किसी बीमारी की पहचान नहीं की जा सकी। कृपया सुनिश्चित करें कि फोटो स्पष्ट है और उसमें पौधे की पत्ती है।']
+    ];
+
+    $fallback = $localizedUnknown[$lang] ?? $localizedUnknown['en'];
+
     // Handle unknown/low confidence results
     if ($result['disease'] === 'unknown' || $identifiedPest === 'Unknown') {
         echo json_encode([
-            'label' => $identifiedPest,
-            'plant' => $identifiedPlant,
+            'label' => $fallback['label'],
+            'plant' => $fallback['plant'],
             'confidence' => $apiConfidence,
             'info' => [
-                'desc' => $apiInfo['desc'] ?? 'Disease not found.',
-                'irrigation' => $apiInfo['irrigation'] ?? 'N/A',
-                'treatment' => $apiInfo['treatment'] ?? 'Please try again with a clearer photo.'
+                'desc' => $apiInfo['desc'] ?? $fallback['desc'],
+                'irrigation' => 'N/A',
+                'treatment' => 'N/A'
             ]
         ]);
         exit;

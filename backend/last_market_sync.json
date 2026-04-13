@@ -1,11 +1,5 @@
 {
-<<<<<<< HEAD
-    "synced_at": "2026-04-09T18:51:57+05:30",
-    "target_date": "09\/04\/2026",
-    "processed": 906
-=======
-    "synced_at": "2026-04-09T21:35:08+05:30",
-    "target_date": "08\/04\/2026",
-    "processed": 0
->>>>>>> 6779760 (Security: Hardened authentication with sessions, fixed IDOR vulnerabilities, and enabled farmer email login support. AI: Upgraded to Keras 3 and fixed prediction logic.)
+    "synced_at": "2026-04-13T10:53:49+05:30",
+    "target_date": "13\/04\/2026",
+    "processed": 80
 }
