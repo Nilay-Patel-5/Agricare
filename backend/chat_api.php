@@ -82,12 +82,29 @@ function chat_trim_history_messages(array $history, int $maxChars = 600): array
 }
 
 try {
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(['error' => 'Unauthorized. Please login.']);
+        exit;
+    }
+
+    $sessionUserId = (int) $_SESSION['user_id'];
+    $sessionRole = $_SESSION['user_role'] ?? 'farmer';
+
     $pdo = Database::getConnection();
     // Removed chat_ensure_schema($pdo) for performance. Run setup_chat.php manually if needed.
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $userId = isset($_GET['user_id']) && ctype_digit((string) $_GET['user_id']) ? (int) $_GET['user_id'] : null;
+        $userId = isset($_GET['user_id']) && ctype_digit((string) $_GET['user_id']) ? (int) $_GET['user_id'] : $sessionUserId;
         
+        // Authorization: Farmer cannot access other's chats
+        if ($sessionRole === 'farmer' && $userId !== $sessionUserId) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            exit;
+        }
+
         if (isset($_GET['sessions'])) {
             echo json_encode(['sessions' => chat_fetch_sessions($pdo, $userId)]);
             exit;
@@ -100,7 +117,14 @@ try {
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-        $userId = isset($_GET['user_id']) && ctype_digit((string) $_GET['user_id']) ? (int) $_GET['user_id'] : null;
+        $userId = isset($_GET['user_id']) && ctype_digit((string) $_GET['user_id']) ? (int) $_GET['user_id'] : $sessionUserId;
+        
+        if ($sessionRole === 'farmer' && $userId !== $sessionUserId) {
+             http_response_code(403);
+             echo json_encode(['error' => 'Forbidden']);
+             exit;
+        }
+
         $sessionKey = trim((string) ($_GET['session_key'] ?? ''));
         
         if ($sessionKey !== '') {
@@ -122,7 +146,7 @@ try {
 
     $data = chat_json_input();
     $message = trim((string) ($data['message'] ?? ''));
-    $userId = isset($data['user']['id']) ? (int) $data['user']['id'] : null;
+    $userId = $sessionUserId; // Always use session ID
     $sessionKey = chat_session_key_from_request($data);
     $clientProfile = is_array($data['user'] ?? null) ? $data['user'] : [];
 

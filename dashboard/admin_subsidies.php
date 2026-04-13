@@ -83,11 +83,12 @@
                                 <th class="py-4 px-6 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
                                 <th class="py-4 px-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
                                 <th class="py-4 px-6 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Last Updated</th>
+                                <th class="py-4 px-6 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Action</th>
                             </tr>
                         </thead>
                         <tbody id="subsidies-table" class="divide-y divide-gray-100">
                             <tr>
-                                <td colspan="5" class="py-12 text-center text-gray-400">
+                                <td colspan="6" class="py-12 text-center text-gray-400">
                                     <i class="fas fa-circle-notch fa-spin text-2xl"></i>
                                 </td>
                             </tr>
@@ -156,6 +157,26 @@
 
     <script>
         let allSubsidies = [];
+        const subsidyModal = document.getElementById('subsidyModal');
+        const subsidyFormMsg = document.getElementById('subsidyFormMsg');
+
+        function escHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
+        function showFormMessage(message, type = 'success') {
+            subsidyFormMsg.textContent = message;
+            subsidyFormMsg.className = type === 'error'
+                ? 'text-xs font-bold px-3 py-2 rounded-xl bg-red-50 text-red-600'
+                : 'text-xs font-bold px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700';
+            subsidyFormMsg.classList.remove('hidden');
+        }
 
         async function loadSubsidies() {
             try {
@@ -176,7 +197,7 @@
                 renderTable(allSubsidies);
             } catch (e) {
                 console.error('Error loading subsidies:', e);
-                document.getElementById('subsidies-table').innerHTML = '<tr><td colspan="5" class="py-8 text-center text-red-400">Failed to load subsidy data: ' + e.message + '</td></tr>';
+                document.getElementById('subsidies-table').innerHTML = '<tr><td colspan="6" class="py-8 text-center text-red-400">Failed to load subsidy data: ' + escHtml(e.message) + '</td></tr>';
             }
         }
 
@@ -184,7 +205,7 @@
             const tbody = document.getElementById('subsidies-table');
 
             if (!data.length) {
-                tbody.innerHTML = '<tr><td colspan="5" class="py-12 text-center text-gray-400">No subsidies available</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-gray-400">No subsidies available</td></tr>';
                 return;
             }
 
@@ -206,6 +227,11 @@
                         <span class="px-3 py-1 bg-green-50 text-green-600 text-xs font-bold rounded-full">${status}</span>
                     </td>
                     <td class="py-4 px-6 text-center text-gray-500">${lastUpdated}</td>
+                    <td class="py-4 px-6 text-right">
+                        <button type="button" onclick="deleteSubsidy(${Number(s.id)})" class="inline-flex items-center justify-center rounded-xl p-2 text-slate-300 transition-colors hover:bg-red-50 hover:text-red-500" title="Delete subsidy">
+                            <i class="fas fa-trash-can text-sm"></i>
+                        </button>
+                    </td>
                 </tr>
             `;
             }).join('');
@@ -233,12 +259,39 @@
         loadSubsidies();
         setInterval(loadSubsidies, 60000);
 
+        async function deleteSubsidy(id) {
+            if (!confirm('Delete this subsidy? This cannot be undone.')) return;
+
+            try {
+                const userStr = localStorage.getItem('agricare_user') || '{}';
+                const res = await fetch('../backend/admin_subsidies_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Data': userStr
+                    },
+                    body: JSON.stringify({ action: 'delete', id })
+                });
+                const result = await res.json();
+
+                if (!result.success) {
+                    showFormMessage(result.message || 'Failed to delete subsidy.', 'error');
+                    return;
+                }
+
+                showFormMessage(result.message || 'Subsidy deleted successfully.');
+                await loadSubsidies();
+            } catch (err) {
+                showFormMessage('Network error while deleting subsidy.', 'error');
+            }
+        }
+
         document.getElementById('subsidyForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('[type=submit]');
-            const msgEl = document.getElementById('subsidyFormMsg');
             btn.textContent = 'Publishing...';
             btn.disabled = true;
+            subsidyFormMsg.classList.add('hidden');
 
             try {
                 const formData = new FormData(e.target);
@@ -255,21 +308,15 @@
                 const result = await res.json();
 
                 if (result.success) {
-                    msgEl.textContent = 'Success: ' + result.message;
-                    msgEl.className = 'text-xs font-bold px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700';
+                    showFormMessage('Success: ' + result.message);
                     e.target.reset();
-                    loadSubsidies();
-                    setTimeout(() => document.getElementById('subsidyModal').classList.add('hidden'), 1200);
+                    await loadSubsidies();
+                    setTimeout(() => subsidyModal.classList.add('hidden'), 1200);
                 } else {
-                    msgEl.textContent = result.message || 'Error.';
-                    msgEl.className = 'text-xs font-bold px-3 py-2 rounded-xl bg-red-50 text-red-600';
+                    showFormMessage(result.message || 'Error.', 'error');
                 }
-
-                msgEl.classList.remove('hidden');
             } catch (err) {
-                msgEl.textContent = 'Network error. Please try again.';
-                msgEl.className = 'text-xs font-bold px-3 py-2 rounded-xl bg-red-50 text-red-600';
-                msgEl.classList.remove('hidden');
+                showFormMessage('Network error. Please try again.', 'error');
             }
 
             btn.textContent = 'Publish';

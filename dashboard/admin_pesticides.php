@@ -10,6 +10,92 @@
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
         .premium-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        .slider-dropdown { position: relative; }
+        .slider-dropdown .sd-panel {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1fae5;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+            z-index: 60;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.2s ease;
+        }
+        .slider-dropdown.open .sd-panel { max-height: 280px; opacity: 1; }
+        .sd-trigger {
+            appearance: none;
+            width: 100%;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            padding: 0.9rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+            gap: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+        }
+        .sd-trigger:hover { background: #f0fdf4; }
+        .sd-trigger:focus,
+        .slider-dropdown.open .sd-trigger {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+            background: white;
+        }
+        .sd-panel .sd-search {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid #d1fae5;
+            background: #f0fdf4;
+            padding: 0.85rem 1rem;
+            outline: none;
+            font-size: 0.875rem;
+        }
+        .sd-list { max-height: 210px; overflow-y: auto; }
+        .sd-item {
+            padding: 0.9rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background-color 0.15s, color 0.15s;
+        }
+        .sd-item:hover,
+        .sd-item.active {
+            background: #ecfdf5;
+            color: #047857;
+        }
+        .sd-item:last-child { border-bottom: 0; }
+        .knowledge-item {
+            border: 1px solid #eef2f7;
+            background: #f8fafc;
+            transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+        }
+        .knowledge-item:hover {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            transform: translateX(2px);
+        }
+        .knowledge-item.active {
+            border-color: #a7f3d0;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+        }
+        .mapping-table thead {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        .mapping-row {
+            border-bottom: 1px solid #e9eef5;
+            transition: background-color 0.18s ease;
+        }
+        .mapping-row:hover { background: #f8fafc; }
+        .pill-high { background: #dcfce7; color: #059669; border: 1px solid #bbf7d0; }
+        .pill-moderate { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .pill-organic { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
     </style>
 </head>
 <body class="flex h-screen bg-slate-50 overflow-hidden">
@@ -25,25 +111,34 @@
         </header>
 
         <div class="flex-1 overflow-y-auto px-10 py-10">
+            <div id="statusMessage" class="hidden mb-6 rounded-2xl border px-4 py-3 text-sm font-semibold"></div>
+
             <div class="grid lg:grid-cols-3 gap-8 mb-12">
                 <div class="premium-card p-6 rounded-3xl">
-                   <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Core Knowledge Hub</p>
+                   <div class="flex items-center justify-between gap-3 mb-4">
+                       <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Core Knowledge Hub</p>
+                       <button type="button" onclick="setPestFilter('')" class="text-[10px] font-black uppercase tracking-widest text-emerald-700">Show All</button>
+                   </div>
                    <div id="mappingList" class="space-y-4">
                        <!-- JS population -->
                    </div>
                 </div>
 
                 <div class="lg:col-span-2 premium-card rounded-3xl overflow-hidden p-0">
-                    <div class="p-6 border-b border-slate-50 flex justify-between items-center">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Pest to Pesticide Mapping Engine</p>
+                    <div class="p-6 border-b border-slate-100 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Pest to Pesticide Mapping Engine</p>
+                            <h3 id="mappingHeading" class="mt-2 text-xl font-black text-slate-900">All pest mappings</h3>
+                        </div>
+                        <p id="mappingCount" class="text-[11px] font-black uppercase tracking-widest text-slate-400">0 entries</p>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50/50">
+                        <table class="mapping-table w-full text-left">
+                            <thead>
                                 <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                     <th class="py-4 px-6">Identified Pest Name</th>
                                     <th class="py-4 px-6">Assigned Solution</th>
-                                    <th class="py-4 px-6">Effectiveness</th>
+                                    <th class="py-4 px-6 text-center">Effectiveness</th>
                                     <th class="py-4 px-6 text-right">Ops</th>
                                 </tr>
                             </thead>
@@ -103,7 +198,20 @@
                 </div>
                 <div>
                    <label class="text-[10px] font-black uppercase text-slate-400 mb-2 block">Select Recommended Pesticide</label>
-                   <select id="pesticideSelect" name="pesticide_id" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none" required></select>
+                   <input type="hidden" id="pesticideSelect" name="pesticide_id" required>
+                   <div class="slider-dropdown" id="pesticidePicker">
+                        <button type="button" class="sd-trigger" onclick="toggleDropdown('pesticidePicker')">
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">Product picker</p>
+                                <p id="pesticidePickerLabel" class="text-sm font-bold text-slate-500">Choose a pesticide product</p>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+                        </button>
+                        <div class="sd-panel">
+                            <input type="text" id="pesticideSearch" class="sd-search" placeholder="Search brand or generic name..." oninput="renderPesticideOptions(this.value)">
+                            <div id="pesticideOptionList" class="sd-list"></div>
+                        </div>
+                   </div>
                 </div>
                 <div>
                    <label class="text-[10px] font-black uppercase text-slate-400 mb-2 block">Effectiveness Rating</label>
@@ -122,42 +230,147 @@
     </div>
 
     <script>
+        let allPesticides = [];
+        let allMappings = [];
+        let selectedPest = '';
+
+        function showStatus(message, type = 'success') {
+            const box = document.getElementById('statusMessage');
+            box.textContent = message;
+            box.className = `mb-6 rounded-2xl border px-4 py-3 text-sm font-semibold ${
+                type === 'error'
+                    ? 'block border-red-200 bg-red-50 text-red-700'
+                    : 'block border-emerald-200 bg-emerald-50 text-emerald-700'
+            }`;
+        }
+
+        function hideStatus() {
+            const box = document.getElementById('statusMessage');
+            box.className = 'hidden mb-6 rounded-2xl border px-4 py-3 text-sm font-semibold';
+            box.textContent = '';
+        }
+
+        function escHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
+        function renderPesticideOptions(query = '') {
+            const normalized = query.trim().toLowerCase();
+            const filtered = allPesticides.filter((p) => {
+                const haystack = `${p.brand || ''} ${p.name || ''}`.toLowerCase();
+                return !normalized || haystack.includes(normalized);
+            });
+
+            const list = document.getElementById('pesticideOptionList');
+            if (!filtered.length) {
+                list.innerHTML = '<div class="sd-item text-sm text-slate-400">No pesticide matched this search.</div>';
+                return;
+            }
+
+            const activeId = document.getElementById('pesticideSelect').value;
+            list.innerHTML = filtered.map((p) => `
+                <div class="sd-item ${String(p.id) === String(activeId) ? 'active' : ''}" onclick="selectPesticide(${Number(p.id)})">
+                    <p class="text-sm font-black text-slate-800">${escHtml(p.brand || 'Unnamed brand')}</p>
+                    <p class="text-xs text-slate-500 mt-1">${escHtml(p.name || 'No generic name')}</p>
+                </div>
+            `).join('');
+        }
+
+        function selectPesticide(id) {
+            const pesticide = allPesticides.find((item) => String(item.id) === String(id));
+            if (!pesticide) return;
+
+            document.getElementById('pesticideSelect').value = pesticide.id;
+            document.getElementById('pesticidePickerLabel').textContent = `${pesticide.brand} (${pesticide.name})`;
+            document.getElementById('pesticidePickerLabel').className = 'text-sm font-bold text-slate-900';
+            document.getElementById('pesticidePicker').classList.remove('open');
+            renderPesticideOptions(document.getElementById('pesticideSearch').value);
+        }
+
+        function setPestFilter(pestName) {
+            selectedPest = pestName || '';
+            renderMappings();
+        }
+
+        function setPestFilterFromEncoded(pestName) {
+            setPestFilter(decodeURIComponent(pestName));
+        }
+
+        function toggleDropdown(id) {
+            document.querySelectorAll('.slider-dropdown.open').forEach((el) => {
+                if (el.id !== id) el.classList.remove('open');
+            });
+            document.getElementById(id).classList.toggle('open');
+        }
+
         async function loadData() {
             const userStr = localStorage.getItem('agricare_user') || '{}';
             const res = await fetch('../backend/admin_pesticides_api.php', {
                 headers: { 'X-User-Data': userStr }
             });
             const data = await res.json();
-            
+            allPesticides = data.pesticides || [];
+            allMappings = data.mappings || [];
+            renderPesticideOptions();
+            renderMappings();
+        }
+
+        function renderMappings() {
+            const filteredMappings = selectedPest
+                ? allMappings.filter((m) => (m.pest_name || '').toLowerCase() === selectedPest.toLowerCase())
+                : allMappings;
+
             const tbody = document.getElementById('mappingTable');
-            tbody.innerHTML = data.mappings.map(m => `
-                <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
-                    <td class="py-6 px-6"><p class="text-sm font-black text-slate-700 uppercase tracking-tight">${m.pest_name}</p></td>
-                    <td class="py-6 px-6">
-                        <p class="text-sm font-black text-slate-900">${m.brand}</p>
-                        <p class="text-[10px] font-bold text-slate-400">${m.name}</p>
-                    </td>
-                    <td class="py-6 px-6">
-                        <span class="px-3 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-full border border-emerald-100">${m.effectiveness}</span>
-                    </td>
-                    <td class="py-6 px-6 text-right">
-                        <button onclick="deleteMapping(${m.mapping_id})" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fas fa-trash-can"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+            document.getElementById('mappingHeading').textContent = selectedPest ? `${selectedPest} mappings` : 'All pest mappings';
+            document.getElementById('mappingCount').textContent = `${filteredMappings.length} entries`;
 
-            const select = document.getElementById('pesticideSelect');
-            select.innerHTML = data.pesticides.map(p => `
-                <option value="${p.id}">${p.brand} (${p.name})</option>
-            `).join('');
+            if (!filteredMappings.length) {
+                tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-sm font-semibold text-slate-400">No mappings found for this pest.</td></tr>';
+            } else {
+                tbody.innerHTML = filteredMappings.map((m) => {
+                    const effect = String(m.effectiveness || 'High').toLowerCase();
+                    const effectClass = effect === 'moderate' ? 'pill-moderate' : (effect === 'organic' ? 'pill-organic' : 'pill-high');
 
-            // Pests summary card
-            const pestNames = [...new Set(data.mappings.map(m => m.pest_name))];
-            document.getElementById('mappingList').innerHTML = pestNames.map(p => `
-                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-emerald-50 transition-colors cursor-default group">
-                    <span class="text-xs font-bold text-slate-600 group-hover:text-emerald-700">${p}</span>
-                    <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
-                </div>
+                    return `
+                        <tr class="mapping-row">
+                            <td class="py-6 px-6">
+                                <p class="text-sm font-black text-slate-800 uppercase tracking-tight">${escHtml(m.pest_name)}</p>
+                            </td>
+                            <td class="py-6 px-6">
+                                <p class="text-xl font-black text-slate-900 leading-none">${escHtml(m.brand)}</p>
+                                <p class="mt-2 text-xs font-bold text-slate-400">${escHtml(m.name)}</p>
+                            </td>
+                            <td class="py-6 px-6 text-center">
+                                <span class="${effectClass} inline-flex rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-widest">${escHtml(m.effectiveness)}</span>
+                            </td>
+                            <td class="py-6 px-6 text-right">
+                                <button onclick="deleteMapping(${m.mapping_id})" class="rounded-xl p-2 text-slate-300 transition-colors hover:bg-red-50 hover:text-red-500">
+                                    <i class="fas fa-trash-can"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            const pestCounts = allMappings.reduce((acc, item) => {
+                const pestName = item.pest_name || 'Unknown';
+                acc[pestName] = (acc[pestName] || 0) + 1;
+                return acc;
+            }, {});
+            const pestNames = Object.keys(pestCounts).sort((a, b) => a.localeCompare(b));
+
+            document.getElementById('mappingList').innerHTML = pestNames.map((p) => `
+                <button type="button" onclick="setPestFilterFromEncoded('${encodeURIComponent(p)}')" class="knowledge-item ${selectedPest === p ? 'active' : ''} flex w-full items-center justify-between rounded-2xl px-4 py-4 text-left">
+                    <span class="text-sm font-bold text-slate-700">${escHtml(p)}</span>
+                    <span class="rounded-full bg-white px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-400">${pestCounts[p]}</span>
+                </button>
             `).join('') || '<p class="text-xs italic text-slate-300 text-center py-4">Knowledge Base Empty</p>';
         }
 
@@ -172,7 +385,13 @@
                 },
                 body: JSON.stringify({action: 'delete_mapping', id: id})
             });
-            loadData();
+            const result = await res.json();
+            if (result.status === 'success') {
+                showStatus(result.message || 'Mapping removed.');
+                loadData();
+                return;
+            }
+            showStatus(result.message || 'Failed to remove mapping.', 'error');
         }
 
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -180,9 +399,15 @@
 
         async function handleForm(event, modalId) {
             event.preventDefault();
+            hideStatus();
             const formData = new FormData(event.target);
             const obj = Object.fromEntries(formData.entries());
             const userStr = localStorage.getItem('agricare_user') || '{}';
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            const originalLabel = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Saving...';
+
             const res = await fetch('../backend/admin_pesticides_api.php', {
                 method: 'POST',
                 headers: {
@@ -192,15 +417,37 @@
                 body: JSON.stringify(obj)
             });
             const result = await res.json();
+
+            submitButton.disabled = false;
+            submitButton.textContent = originalLabel;
+
             if(result.status === 'success') {
                 closeModal(modalId);
-                loadData();
                 event.target.reset();
+                if (obj.action === 'add_mapping') {
+                    document.getElementById('pesticideSelect').value = '';
+                    document.getElementById('pesticidePickerLabel').textContent = 'Choose a pesticide product';
+                    document.getElementById('pesticidePickerLabel').className = 'text-sm font-bold text-slate-500';
+                    document.getElementById('pesticideSearch').value = '';
+                }
+                await loadData();
+                if (obj.action === 'add_pesticide' && result.pesticide?.id) {
+                    selectPesticide(result.pesticide.id);
+                }
+                showStatus(result.message || 'Saved successfully.');
+                return;
             }
+            showStatus(result.message || 'Unable to save this item.', 'error');
         }
 
         document.getElementById('pesticideForm').onsubmit = (e) => handleForm(e, 'medicineModal');
         document.getElementById('mappingForm').onsubmit = (e) => handleForm(e, 'pestModal');
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.slider-dropdown')) {
+                document.querySelectorAll('.slider-dropdown.open').forEach((el) => el.classList.remove('open'));
+            }
+        });
         
         loadData();
     </script>

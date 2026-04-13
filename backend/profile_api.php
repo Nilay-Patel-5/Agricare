@@ -12,15 +12,28 @@ if ($method === 'GET') {
     $data = $_GET;
 }
 
-if (!$data || !isset($data['id'])) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'User ID is required']);
-    exit;
-}
-
-$userId = $data['id'];
-
 try {
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Unauthorized. Please login.']);
+        exit;
+    }
+
+    $userId = (int) ($data['id'] ?? 0);
+    $sessionUserId = (int) $_SESSION['user_id'];
+    $sessionRole = $_SESSION['user_role'] ?? 'farmer';
+
+    // Farmer can only access their own profile. Admin can access any.
+    if ($sessionRole === 'farmer' && $userId !== $sessionUserId) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Forbidden. You can only access your own profile.']);
+        exit;
+    }
+
+    if ($userId === 0) {
+        $userId = $sessionUserId;
+    }
     $pdo = Database::getConnection();
 
     if ($method === 'GET') {

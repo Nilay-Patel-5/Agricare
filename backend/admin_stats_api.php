@@ -5,13 +5,10 @@ require_once __DIR__ . '/db.php';
 
 require_once __DIR__ . '/demo_admin_data.php';
 
-// Auth check: only admin role allowed
-$userDataHeader = $_SERVER['HTTP_X_USER_DATA'] ?? '';
-$user = $userDataHeader ? json_decode($userDataHeader, true) : json_decode($_COOKIE['agricare_user'] ?? '{}', true);
-
-if (($user['role'] ?? '') !== 'admin') {
+session_start();
+if (!isset($_SESSION['user_id']) || ($_SESSION['user_role'] ?? '') !== 'admin') {
     http_response_code(403);
-    echo json_encode(['error' => 'Forbidden.']);
+    echo json_encode(['error' => 'Forbidden. Admin access required.']);
     exit;
 }
 

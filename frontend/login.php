@@ -280,74 +280,59 @@
             let identifier = identifierField.value.trim();
             const lang = localStorage.getItem('agricare_lang') || 'en';
             
-            // Limit numeric input
-            if (/^\d/.test(identifier)) {
-                // If it starts with a number, strictly enforce numbers only and length 10
-                const sanitized = identifier.replace(/\D/g, '').slice(0, 10);
-                if (identifier !== sanitized) {
-                    identifierField.value = sanitized;
-                    identifier = sanitized;
-                }
-            }
-
             const pwdLabel = document.getElementById('password-label');
             const pwdInput = document.getElementById('password');
             const pwdToggleBtn = document.getElementById('toggle-pwd-btn');
             const pwdIcon = document.getElementById('pwd-icon');
 
-            // Empty input acts as either, but we default to Admin format visually to allow typing anything
-            const isNumeric = /^\d+$/.test(identifier) && identifier.length > 0;
-            const isFarmer = isNumeric;
-            document.getElementById('role-input').value = isFarmer ? 'farmer' : 'admin';
-
             document.getElementById('phone-error').classList.add('hidden');
             document.getElementById('email-error').classList.add('hidden');
             document.getElementById('admin-password-error').classList.add('hidden');
 
-            if (isFarmer) {
+            const isNumeric = /^\d+$/.test(identifier);
+            const isEmail = identifier.includes('@');
+            const isAdminEmail = identifier.toLowerCase().endsWith('@agricare.admin');
+
+            if (isNumeric) {
+                document.getElementById('role-input').value = 'farmer';
                 pwdLabel.textContent = translations[lang].pin;
-                pwdInput.type = 'password';
-                pwdInput.inputMode = 'numeric';
+                pwdInput.placeholder = translations[lang].enterPin || '••••••';
                 pwdInput.maxLength = 6;
                 pwdInput.pattern = '\\d{6}';
-                pwdInput.placeholder = translations[lang].enterPin || '••••••';
-                pwdToggleBtn.classList.remove('hidden');
-                if (pwdIcon.classList.contains('fa-eye-slash') && pwdInput.type === 'password') {
-                     pwdIcon.classList.remove('fa-eye-slash');
-                     pwdIcon.classList.add('fa-eye');
-                }
                 
-                // Unlock PIN only if fully 10 digits and starts with 6-9
-                const phoneRegex = /^[6-9]\d{9}$/;
-                if (phoneRegex.test(identifier)) {
+                if (/^[6-9]\d{9}$/.test(identifier)) {
                     pwdInput.disabled = false;
-                    document.getElementById('phone-error').classList.add('hidden');
                 } else {
                     pwdInput.disabled = true;
-                    if (identifier.length > 0) {
-                        document.getElementById('phone-error').classList.remove('hidden');
+                    if (identifier.length > 0) document.getElementById('phone-error').classList.remove('hidden');
+                }
+            } else if (isEmail) {
+                if (isAdminEmail) {
+                    document.getElementById('role-input').value = 'admin';
+                    pwdLabel.textContent = translations[lang].password;
+                    pwdInput.placeholder = translations[lang].enterPwd || '••••••••';
+                    pwdInput.removeAttribute('maxLength');
+                    pwdInput.removeAttribute('pattern');
+                    pwdInput.disabled = false;
+                } else {
+                    // Farmer Email
+                    document.getElementById('role-input').value = 'farmer';
+                    pwdLabel.textContent = translations[lang].pin;
+                    pwdInput.placeholder = translations[lang].enterPin || '••••••';
+                    pwdInput.maxLength = 6;
+                    pwdInput.pattern = '\\d{6}';
+                    
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (emailRegex.test(identifier)) {
+                        pwdInput.disabled = false;
+                    } else {
+                        pwdInput.disabled = true;
                     }
                 }
             } else {
-                pwdLabel.textContent = translations[lang].password;
-                pwdInput.type = 'password';
-                pwdInput.removeAttribute('inputMode');
-                pwdInput.removeAttribute('maxLength');
-                pwdInput.removeAttribute('pattern');
-                pwdInput.placeholder = translations[lang].enterPwd || '••••••••';
-                pwdToggleBtn.classList.remove('hidden');
-
-                // Admin email format check
-                const emailRegex = /^[a-zA-Z0-9._]+@agricare\.admin$/;
-                if (emailRegex.test(identifier)) {
-                    pwdInput.disabled = false;
-                    document.getElementById('email-error').classList.add('hidden');
-                } else {
-                    pwdInput.disabled = true;
-                    if (identifier.length > 0) {
-                        document.getElementById('email-error').classList.remove('hidden');
-                    }
-                }
+                // Unknown/Mixed
+                document.getElementById('role-input').value = 'farmer';
+                pwdInput.disabled = true;
             }
         }
 
@@ -370,13 +355,22 @@
             e.preventDefault();
             const identifier = document.getElementById('identifier-input').value.trim();
             const lang = localStorage.getItem('agricare_lang') || 'en';
-            const role = /^\d+$/.test(identifier) ? 'farmer' : 'admin';
+            const role = document.getElementById('role-input').value; // Get role from helper function logic
 
             if (role === 'farmer') {
-                const phoneRegex = /^[6-9]\d{9}$/;
-                if (!phoneRegex.test(identifier)) {
-                    document.getElementById('phone-error').classList.remove('hidden');
-                    return; // Stop form submission
+                const isNumeric = /^\d+$/.test(identifier);
+                if (isNumeric) {
+                    const phoneRegex = /^[6-9]\d{9}$/;
+                    if (!phoneRegex.test(identifier)) {
+                        document.getElementById('phone-error').classList.remove('hidden');
+                        return;
+                    }
+                } else {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(identifier)) {
+                        alert(translations[lang].emailError || 'Please enter a valid email.');
+                        return;
+                    }
                 }
 
                 // PIN validation
@@ -387,10 +381,11 @@
                     return;
                 }
             } else {
+                // Admin validation
                 const emailRegex = /^[a-zA-Z0-9._]+@agricare\.admin$/;
                 if (!emailRegex.test(identifier)) {
                     document.getElementById('email-error').classList.remove('hidden');
-                    return; // Stop form submission
+                    return;
                 }
 
                 // Admin Password validation
@@ -398,7 +393,7 @@
                 const adminRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{7,}$/;
                 if (!adminRegex.test(pwd)) {
                     document.getElementById('admin-password-error').classList.remove('hidden');
-                    return; // Stop form submission
+                    return;
                 }
             }
 

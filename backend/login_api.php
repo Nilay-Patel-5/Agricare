@@ -36,7 +36,7 @@ try {
     $userData = null;
 
     if (preg_match('/^[0-9]+$/', $identifier)) {
-        // Numeric input -> try authenticating as Farmer
+        // Numeric -> try Farmer by Phone
         if (preg_match('/^[6-9]\d{9}$/', $identifier)) {
              $stmt = $pdo->prepare("SELECT * FROM farmers WHERE phone = ?");
              $stmt->execute([$identifier]);
@@ -49,31 +49,37 @@ try {
                      'name' => $user['name'],
                      'role' => 'farmer',
                      'pref_lang' => $user['pref_lang'] ?? 'en',
-                     'district' => $user['district'],
-                     'city' => $user['city']
+                     'district' => $user['district'] ?? '',
+                     'city' => $user['city'] ?? ''
                  ];
              }
         }
-    } else {
-        // Text input -> try authenticating as Admin
-        if (preg_match('/^[a-zA-Z0-9._]+@agricare\.admin$/', $identifier)) {
-             $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = ?");
-             $stmt->execute([$identifier]);
-             $admin = $stmt->fetch();
-             
-             if ($admin && password_verify($password, $admin['password'])) {
-                 $isAuthenticated = true;
-                 $userData = [
-                     'id' => $admin['id'],
-                     'name' => $admin['name'],
-                     'role' => 'admin',
-                     'pref_lang' => 'en'
-                 ];
-             }
+    } elseif (preg_match('/^[a-zA-Z0-9._%+-]+@agricare\.admin$/', $identifier)) {
+        // Admin Domain -> try Admin
+        $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = ?");
+        $stmt->execute([$identifier]);
+        $admin = $stmt->fetch();
+        
+        if ($admin && password_verify($password, $admin['password'])) {
+            $isAuthenticated = true;
+            $userData = ['id' => $admin['id'], 'name' => $admin['name'], 'role' => 'admin', 'pref_lang' => 'en'];
+        }
+    } elseif (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+        // General Email -> try Farmer by Email
+        $stmt = $pdo->prepare("SELECT * FROM farmers WHERE email = ?");
+        $stmt->execute([$identifier]);
+        $user = $stmt->fetch();
+        
+        if ($user && password_verify($password, $user['pin'])) {
+            $isAuthenticated = true;
+            $userData = ['id' => $user['id'], 'name' => $user['name'], 'role' => 'farmer', 'pref_lang' => $user['pref_lang'] ?? 'en'];
         }
     }
 
     if ($isAuthenticated) {
+        $_SESSION['user_id'] = $userData['id'];
+        $_SESSION['user_name'] = $userData['name'];
+        $_SESSION['user_role'] = $userData['role'];
         echo json_encode(['success' => true, 'user' => $userData]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Invalid credentials.']);
