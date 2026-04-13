@@ -384,6 +384,10 @@
                     <ul class="space-y-4 text-gray-400">
                         <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_advisory">Crop
                                 Advisory</a></li>
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="calendar">Crop
+                                Calendar</a></li>
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="subsidies">Government
+                                Subsidies</a></li>
                         <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
                                 Disease Identification</a></li>
                         <li><a href="market.php" class="hover:text-emerald-400 transition-colors"

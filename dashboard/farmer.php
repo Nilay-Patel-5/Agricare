@@ -15,6 +15,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="../frontend/js/translations.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -350,9 +351,12 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
             <div class="space-y-6 mb-8">
                 <div class="flex flex-wrap gap-2">
                     <button onclick="filterSubsidies('All')" data-cat="All" class="subsidy-tab bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-95" data-lang="cat_all">All Schemes</button>
-                    <button onclick="filterSubsidies('Income Support')" data-cat="Income Support" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_income">Income Support</button>
                     <button onclick="filterSubsidies('Irrigation')" data-cat="Irrigation" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_irrigation">Irrigation</button>
                     <button onclick="filterSubsidies('Equipment')" data-cat="Equipment" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_equipment">Equipment</button>
+                    <button onclick="filterSubsidies('Training')" data-cat="Training" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_training">Training</button>
+                    <button onclick="filterSubsidies('Seed & Fertilizer')" data-cat="Seed & Fertilizer" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_seeds">Seed & Fertilizer</button>
+                    <button onclick="filterSubsidies('Financial')" data-cat="Financial" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_financial">Financial</button>
+                    <button onclick="filterSubsidies('Insurance')" data-cat="Insurance" class="subsidy-tab bg-white text-gray-600 px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all active:scale-95 border border-gray-100" data-lang="cat_insurance">Insurance</button>
                 </div>
 
                 <div class="flex flex-col md:flex-row gap-4">
@@ -567,7 +571,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
             hi: ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर']
         };
 
-        const translations = {
+        const dashboardTranslations = {
             en: {
                 appName: 'AgriCare',
                 farmerPortal: 'Farmer Portal',
@@ -612,9 +616,12 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 impact: 'Impact',
                 high_yield: 'High Yield',
                 cat_all: 'All Schemes',
-                cat_income: 'Income Support',
                 cat_irrigation: 'Irrigation',
                 cat_equipment: 'Equipment',
+                cat_training: 'Training',
+                cat_seeds: 'Seed & Fertilizer',
+                cat_financial: 'Financial',
+                cat_insurance: 'Insurance',
                 day: 'Day'
             },
             gu: {
@@ -661,9 +668,12 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 impact: 'અસર',
                 high_yield: 'વધુ ઉપજ',
                 cat_all: 'બધી યોજનાઓ',
-                cat_income: 'આવક સહાય',
                 cat_irrigation: 'સિંચાઈ',
                 cat_equipment: 'સાધનો',
+                cat_training: 'તાલીમ',
+                cat_seeds: 'બિયારણ અને ખાતર',
+                cat_financial: 'નાણાકીય સહાય',
+                cat_insurance: 'વીમો',
                 day: 'દિવસ'
             },
             hi: {
@@ -710,12 +720,24 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 impact: 'प्रभाव',
                 high_yield: 'उच्च उपज',
                 cat_all: 'सभी योजनाएं',
-                cat_income: 'आय सहायता',
                 cat_irrigation: 'सिंचाई',
                 cat_equipment: 'उपकरण',
+                cat_training: 'प्रशिक्षण',
+                cat_insurance: 'बीमा',
                 day: 'दिन'
             }
         };
+
+        // Merge dashboard-specific translations into the global dictionary (from translations.js)
+        if (typeof translations !== 'undefined') {
+            for (const lang in dashboardTranslations) {
+                if (!translations[lang]) translations[lang] = {};
+                Object.assign(translations[lang], dashboardTranslations[lang]);
+            }
+        } else {
+            // Fallback if translations.js is somehow not loaded
+            window.translations = dashboardTranslations;
+        }
 
         let currentLang = localStorage.getItem('agricare_lang') || 'en';
         let activeCropIndex = 0;
@@ -996,7 +1018,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                     <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-16 -mt-16 opacity-50 transition-transform group-hover:scale-110"></div>
                     
                     <div class="flex justify-between items-start mb-6 relative z-10">
-                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">${translations[currentLang][{'All': 'cat_all', 'Income Support': 'cat_income', 'Irrigation': 'cat_irrigation', 'Equipment': 'cat_equipment'}[s.category]] || s.category}</span>
+                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">${translations[currentLang][{'All': 'cat_all', 'Irrigation': 'cat_irrigation', 'Equipment': 'cat_equipment', 'Training': 'cat_training', 'Seed & Fertilizer': 'cat_seeds', 'Financial': 'cat_financial', 'Insurance': 'cat_insurance'}[s.category]] || s.category}</span>
                         <div class="flex items-center gap-1.5">
                             <span class="relative flex h-2 w-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -1006,13 +1028,13 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                         </div>
                     </div>
 
-                    <h4 class="text-xl font-black text-gray-900 mb-3 leading-tight group-hover:text-emerald-700 transition-colors">${s[`name_${currentLang}`] || s.name}</h4>
-                    <p class="text-sm text-gray-500 font-medium line-clamp-2 mb-6 leading-relaxed">${s[`description_${currentLang}`] || s.description}</p>
+                    <h4 class="text-xl font-black text-gray-900 mb-3 leading-tight group-hover:text-emerald-700 transition-colors">${s[`name_${currentLang}`] || (translations[currentLang] && translations[currentLang][s.name]) || s.name}</h4>
+                    <p class="text-sm text-gray-500 font-medium line-clamp-2 mb-6 leading-relaxed">${s[`description_${currentLang}`] || (translations[currentLang] && translations[currentLang][s.description]) || s.description}</p>
                     
                     <div class="space-y-3 mb-8">
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
                             <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${translations[currentLang].benefit_label || 'Key Benefit'}</span>
-                            <span class="text-xs font-bold text-gray-700">${s[`benefits_${currentLang}`] || s.benefits || '--'}</span>
+                            <span class="text-xs font-bold text-gray-700">${s[`benefits_${currentLang}`] || (translations[currentLang] && translations[currentLang][s.benefits]) || s.benefits || '--'}</span>
                         </div>
                     </div>
 

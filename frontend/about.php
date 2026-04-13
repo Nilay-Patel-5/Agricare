@@ -173,7 +173,7 @@
 
     <!-- Footer -->
     <footer id="contact" class="bg-gray-900 text-white pt-20 pb-10">
-        <div class="max-w-7xl mx-auto px-6 lg:px-12">
+        <div class="desktop-container px-6 lg:px-12">
             <div class="grid lg:grid-cols-4 gap-12 mb-16">
                 <div class="lg:col-span-2">
                     <div class="flex items-center gap-4 mb-6">
@@ -205,6 +205,10 @@
                     <ul class="space-y-4 text-gray-400">
                         <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_advisory">Crop
                                 Advisory</a></li>
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="calendar">Crop
+                                Calendar</a></li>
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="subsidies">Government
+                                Subsidies</a></li>
                         <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
                                 Disease Identification</a></li>
                         <li><a href="market.php" class="hover:text-emerald-400 transition-colors"

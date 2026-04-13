@@ -370,9 +370,10 @@
                 for the needs of Indian agriculture.</p>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center max-w-[1100px] mx-auto overflow-visible">
+            <!-- Row 1: 3 Columns -->
             <a href="disease_detection.php"
-                class="bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
+                class="w-full max-w-[320px] lg:w-[320px] h-full flex flex-col bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
                 <div
                     class="w-20 h-20 bg-emerald-100 rounded-2xl flex items-center justify-center text-4xl text-emerald-600 mb-8 group-hover:scale-110 transition-transform">
                     <i class="fas fa-microscope"></i>
@@ -383,7 +384,7 @@
             </a>
 
             <a href="weather.php"
-                class="bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
+                class="w-full max-w-[320px] lg:w-[320px] h-full flex flex-col bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
                 <div
                     class="w-20 h-20 bg-orange-100 rounded-2xl flex items-center justify-center text-4xl text-orange-600 mb-8 group-hover:scale-110 transition-transform">
                     <i class="fas fa-cloud-sun-rain"></i>
@@ -394,7 +395,7 @@
             </a>
 
             <a href="market.php"
-                class="bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
+                class="w-full max-w-[320px] lg:w-[320px] h-full flex flex-col bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
                 <div
                     class="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center text-4xl text-blue-600 mb-8 group-hover:scale-110 transition-transform">
                     <i class="fas fa-store"></i>
@@ -402,6 +403,27 @@
                 <h3 class="text-2xl font-bold text-gray-800 mb-4" data-lang="market_intel">Mandi Prices</h3>
                 <p class="text-gray-600 leading-relaxed" data-lang="market-desc">Direct APMC connection to find the best
                     selling price for your crops near you.</p>
+            </a>
+
+            <!-- Row 2: 4th Card in Col 1, 5th Card in Col 3 (Col 2 Empty) -->
+            <a href="login.php"
+                class="w-full max-w-[320px] lg:w-[320px] h-full flex flex-col lg:col-start-1 bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
+                <div
+                    class="w-20 h-20 bg-purple-100 rounded-2xl flex items-center justify-center text-4xl text-purple-600 mb-8 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4" data-lang="calendar">પાક કેલેન્ડર</h3>
+                <p class="text-gray-600 leading-relaxed" data-lang="calendar-desc">તમારા સ્થાન અને ઋતુના આધારે વ્યક્તિગત પાક સલાહ અને વાવણીનું સમયપત્રક.</p>
+            </a>
+
+            <a href="login.php"
+                class="w-full max-w-[320px] lg:w-[320px] h-full flex flex-col lg:col-start-3 bg-white p-10 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group">
+                <div
+                    class="w-20 h-20 bg-yellow-100 rounded-2xl flex items-center justify-center text-4xl text-yellow-600 mb-8 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-hand-holding-dollar"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4" data-lang="subsidies">સરકારી સબસિડી</h3>
+                <p class="text-gray-600 leading-relaxed" data-lang="subsidies-desc">સરકાર તરફથી નવીનતમ કૃષિ યોજનાઓ અને નાણાકીય સહાય વિશેની માહિતી.</p>
             </a>
         </div>
     </section>
@@ -439,6 +461,10 @@
                     <ul class="space-y-4 text-gray-400">
                         <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_advisory">Crop
                                 Advisory</a></li>
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="calendar">Crop
+                                Calendar</a></li>
+                        <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="subsidies">Government
+                                Subsidies</a></li>
                         <li><a href="login.php" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
                                 Disease Identification</a></li>
                         <li><a href="market.php" class="hover:text-emerald-400 transition-colors"
