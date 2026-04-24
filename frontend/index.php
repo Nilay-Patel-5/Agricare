@@ -422,7 +422,7 @@
                     class="w-20 h-20 bg-yellow-100 rounded-2xl flex items-center justify-center text-4xl text-yellow-600 mb-8 group-hover:scale-110 transition-transform">
                     <i class="fas fa-hand-holding-dollar"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-4" data-lang="subsidies">સરકારી સબસિડી</h3>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4" data-lang="subsidies">સરકારી સહાય</h3>
                 <p class="text-gray-600 leading-relaxed" data-lang="subsidies-desc">સરકાર તરફથી નવીનતમ કૃષિ યોજનાઓ અને નાણાકીય સહાય વિશેની માહિતી.</p>
             </a>
         </div>

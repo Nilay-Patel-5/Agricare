@@ -632,7 +632,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 marketPrices: 'મંડીના ભાવો',
                 weather: 'હવામાન આગાહી',
                 disease: 'રોગ નિદાન',
-                subsidies: 'સરકારી સબસિડી',
+                subsidies: 'સરકારી સહાય',
                 logout: 'લોગઆઉટ',
                 profile: 'મારી પ્રોફાઇલ',
                 headerTitle: 'મોસમી પ્રવૃત્તિ યોજના',
@@ -1032,9 +1032,9 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                     <p class="text-sm text-gray-500 font-medium line-clamp-2 mb-6 leading-relaxed">${s[`description_${currentLang}`] || (translations[currentLang] && translations[currentLang][s.description]) || s.description}</p>
                     
                     <div class="space-y-3 mb-8">
-                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
-                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${translations[currentLang].benefit_label || 'Key Benefit'}</span>
-                            <span class="text-xs font-bold text-gray-700">${s[`benefits_${currentLang}`] || (translations[currentLang] && translations[currentLang][s.benefits]) || s.benefits || '--'}</span>
+                        <div class="flex flex-col gap-1.5 p-4 bg-gray-50 rounded-2xl border border-gray-100/50">
+                            <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">${translations[currentLang].benefit_label || 'Key Benefit'}</span>
+                            <span class="text-sm font-bold text-gray-800 leading-tight">${s[`benefits_${currentLang}`] || (translations[currentLang] && translations[currentLang][s.benefits]) || s.benefits || '--'}</span>
                         </div>
                     </div>
 
@@ -1102,6 +1102,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                     const userData = JSON.parse(sessionStorage.getItem('agricare_user'));
                     const fd = new FormData();
                     fd.append('image', file);
+                    fd.append('lang', currentLang);
                     if (userData && userData.id) fd.append('user_id', userData.id);
 
                     const res = await fetch(AI_PREDICT_ENDPOINT, {

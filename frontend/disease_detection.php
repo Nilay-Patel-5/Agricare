@@ -450,7 +450,7 @@ exit;
                 tagline: "ગુજરાતનું સ્માર્ટ કૃષિ પ્લેટફોર્મ",
                 home: "🏠 મુખ્ય",
                 market: "📈 બજાર",
-                subsidies: "💰 સબસિડી",
+                subsidies: "💰 સહાય",
                 weather: "🌤️ હવામાન",
                 contact: "ℹ️ પરિચય",
                 ai_powered: "AI વિઝન સંચાલિત",

@@ -258,7 +258,7 @@ require_once __DIR__ . '/../backend/db.php';
                 menu: 'મેનુ',
                 cropCalendar: 'પાક કેલેન્ડર',
                 disease: 'રોગ નિદાન',
-                subsidies: 'સરકારી સબસિડી',
+                subsidies: 'સરકારી સહાય',
                 profile: 'મારી પ્રોફાઇલ',
                 logout: 'લોગઆઉટ',
                 profileHeader: 'પ્રોફાઇલ સેટિંગ્સ',

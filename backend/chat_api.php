@@ -16,6 +16,7 @@ set_error_handler(static function (int $severity, string $message, string $file,
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
+require_once __DIR__ . '/env.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/ai/chat_context.php';
 require_once __DIR__ . '/ai/gemini.php';
@@ -46,7 +47,7 @@ function chat_detect_intents(string $message, bool $hasImage): array
     $text = mb_strtolower($message);
 
     $market = preg_match('/\b(market|mandi|price|prices|rate|rates|apmc|sell|selling|મંડી|ભાવ|मंडी)\b/u', $text) === 1;
-    $subsidy = preg_match('/\b(subsidy|subsidies|scheme|schemes|loan|grant|benefit|benefits|irrigation|સબસિડી|યોજના|योजना)\b/u', $text) === 1;
+    $subsidy = preg_match('/\b(subsidy|subsidies|scheme|schemes|loan|grant|benefit|benefits|irrigation|સબસિડી|સહાય|યોજના|योजना)\b/u', $text) === 1;
     $schedule = preg_match('/\b(schedule|calendar|task|tasks|when|sow|plant|watering|fertilizer|spray|harvest|પત્રક|कैलेंडर)\b/u', $text) === 1;
     $pesticide = $hasImage || preg_match('/\b(pest|disease|pesticide|pesticides|insect|fungus|fungal|spray|treatment|જીવાત|રોગ|कीट)\b/u', $text) === 1;
     $shop = preg_match('/\b(shop|shops|store|stores|buy|purchase|dealer|agri-shop|agriculture shop|locate|near me|nearby|દુકાન|માર્કેટ|દુકાનો|दुकान)\b/u', $text) === 1;
@@ -338,6 +339,8 @@ Rules: Be brief, practical, and action-oriented. Use the provided farm data firs
         $provider = 'failsafe';
         $modelUsed = 'hardcoded-agricultural-logic';
         
+        file_put_contents(__DIR__ . '/chat_errors.log', date('[Y-m-d H:i:s] ') . 'Providers failed: ' . implode(', ', $providerErrors) . "\n", FILE_APPEND);
+
         $fallbacks = [
             'en' => [
                 "I'm sorry, I'm having a bit of trouble connecting to my AI core right now. However, I've noted your interest in {$searchCrop} in {$searchDistrict}. Please try again in 30 seconds, or check the 'Mandi Prices' and 'Subsidies' sections in the menu for direct data.",

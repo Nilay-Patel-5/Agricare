@@ -5,7 +5,6 @@
     const sendBtn = document.getElementById('sendBtn');
     const errorEl = document.getElementById('chatError');
     const profileSummaryEl = document.getElementById('profileSummary');
-    const modelBadgeEl = document.getElementById('modelBadge');
     const clearChatBtn = document.getElementById('clearChatBtn');
     const promptButtons = document.querySelectorAll('.prompt-btn');
 
@@ -327,7 +326,7 @@
 
     function getStoredUser() {
         try {
-            return JSON.parse(sessionStorage.getItem('agricare_user') || 'null') || {};
+            return JSON.parse(sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user') || 'null') || {};
         } catch (err) {
             return {};
         }
@@ -368,6 +367,24 @@
         return escapeHtml(text).replace(/\n/g, '<br>');
     }
 
+    function parseMarkdown(text) {
+        if (!text) return '';
+        let html = escapeHtml(text);
+        
+        // Bold: **text** -> <strong>text</strong>
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>');
+        
+        // Italic: *text* -> <em>text</em>
+        html = html.replace(/(?:^|[^\*])\*([^\*]+)\*(?=[^\*]|$)/g, function(match, p1) {
+            return match.replace('*' + p1 + '*', '<em>' + p1 + '</em>');
+        });
+        
+        // Bullet points: * or - at start of line
+        html = html.replace(/(?:^|\n)(\s*)[\*\-]\s+(.*)/g, '\n$1• $2');
+        
+        return html.replace(/\n/g, '<br>');
+    }
+
     function setError(message) {
         if (!message) {
             errorEl.classList.add('hidden');
@@ -395,7 +412,7 @@
             wrapper.innerHTML = `
                 <div class="max-w-3xl w-full flex justify-end">
                     <div class="bg-emerald-600 text-white px-5 py-3 rounded-2xl max-w-[80%] md:max-w-[70%] text-[15px] leading-relaxed break-words whitespace-pre-wrap shadow-sm">
-                        ${nl2br(text)}
+                        ${parseMarkdown(text)}
                     </div>
                 </div>
             `;
@@ -407,7 +424,7 @@
                         <i class="fas fa-leaf"></i>
                     </div>
                     <div class="flex-1 text-gray-800 text-[15px] leading-relaxed break-words whitespace-pre-wrap py-1 prose">
-                        ${nl2br(text)}
+                        ${parseMarkdown(text)}
                     </div>
                 </div>
             `;
@@ -796,10 +813,6 @@
 
             speak(data.reply || '');
 
-            if (data.model) {
-                modelBadgeEl.textContent = data.model;
-            }
-
             loadSessions();
         } catch (err) {
             pendingEl.remove();
@@ -820,7 +833,6 @@
         localStorage.setItem('agricare_chat_session', created);
         messagesEl.innerHTML = '';
         renderEmptyState();
-        modelBadgeEl.textContent = 'AI model pending';
         setError('');
         clearImage();
         resetComposer();

@@ -276,13 +276,13 @@ exit;
                 logo: 'એગ્રીકેર',
                 tagline: "ગુજરાતનું સ્માર્ટ કૃષિ પ્લેટફોર્મ",
                 home: '🏠 મુખ્ય',
-                subsidies: '💰 સબસિડી',
+                subsidies: '💰 સહાય',
                 market: '📈 બજાર',
                 weather: '🌤️ હવામાન',
                 contact: 'ℹ️ પરિચય',
                 loginBtn: 'લોગિન',
                 registerBtn: 'નોંધણી',
-                subsidy_hero_title: 'તમારા માટે સરકારી <span class="text-emerald-600">સબસિડી</span>',
+                subsidy_hero_title: 'તમારા માટે સરકારી <span class="text-emerald-600">સહાય</span>',
                 subsidy_hero_desc: 'રાજ્ય અને કેન્દ્ર સરકાર દ્વારા ખેડૂતો માટે આપવામાં આવતી નવીનતમ નાણાકીય સહાય, યોજનાઓ અને લાભો શોધો.',
                 cat_all: 'તમામ યોજનાઓ',
                 cat_income: 'આવક સહાય',
@@ -297,7 +297,7 @@ exit;
                 live_status: 'ચાલુ',
                 upcoming_status: 'આગામી',
                 solutions: 'ઉકેલો',
-                sol_subsidies: 'સબસિડી પોર્ટલ',
+                sol_subsidies: 'સહાય પોર્ટલ',
                 sol_market: 'બજાર જોડાણ',
                 sol_weather: 'હવામાન સ્ટેશન',
                 location: '⚲ સ્થળ: ગુજરાત, ભારત',
@@ -410,18 +410,18 @@ exit;
                                     <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
                                         <i class="fas fa-gift"></i>
                                     </div>
-                                    <div>
-                                        <div class="text-xs font-bold text-gray-400 uppercase tracking-tighter">${translations[currentLang].benefit_label}</div>
-                                        <div class="text-sm font-bold text-gray-700">${benefit}</div>
+                                    <div class="flex flex-col gap-0.5">
+                                        <div class="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">${translations[currentLang].benefit_label}</div>
+                                        <div class="text-sm font-bold text-gray-700 leading-tight">${benefit}</div>
                                     </div>
                                 </div>
                                 <div class="flex gap-3">
                                     <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 shrink-0">
                                         <i class="fas fa-user-check"></i>
                                     </div>
-                                    <div>
-                                        <div class="text-xs font-bold text-gray-400 uppercase tracking-tighter">${translations[currentLang].eligibility_label}</div>
-                                        <div class="text-sm font-bold text-gray-700">${eligibility}</div>
+                                    <div class="flex flex-col gap-0.5">
+                                        <div class="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">${translations[currentLang].eligibility_label}</div>
+                                        <div class="text-sm font-bold text-gray-700 leading-tight">${eligibility}</div>
                                     </div>
                                 </div>
                             </div>

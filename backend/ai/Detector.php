@@ -10,12 +10,12 @@ class DiseaseDetector {
      * @param string $mimeType MIME type of the image.
      * @return array Identification data (label, plant, confidence, info).
      */
-    public static function identify(string $imagePath, string $mimeType = 'image/jpeg'): array {
+    public static function identify(string $imagePath, string $mimeType = 'image/jpeg', string $lang = 'en'): array {
         if (!ai_ensure_engine()) {
             return ['error' => 'Local AI model is not ready. Check the model file and Python setup in the ai folder.'];
         }
 
-        $data = ai_run_prediction($imagePath);
+        $data = ai_run_prediction($imagePath, $lang);
         if (!$data || isset($data['error'])) {
             return ['error' => $data['error'] ?? 'Invalid response from local AI inference'];
         }

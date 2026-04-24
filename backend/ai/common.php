@@ -141,12 +141,11 @@ function ai_ensure_engine(): bool
     return ai_is_healthy();
 }
 
-function ai_run_prediction(string $imagePath): array
+function ai_run_prediction(string $imagePath, string $lang = 'en'): array
 {
-    $resolvedImagePath = realpath($imagePath) ?: $imagePath;
-
-    if (!file_exists($resolvedImagePath)) {
-        return ['error' => 'Uploaded image file was not found.'];
+    $resolvedImagePath = realpath($imagePath);
+    if (!$resolvedImagePath) {
+        return ['error' => 'Image file not found: ' . $imagePath];
     }
 
     if (!file_exists(ai_model_path())) {
@@ -163,7 +162,7 @@ function ai_run_prediction(string $imagePath): array
     }
 
     $result = ai_run_process(
-        array_merge($python, [ai_predict_script_path(), '--image', $resolvedImagePath]),
+        array_merge($python, [ai_predict_script_path(), '--image', $resolvedImagePath, '--lang', $lang]),
         ai_root_dir(),
         120
     );

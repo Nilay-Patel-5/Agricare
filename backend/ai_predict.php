@@ -34,13 +34,14 @@ if (!isset($_FILES['image']) || !is_uploaded_file($_FILES['image']['tmp_name']))
 }
 
 $userId = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
+$lang = $_POST['lang'] ?? 'en';
 
 try {
     $mimeType = $_FILES['image']['type'] ?: 'image/jpeg';
     $pdo = null;
 
     // Use the unified AI Disease Detection folder service
-    $result = DiseaseDetector::identify($_FILES['image']['tmp_name'], $mimeType);
+    $result = DiseaseDetector::identify($_FILES['image']['tmp_name'], $mimeType, $lang);
 
     if (isset($result['error'])) {
         log_ai_error("AI Detection failed: " . $result['error']);
@@ -49,37 +50,29 @@ try {
         ai_json_error("AI System could not process your request. " . $result['error']);
     }
 
-    $lang = $_POST['lang'] ?? 'en';
     $identifiedPest = $result['label'] ?? 'Unknown';
     $identifiedPlant = $result['plant'] ?? 'Detected';
     $apiConfidence = $result['confidence'] ?? 0.0;
     $apiInfo = $result['info'] ?? [];
+    $rawDisease = $result['disease'] ?? 'unknown';
 
-    // Localized fallback strings for "Unknown" case
-    $localizedUnknown = [
-        'en' => ['label' => 'Disease not found', 'plant' => 'Unknown', 'desc' => 'No disease could be identified. Please ensure the photo is clear and contains a plant leaf.'],
-        'gu' => ['label' => 'રોગ મળ્યો નથી', 'plant' => 'અજ્ઞાત', 'desc' => 'કોઈ રોગની ઓળખ થઈ શકી નથી. કૃપા કરીને ખાતરી કરો કે ફોટો સ્પષ્ટ છે અને તેમાં છોડનું પાન છે.'],
-        'hi' => ['label' => 'रोग नहीं मिला', 'plant' => 'अज्ञात', 'desc' => 'किसी बीमारी की पहचान नहीं की जा सकी। कृपया सुनिश्चित करें कि फोटो स्पष्ट है और उसमें पौधे की पत्ती है।']
-    ];
-
-    $fallback = $localizedUnknown[$lang] ?? $localizedUnknown['en'];
-
-    // Handle unknown/low confidence results
-    if ($result['disease'] === 'unknown' || $identifiedPest === 'Unknown') {
+    // Handle unknown/low confidence results (python script sets disease to 'unknown')
+    if ($rawDisease === 'unknown') {
         echo json_encode([
-            'label' => $fallback['label'],
-            'plant' => $fallback['plant'],
+            'label' => $identifiedPest,
+            'plant' => $identifiedPlant,
             'confidence' => $apiConfidence,
             'info' => [
-                'desc' => $apiInfo['desc'] ?? $fallback['desc'],
-                'irrigation' => 'N/A',
-                'treatment' => 'N/A'
+                'desc' => $apiInfo['desc'] ?? 'Disease not found.',
+                'irrigation' => $apiInfo['irrigation'] ?? 'N/A',
+                'treatment' => $apiInfo['treatment'] ?? 'N/A'
             ]
         ]);
         exit;
     }
 
-    if ($identifiedPest === 'Healthy' || (strpos(strtolower($identifiedPest), 'healthy') !== false)) {
+    // Handle healthy plant results
+    if (strpos(strtolower($rawDisease), 'healthy') !== false) {
         echo json_encode([
             'label' => $identifiedPest,
             'plant' => $identifiedPlant,

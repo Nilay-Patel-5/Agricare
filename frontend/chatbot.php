@@ -150,12 +150,11 @@
                 <div class="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center text-white text-xs">
                     <i class="fas fa-user-tractor"></i>
                 </div>
-                <div id="profileSummary" class="truncate flex-1 text-xs text-gray-600" data-lang="loadingProfile">Loading profile...</div>
+                <div id="profileSummary" class="truncate flex-1 text-xs text-gray-600">Loading profile...</div>
             </div>
             <a href="../dashboard/farmer.php" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-emerald-700 transition-colors">
                 <i class="fas fa-arrow-left text-xs"></i> <span data-lang="toDashboard">To Dashboard</span>
             </a>
-            <p id="modelBadge" class="px-3 py-1 text-[10px] mx-auto" data-lang="aiModelPending">AI model pending</p>
         </div>
     </aside>
 
@@ -270,7 +269,7 @@
                 newChat: 'નવી ચેટ',
                 findShops: 'નજીકની દુકાનો શોધો',
                 mandiPrices: 'મંડી ભાવ',
-                subsidies: 'સબસિડી',
+                subsidies: 'સહાય',
                 loadingProfile: 'પ્રોફાઇલ લોડ થઈ રહ્યો છે...',
                 toDashboard: 'ડૅશબોર્ડ પર જાઓ',
                 aiModelPending: 'AI મોડેલ પ્રતિક્ષા',
@@ -279,7 +278,7 @@
                 inputPlaceholder: 'AgriCare સહાયકને સંદેશ...',
                 disclaimer: 'AgriBot ભૂલ કરી શકે છે. કૃષિ માહિતી ચકાસો.',
                 welcomeTitle: 'હું આજે ખેતીમાં કઈ રીતે મદદ કરી શકું?',
-                welcomeSubtitle: 'સબસિડી, બજાર ભાવ, દૈનિક કાર્ય વિશે પૂછો અથવા AI ઓળખ માટે જીવાત ફોટો અપલોડ કરો.',
+                welcomeSubtitle: 'સહાય, બજાર ભાવ, દૈનિક કાર્ય વિશે પૂછો અથવા AI ઓળખ માટે જીવાત ફોટો અપલોડ કરો.',
                 thinking: 'વિચારી રહ્યો છું...',
                 gettingLocation: '📍 સ્થાન મેળવી રહ્યા છીએ અને નજીકની દુકાનો શોધી રહ્યા છીએ...',
                 noHistoryYet: 'હજી કોઈ ઇતિહાસ નથી',
@@ -292,7 +291,7 @@
                 searchMoreShops: '🔍 Google Maps પર વધુ દુકાન શોધો',
                 findShopsMsg: 'નજીકની કૃષિ દુકાનો શોધો 🗺️',
                 mandiPrompt: 'મારા વિસ્તાર માટે આજના મંડી ભાવ બતાવો.',
-                subsidyPrompt: 'સરકારી સબસિડી અને યોજનાઓની નવીનતમ માહિતી આપો.',
+                subsidyPrompt: 'સરકારી સહાય અને યોજનાઓની નવીનતમ માહિતી આપો.',
             },
             hi: {
                 newChat: 'नई चैट',
@@ -359,7 +358,7 @@
         (function () {
             let lang = 'en';
             try {
-                const user = JSON.parse(sessionStorage.getItem('agricare_user') || 'null');
+                const user = JSON.parse(sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user') || 'null');
                 lang = (user && user.pref_lang) || localStorage.getItem('agricare_lang') || 'en';
             } catch (e) {}
             if (!['en', 'gu', 'hi'].includes(lang)) lang = 'en';
