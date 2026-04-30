@@ -28,7 +28,7 @@ try {
 
     $pdo = Database::getConnection();
     $today = date('d/m/Y');
-    $syncMetaPath = __DIR__ . '/last_market_sync.json';
+    $syncMetaPath = __DIR__ . '/cache/last_market_sync.json';
     $syncMeta = ['synced_at' => null, 'target_date' => null];
 
     if (is_file($syncMetaPath)) {
@@ -38,7 +38,7 @@ try {
         }
     }
 
-    $latestLocalDate = $pdo->query("SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY id DESC LIMIT 1")->fetchColumn();
+    $latestLocalDate = $pdo->query("SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY TO_DATE(arrival_date, 'DD/MM/YYYY') DESC LIMIT 1")->fetchColumn();
     $lastSyncTs = !empty($syncMeta['synced_at']) ? strtotime((string) $syncMeta['synced_at']) : 0;
     $shouldSync = ($latestLocalDate !== $today || !$lastSyncTs || (time() - $lastSyncTs) > 3600); // 1 hour sync gate
 
@@ -60,7 +60,7 @@ try {
     $markets = $input['markets'] ?? [];
     $commodities = $input['commodities'] ?? [];
 
-    $dateQuery = "SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY id DESC LIMIT 1";
+    $dateQuery = "SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY TO_DATE(arrival_date, 'DD/MM/YYYY') DESC LIMIT 1";
     $dateStmt = $pdo->prepare($dateQuery);
     $dateStmt->execute();
     $latestDateResult = $dateStmt->fetch();
