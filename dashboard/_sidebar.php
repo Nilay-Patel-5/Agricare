@@ -29,6 +29,7 @@ function navLink($href, $icon, $label, $current) {
         <?= navLink('admin_subsidies.php', 'hand-holding-heart',  'Subsidies',        $currentPage) ?>
         <?= navLink('admin_market.php',    'arrow-trend-up',      'Market Data',      $currentPage) ?>
         <?= navLink('admin_pesticides.php','vial-virus',          'Pesticides',       $currentPage) ?>
+        <?= navLink('admin_feedback.php',  'comment-dots',        'User Feedback',    $currentPage) ?>
     </nav>
 
     <div class="p-6 border-t border-slate-900">

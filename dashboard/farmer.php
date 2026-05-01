@@ -129,7 +129,12 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 <i class="fas fa-hand-holding-dollar w-5 text-center"></i>
                 <span data-lang="subsidies">Government Subsidies</span>
             </a>
-            <a href="profile.php" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
+            <a href="#" onclick="switchModule('feedback', this)"
+                class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
+                <i class="fas fa-comment-dots w-5 text-center"></i>
+                <span data-lang="feedback_nav">Feedback</span>
+            </a>
+            <a href="#" onclick="switchModule('profile', this)" class="sidebar-link flex items-center gap-3 px-6 py-3 text-gray-600">
                 <i class="fas fa-user-circle w-5 text-center"></i>
                 <span data-lang="profile">My Profile</span>
             </a>
@@ -156,7 +161,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 </h2>
             </div>
 
-            <a href="profile.php" class="flex items-center gap-4 group hover:bg-emerald-50 py-1.5 px-3 rounded-2xl transition-all border border-transparent hover:border-emerald-100">
+            <a href="#" onclick="switchModule('profile')" class="flex items-center gap-4 group hover:bg-emerald-50 py-1.5 px-3 rounded-2xl transition-all border border-transparent hover:border-emerald-100">
                 <p id="userNameDisplay" class="text-sm font-bold text-gray-800 group-hover:text-emerald-700">Farmer User</p>
                 <div class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-bold border-2 border-white shadow-sm group-hover:scale-110 transition-transform">
                     <i class="fas fa-user"></i>
@@ -373,6 +378,197 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 <div class="col-span-full py-20 text-center">
                     <i class="fas fa-spinner fa-spin text-3xl text-emerald-600 mb-4"></i>
                     <p class="font-bold text-gray-500">Retrieving schemes...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module: Feedback -->
+        <div id="module-feedback" class="module-view hidden flex-1 overflow-y-auto px-6 lg:px-10 py-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="mb-10 text-center">
+                    <h3 class="text-4xl font-black text-gray-900 mb-4" data-lang="feedback_title">Send Feedback</h3>
+                    <p class="text-lg text-gray-600" data-lang="feedback_subtitle">Your feedback helps us improve AgriCare for all farmers.</p>
+                </div>
+
+                <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
+                    <form id="feedbackForm" onsubmit="submitFeedback(event)" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2" data-lang="feedback_subject_label">Subject</label>
+                            <input type="text" id="feedbackSubject" required
+                                class="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                                data-placeholder="feedback_subject_ph"
+                                placeholder="e.g., App Improvement">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2" data-lang="feedback_rating_label">Rating</label>
+                            <div class="flex flex-wrap gap-4">
+                                <input type="radio" id="rating5" name="rating" value="5" class="hidden" checked>
+                                <input type="radio" id="rating4" name="rating" value="4" class="hidden">
+                                <input type="radio" id="rating3" name="rating" value="3" class="hidden">
+                                <input type="radio" id="rating2" name="rating" value="2" class="hidden">
+                                <input type="radio" id="rating1" name="rating" value="1" class="hidden">
+
+                                <div class="flex flex-col items-center gap-1 group cursor-pointer" onclick="selectRating(5)">
+                                    <div id="star-box-5" class="rating-star-box w-12 h-12 flex items-center justify-center rounded-xl bg-emerald-500 text-white transition-all shadow-sm">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="rating-label text-[9px] font-black text-gray-400 uppercase tracking-tighter" data-lang="rating_5">Excellent</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1 group cursor-pointer" onclick="selectRating(4)">
+                                    <div id="star-box-4" class="rating-star-box w-12 h-12 flex items-center justify-center rounded-xl bg-gray-50 text-gray-300 transition-all shadow-sm">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="rating-label text-[9px] font-black text-gray-400 uppercase tracking-tighter" data-lang="rating_4">Good</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1 group cursor-pointer" onclick="selectRating(3)">
+                                    <div id="star-box-3" class="rating-star-box w-12 h-12 flex items-center justify-center rounded-xl bg-gray-50 text-gray-300 transition-all shadow-sm">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="rating-label text-[9px] font-black text-gray-400 uppercase tracking-tighter" data-lang="rating_3">Average</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1 group cursor-pointer" onclick="selectRating(2)">
+                                    <div id="star-box-2" class="rating-star-box w-12 h-12 flex items-center justify-center rounded-xl bg-gray-50 text-gray-300 transition-all shadow-sm">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="rating-label text-[9px] font-black text-gray-400 uppercase tracking-tighter" data-lang="rating_2">Poor</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1 group cursor-pointer" onclick="selectRating(1)">
+                                    <div id="star-box-1" class="rating-star-box w-12 h-12 flex items-center justify-center rounded-xl bg-gray-50 text-gray-300 transition-all shadow-sm">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span class="rating-label text-[9px] font-black text-gray-400 uppercase tracking-tighter" data-lang="rating_1">Bad</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2" data-lang="feedback_message_label">Your Message</label>
+                            <textarea id="feedbackMessage" rows="5" required
+                                class="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                                data-placeholder="feedback_message_ph"
+                                placeholder="Describe your experience or suggest features..."></textarea>
+                        </div>
+                        <button type="submit" id="feedbackSubmitBtn"
+                            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3">
+                            <i class="fas fa-paper-plane"></i>
+                            <span data-lang="feedback_submit">Submit Feedback</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module: Profile -->
+        <div id="module-profile" class="module-view hidden flex-1 overflow-y-auto px-6 lg:px-10 py-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-8 text-center lg:text-left">
+                    <h2 class="text-3xl font-black text-gray-900 mb-2" data-lang="profileHeader">Profile Settings</h2>
+                    <p class="text-gray-600 font-medium" data-lang="profileSubheader">Manage your account information and preferences.</p>
+                </div>
+
+                <!-- Display Mode -->
+                <div id="profile-view-mode" class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden mb-8">
+                    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-32 relative">
+                        <div class="absolute -bottom-12 left-10">
+                            <div class="w-24 h-24 bg-white rounded-3xl shadow-xl flex items-center justify-center text-emerald-600 text-4xl font-black">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-16 pb-8 px-10">
+                        <div class="flex flex-wrap justify-between items-start gap-4 mb-10">
+                            <div>
+                                <h3 id="profile-display-name" class="text-3xl font-black text-gray-900 mb-1">Loading...</h3>
+                                <p class="text-sm font-bold text-emerald-600 uppercase tracking-widest" data-lang="farmerPortal">Farmer Portal</p>
+                            </div>
+                            <button onclick="toggleProfileMode('edit')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-2xl font-bold text-sm shadow-lg shadow-emerald-200 transition-all active:scale-95 flex items-center gap-2">
+                                <i class="fas fa-edit"></i> <span data-lang="editProfile">Edit Profile</span>
+                            </button>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-lang="phoneNumber">Phone Number</p>
+                                    <p id="display-phone" class="text-gray-800 font-bold">--</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-lang="emailAddress">Email Address</p>
+                                    <p id="display-email" class="text-gray-800 font-bold">--</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-lang="preferredLang">Preferred Language</p>
+                                    <p id="display-lang" class="text-gray-800 font-bold">--</p>
+                                </div>
+                            </div>
+                            <div class="space-y-6">
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-lang="district">District</p>
+                                    <p id="display-district" class="text-gray-800 font-bold">--</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-lang="city">City / Village</p>
+                                    <p id="display-city" class="text-gray-800 font-bold">--</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" data-lang="pincode">Pincode</p>
+                                    <p id="display-pincode" class="text-gray-800 font-bold">--</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <div id="profile-edit-mode" class="hidden bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-10 mb-8">
+                    <form id="profile-form" onsubmit="handleProfileUpdate(event)" class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1" data-lang="fullName">Full Name</label>
+                                <input type="text" name="name" id="input-name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-bold text-gray-800">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1" data-lang="emailAddress">Email Address</label>
+                                <input type="email" name="email" id="input-email" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-bold text-gray-800">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1" data-lang="phoneNumber">Phone Number</label>
+                                <input type="tel" name="phone" id="input-phone" pattern="\d{10}" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-bold text-gray-800">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1" data-lang="preferredLang">Preferred Language</label>
+                                <select name="pref_lang" id="input-lang" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-bold text-gray-800 appearance-none">
+                                    <option value="en">English</option>
+                                    <option value="gu">ગુજરાતી (Gujarati)</option>
+                                    <option value="hi">हिन्दी (Hindi)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1" data-lang="district">District</label>
+                                <select name="district" id="input-district" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-bold text-gray-800">
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1" data-lang="city">City / Village</label>
+                                <input type="text" name="city" id="input-city" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-bold text-gray-800">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1" data-lang="pincode">Pincode</label>
+                                <input type="text" name="pincode" id="input-pincode" pattern="\d{6}" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-bold text-gray-800">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1" data-lang="changePin">Change PIN (Empty to keep)</label>
+                                <input type="password" name="pin" id="input-pin" pattern="\d{6}" maxlength="6" placeholder="••••••" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all outline-none font-bold text-gray-800">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <button type="submit" id="profile-save-btn" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3">
+                                <i class="fas fa-check-circle"></i> <span data-lang="saveChanges">Save Changes</span>
+                            </button>
+                            <button type="button" onclick="toggleProfileMode('view')" class="px-8 bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold rounded-2xl transition-all" data-lang="cancel">Cancel</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -596,7 +792,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 model_confidence: 'Scan Accuracy',
                 irrigation: 'Watering Plan',
                 treatment: 'Medication',
-                awaiting_scan: 'Scanning for Data...',
+                awaiting_scan: 'Awaiting Upload',
                 status_online: 'AI ONLINE',
                 status_offline: 'AI OFFLINE',
                 subsidy_hero_desc: 'Discover the latest financial aids, schemes, and benefits provided by the state and central government for farmers.',
@@ -622,7 +818,21 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 cat_seeds: 'Seed & Fertilizer',
                 cat_financial: 'Financial',
                 cat_insurance: 'Insurance',
-                day: 'Day'
+                day: 'Day',
+                feedback_nav: 'Feedback',
+                feedback_title: 'Send Feedback',
+                feedback_subtitle: 'Your feedback helps us improve AgriCare for all farmers.',
+                feedback_subject_label: 'Subject',
+                feedback_rating_label: 'Overall Rating',
+                feedback_message_label: 'Your Message',
+                feedback_submit: 'Submit Feedback',
+                feedback_subject_ph: 'e.g., App Improvement',
+                feedback_message_ph: 'Describe your experience or suggest features...',
+                rating_5: 'Excellent',
+                rating_4: 'Good',
+                rating_3: 'Average',
+                rating_2: 'Poor',
+                rating_1: 'Bad'
             },
             gu: {
                 appName: 'એગ્રીકેર',
@@ -648,7 +858,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 model_confidence: 'ચોકસાઈ',
                 irrigation: 'પિયત યોજના',
                 treatment: 'સારવાર',
-                awaiting_scan: 'ડેટા સ્કેન કરી રહ્યા છીએ...',
+                awaiting_scan: 'અપલોડની રાહ જોઈ રહ્યા છીએ',
                 status_online: 'AI ઓનલાઇન',
                 status_offline: 'AI ઓફલાઇન',
                 subsidy_hero_desc: 'તમારી કૃષિ જરૂરિયાતો માટે ઉપલબ્ધ સરકારી સહાય અને યોજનાઓ વિશે જાણો.',
@@ -674,7 +884,21 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 cat_seeds: 'બિયારણ અને ખાતર',
                 cat_financial: 'નાણાકીય સહાય',
                 cat_insurance: 'વીમો',
-                day: 'દિવસ'
+                day: 'દિવસ',
+                feedback_nav: 'પ્રતિસાદ',
+                feedback_title: 'પ્રતિસાદ મોકલો',
+                feedback_subtitle: 'તમારો પ્રતિસાદ અમને એગ્રીકેરને સુધારવામાં મદદ કરે છે.',
+                feedback_subject_label: 'વિષય',
+                feedback_rating_label: 'રેટિંગ',
+                feedback_message_label: 'તમારો સંદેશ',
+                feedback_submit: 'પ્રતિસાદ સબમિટ કરો',
+                feedback_subject_ph: 'દા.ત., એપ્લિકેશન સુધારો',
+                feedback_message_ph: 'તમારા અનુભવનું વર્ણન કરો અથવા સુવિધાઓ સૂચવો...',
+                rating_5: 'ઉત્તમ',
+                rating_4: 'સારું',
+                rating_3: 'સાધારણ',
+                rating_2: 'નબળું',
+                rating_1: 'ખરાબ'
             },
             hi: {
                 appName: 'एग्रीकेयर',
@@ -700,7 +924,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 model_confidence: 'स्कैन सटीकता',
                 irrigation: 'सिंचाई योजना',
                 treatment: 'उपचार',
-                awaiting_scan: 'डेटा स्कैन हो रहा है...',
+                awaiting_scan: 'अपलोड की प्रतीक्षा है',
                 status_online: 'AI ऑनलाइन',
                 status_offline: 'AI ऑफलाइन',
                 subsidy_hero_desc: 'अपनी कृषि आवश्यकताओं के लिए उपलब्ध सरकारी सहायता और योजनाओं के बारे में जानें।',
@@ -724,7 +948,21 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 cat_equipment: 'उपकरण',
                 cat_training: 'प्रशिक्षण',
                 cat_insurance: 'बीमा',
-                day: 'दिन'
+                day: 'दिन',
+                feedback_nav: 'फीडबैक',
+                feedback_title: 'फीडबैक भेजें',
+                feedback_subtitle: 'आपकी प्रतिक्रिया हमें एग्रीकेयर को बेहतर बनाने में मदद करती है।',
+                feedback_subject_label: 'विषय',
+                feedback_rating_label: 'रेटिंग',
+                feedback_message_label: 'आपका संदेश',
+                feedback_submit: 'फीडबैक भेजें',
+                feedback_subject_ph: 'जैसे, ऐप में सुधार',
+                feedback_message_ph: 'अपने अनुभव का वर्णन करें या सुविधाओं का सुझाव दें...',
+                rating_5: 'उत्कृष्ट',
+                rating_4: 'अच्छा',
+                rating_3: 'सामान्य',
+                rating_2: 'खराब',
+                rating_1: 'बहुत खराब'
             }
         };
 
@@ -739,7 +977,17 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
             window.translations = dashboardTranslations;
         }
 
+        // Safety: Ensure translations is globally accessible even if defined as const in another script
+        const safeTranslations = typeof translations !== 'undefined' ? translations : window.translations;
+        
         let currentLang = localStorage.getItem('agricare_lang') || 'en';
+        // Ensure the current language exists in our dictionary
+        if (!safeTranslations[currentLang]) currentLang = 'en';
+
+        // Helper to get translated string safely
+        function t(key) {
+            return (safeTranslations[currentLang] && safeTranslations[currentLang][key]) || key;
+        }
         let activeCropIndex = 0;
         let cropsData = [];
 
@@ -829,7 +1077,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 grid.innerHTML = `
                     <div class="bg-white rounded-[2rem] p-12 text-center border border-gray-100 shadow-sm">
                         <i class="fas fa-calendar-day text-5xl text-gray-100 mb-4"></i>
-                        <p class="text-gray-400 font-bold uppercase tracking-widest text-sm">${translations[currentLang].noActivity}</p>
+                        <p class="text-gray-400 font-bold uppercase tracking-widest text-sm">${t('noActivity')}</p>
                     </div>
                 `;
                 return;
@@ -853,22 +1101,22 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                                 <h4 class="text-xl font-black text-gray-900">${activity[`task_${currentLang}`]}</h4>
                             </div>
                             <div class="timeline-badge">
-                                ${translations[currentLang].day} ${activity.start_day} - ${activity.end_day}
+                                ${t('day')} ${activity.start_day} - ${activity.end_day}
                             </div>
                         </div>
                         
                         <div class="grid md:grid-cols-3 gap-4">
                             <div class="bg-gray-50 p-4 rounded-2xl">
-                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${translations[currentLang].status || 'Status'}</p>
-                                <p class="text-sm font-bold text-gray-800">${translations[currentLang].planned_op || 'Planned Operation'}</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${t('status')}</p>
+                                <p class="text-sm font-bold text-gray-800">${t('planned_op')}</p>
                             </div>
                             <div class="bg-gray-50 p-4 rounded-2xl">
-                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${translations[currentLang].duration || 'Duration'}</p>
-                                <p class="text-sm font-bold text-gray-800">${activity.end_day - activity.start_day} ${translations[currentLang].days || 'Days'}</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${t('duration')}</p>
+                                <p class="text-sm font-bold text-gray-800">${activity.end_day - activity.start_day} ${t('days')}</p>
                             </div>
                              <div class="bg-gray-50 p-4 rounded-2xl">
-                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${translations[currentLang].impact || 'Impact'}</p>
-                                <p class="text-sm font-bold text-emerald-600">${translations[currentLang].high_yield || 'High Yield'}</p>
+                                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${t('impact')}</p>
+                                <p class="text-sm font-bold text-emerald-600">${t('high_yield')}</p>
                             </div>
                         </div>
                     </div>
@@ -883,7 +1131,12 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
 
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
-                if (translations[lang] && translations[lang][key]) el.innerText = translations[lang][key];
+                if (safeTranslations[lang] && safeTranslations[lang][key]) el.innerText = safeTranslations[lang][key];
+            });
+
+            document.querySelectorAll('[data-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-placeholder');
+                if (safeTranslations[lang] && safeTranslations[lang][key]) el.placeholder = safeTranslations[lang][key];
             });
 
             document.body.classList.remove('gu-text', 'hi-text');
@@ -928,14 +1181,17 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
 
             // Update Topbar Title
             const titleMap = {
-                calendar: translations[currentLang].cropCalendar,
-                disease: translations[currentLang].disease,
-                subsidies: translations[currentLang].subsidies
+                calendar: t('cropCalendar'),
+                disease: t('disease'),
+                subsidies: t('subsidies'),
+                feedback: t('feedback_nav'),
+                profile: t('profile')
             };
             const topbarTitle = document.querySelector('header h2');
             if (topbarTitle) topbarTitle.innerText = titleMap[modId] || 'Dashboard';
 
             if (modId === 'subsidies') fetchSubsidies();
+            if (modId === 'profile') fetchProfile();
         }
 
         // Handle URL parameters for modules
@@ -1018,28 +1274,28 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                     <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-16 -mt-16 opacity-50 transition-transform group-hover:scale-110"></div>
                     
                     <div class="flex justify-between items-start mb-6 relative z-10">
-                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">${translations[currentLang][{'All': 'cat_all', 'Irrigation': 'cat_irrigation', 'Equipment': 'cat_equipment', 'Training': 'cat_training', 'Seed & Fertilizer': 'cat_seeds', 'Financial': 'cat_financial', 'Insurance': 'cat_insurance'}[s.category]] || s.category}</span>
+                        <span class="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">${t({'All': 'cat_all', 'Irrigation': 'cat_irrigation', 'Equipment': 'cat_equipment', 'Training': 'cat_training', 'Seed & Fertilizer': 'cat_seeds', 'Financial': 'cat_financial', 'Insurance': 'cat_insurance'}[s.category]) || s.category}</span>
                         <div class="flex items-center gap-1.5">
                             <span class="relative flex h-2 w-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </span>
-                            <span class="text-emerald-500 font-black text-[10px] tracking-tight uppercase">${s.status === 'Live' ? (translations[currentLang].live_status || 'Live') : (translations[currentLang].upcoming_status || s.status || 'Active')}</span>
+                            <span class="text-emerald-500 font-black text-[10px] tracking-tight uppercase">${s.status === 'Live' ? t('live_status') : (t('upcoming_status') || s.status || 'Active')}</span>
                         </div>
                     </div>
 
-                    <h4 class="text-xl font-black text-gray-900 mb-3 leading-tight group-hover:text-emerald-700 transition-colors">${s[`name_${currentLang}`] || (translations[currentLang] && translations[currentLang][s.name]) || s.name}</h4>
-                    <p class="text-sm text-gray-500 font-medium line-clamp-2 mb-6 leading-relaxed">${s[`description_${currentLang}`] || (translations[currentLang] && translations[currentLang][s.description]) || s.description}</p>
+                    <h4 class="text-xl font-black text-gray-900 mb-3 leading-tight group-hover:text-emerald-700 transition-colors">${s[`name_${currentLang}`] || t(s.name)}</h4>
+                    <p class="text-sm text-gray-500 font-medium line-clamp-2 mb-6 leading-relaxed">${s[`description_${currentLang}`] || t(s.description)}</p>
                     
                     <div class="space-y-3 mb-8">
                         <div class="flex flex-col gap-1.5 p-4 bg-gray-50 rounded-2xl border border-gray-100/50">
-                            <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">${translations[currentLang].benefit_label || 'Key Benefit'}</span>
-                            <span class="text-sm font-bold text-gray-800 leading-tight">${s[`benefits_${currentLang}`] || (translations[currentLang] && translations[currentLang][s.benefits]) || s.benefits || '--'}</span>
+                            <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none">${t('benefit_label')}</span>
+                            <span class="text-sm font-bold text-gray-800 leading-tight">${s[`benefits_${currentLang}`] || t(s.benefits) || '--'}</span>
                         </div>
                     </div>
 
                     <a href="${s.apply_link}" target="_blank" class="flex items-center justify-center gap-2 w-full bg-gray-900 text-white py-4 rounded-2xl font-black hover:bg-emerald-600 shadow-lg hover:shadow-emerald-200 transition-all active:scale-95 relative z-10">
-                        <span>${translations[currentLang].apply_now}</span>
+                        <span>${t('apply_now')}</span>
                         <i class="fas fa-external-link-alt text-xs opacity-50"></i>
                     </a>
                 </div>
@@ -1121,7 +1377,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                     if (data.error) {
                         alert("⚠️ " + data.error);
                         analyzeBtn.disabled = false;
-                        document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
+                        document.getElementById('btn-text').textContent = t('btn_analyze');
                         return;
                     }
 
@@ -1134,7 +1390,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                     console.error("AI Analysis Error:", err);
                     alert("Neural engine is taking longer than expected. Please check your internet connection.");
                     analyzeBtn.disabled = false;
-                    document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
+                    document.getElementById('btn-text').textContent = t('btn_analyze');
                 }
             };
         }
@@ -1157,7 +1413,7 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
             document.getElementById('confidence-bar').style.width = Math.max(10, conf) + "%";
 
             analyzeBtn.disabled = false;
-            document.getElementById('btn-text').textContent = translations[currentLang].btn_analyze;
+            document.getElementById('btn-text').textContent = t('btn_analyze');
         }
 
         // Health Checker
@@ -1169,18 +1425,18 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                     signal: AbortSignal.timeout(6000)
                 });
                 if (res.ok) {
-                    label.innerText = translations[currentLang].status_online || 'AI ONLINE';
+                    label.innerText = t('status_online');
                     label.className = "text-[10px] font-black uppercase tracking-widest text-emerald-600";
                     pulse.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
                 } else {
-                    label.innerText = translations[currentLang].status_offline || 'AI OFFLINE';
+                    label.innerText = t('status_offline');
                     label.className = "text-[10px] font-black uppercase tracking-widest text-orange-500";
                     pulse.className = "w-3 h-3 rounded-full bg-orange-400";
                 }
             } catch {
                 const label = document.getElementById('status-label');
                 const pulse = document.getElementById('status-pulse');
-                if (label) label.innerText = translations[currentLang].status_offline;
+                if (label) label.innerText = t('status_offline');
                 if (pulse) pulse.className = "w-3 h-3 rounded-full bg-orange-400";
             }
         }
@@ -1190,6 +1446,198 @@ $dashboardSubsidyFallback = admin_demo_subsidies();
                 checkApi();
             }
         }, 60000);
+
+        // --- PROFILE MODULE LOGIC ---
+        let userProfile = null;
+        const districts = [
+            'Ahmedabad', 'Amreli', 'Anand', 'Arvalli', 'Banaskantha', 'Bharuch', 'Bhavnagar',
+            'Botad', 'Chhota Udaipur', 'Dahod', 'Dang', 'Devbhoomi Dwarka', 'Gandhinagar',
+            'Gir Somnath', 'Jamnagar', 'Junagadh', 'Kheda', 'Kutch', 'Mahisagar', 'Mehsana',
+            'Morbi', 'Narmada', 'Navsari', 'Panchmahal', 'Patan', 'Porbandar', 'Rajkot',
+            'Sabarkantha', 'Surat', 'Surendranagar', 'Tapi', 'Vadodara', 'Valsad'
+        ];
+
+        function toggleProfileMode(mode) {
+            document.getElementById('profile-view-mode').classList.toggle('hidden', mode === 'edit');
+            document.getElementById('profile-edit-mode').classList.toggle('hidden', mode === 'view');
+            if (mode === 'edit') fillProfileForm();
+        }
+
+        async function fetchProfile() {
+            const userStr = sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user');
+            const userData = userStr ? JSON.parse(userStr) : null;
+            if (!userData || !userData.id) return;
+
+            try {
+                const res = await fetch(`../backend/profile_api.php?id=${userData.id}`);
+                const data = await res.json();
+                if (data.success) {
+                    userProfile = data.user;
+                    updateProfileUI();
+                }
+            } catch (err) { console.error("Profile fetch error", err); }
+        }
+
+        function updateProfileUI() {
+            if(!userProfile) return;
+            document.getElementById('profile-display-name').innerText = userProfile.name;
+            document.getElementById('display-phone').innerText = userProfile.phone;
+            document.getElementById('display-email').innerText = userProfile.email || '--';
+            document.getElementById('display-district').innerText = userProfile.district;
+            document.getElementById('display-city').innerText = userProfile.city;
+            document.getElementById('display-pincode').innerText = userProfile.pincode;
+            document.getElementById('display-lang').innerText = userProfile.pref_lang === 'gu' ? 'ગુજરાતી' : (userProfile.pref_lang === 'hi' ? 'हिन्दी' : 'English');
+            document.getElementById('userNameDisplay').innerText = userProfile.name;
+        }
+
+        function fillProfileForm() {
+            if(!userProfile) return;
+            document.getElementById('input-name').value = userProfile.name;
+            document.getElementById('input-email').value = userProfile.email || '';
+            document.getElementById('input-phone').value = userProfile.phone;
+            document.getElementById('input-lang').value = userProfile.pref_lang;
+            document.getElementById('input-city').value = userProfile.city;
+            document.getElementById('input-pincode').value = userProfile.pincode;
+            
+            // Populate districts if empty
+            const distSelect = document.getElementById('input-district');
+            if (distSelect.options.length <= 1) {
+                distSelect.innerHTML = '';
+                districts.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    distSelect.appendChild(opt);
+                });
+            }
+            distSelect.value = userProfile.district;
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            const btn = document.getElementById('profile-save-btn');
+            const originalContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            const formData = new FormData(e.target);
+            const payload = Object.fromEntries(formData.entries());
+            payload.id = userProfile.id;
+
+            try {
+                const res = await fetch('../backend/profile_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    userProfile = { ...userProfile, ...payload };
+                    if (payload.pin) delete userProfile.pin;
+                    
+                    // Update session storage
+                    const currentStr = sessionStorage.getItem('agricare_user') || localStorage.getItem('agricare_user');
+                    const currentData = currentStr ? JSON.parse(currentStr) : {};
+                    const updatedData = { ...currentData, name: payload.name, pref_lang: payload.pref_lang, district: payload.district, city: payload.city };
+                    
+                    if (localStorage.getItem('agricare_user')) localStorage.setItem('agricare_user', JSON.stringify(updatedData));
+                    sessionStorage.setItem('agricare_user', JSON.stringify(updatedData));
+                    
+                    changeLang(payload.pref_lang);
+                    updateProfileUI();
+                    toggleProfileMode('view');
+                    alert("Profile updated successfully!");
+                } else { alert(data.message); }
+            } catch (err) { alert("Update failed."); }
+            finally {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+            }
+        }
+    </script>
+
+    <!-- Tailwind Class Harvester (Ensures dynamic classes are included in the CSS bundle) -->
+    <div class="hidden bg-emerald-500 bg-teal-500 bg-blue-500 bg-orange-400 bg-red-500 text-emerald-600 text-teal-600 text-blue-600 text-orange-600 text-red-600 scale-110 shadow-lg"></div>
+
+    <script>
+        function selectRating(val) {
+            // Update hidden inputs
+            document.querySelectorAll('input[name="rating"]').forEach(input => {
+                input.checked = (parseInt(input.value) === val);
+            });
+
+            // Update UI
+            document.querySelectorAll('.rating-star-box').forEach(box => {
+                box.style.backgroundColor = '';
+                box.style.color = '';
+                box.className = "rating-star-box w-12 h-12 flex items-center justify-center rounded-xl bg-gray-50 text-gray-300 transition-all shadow-sm";
+            });
+            document.querySelectorAll('.rating-label').forEach(label => {
+                label.style.color = '';
+                label.className = "rating-label text-[9px] font-black text-gray-400 uppercase tracking-tighter";
+            });
+
+            const activeBox = document.getElementById(`star-box-${val}`);
+            const activeLabel = activeBox.nextElementSibling;
+            
+            const hexColors = {
+                5: '#10b981', // emerald-500
+                4: '#14b8a6', // teal-500
+                3: '#3b82f6', // blue-500
+                2: '#fb923c', // orange-400
+                1: '#ef4444'  // red-500
+            };
+            const textHexColors = {
+                5: '#059669',
+                4: '#0d9488',
+                3: '#2563eb',
+                2: '#ea580c',
+                1: '#dc2626'
+            };
+
+            if (activeBox) {
+                activeBox.style.backgroundColor = hexColors[val];
+                activeBox.style.color = '#ffffff';
+                activeBox.className = `rating-star-box w-12 h-12 flex items-center justify-center rounded-xl transition-all shadow-lg scale-110`;
+                if (activeLabel) {
+                    activeLabel.style.color = textHexColors[val];
+                    activeLabel.className = `rating-label text-[9px] font-black uppercase tracking-tighter`;
+                }
+            }
+        }
+
+        async function submitFeedback(e) {
+            e.preventDefault();
+            const btn = document.getElementById('feedbackSubmitBtn');
+            const subject = document.getElementById('feedbackSubject').value;
+            const message = document.getElementById('feedbackMessage').value;
+            const rating = document.querySelector('input[name="rating"]:checked').value;
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Submitting...`;
+
+            try {
+                const res = await fetch('../backend/submit_feedback_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subject, message, rating })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert('✅ ' + t('feedback_success'));
+                    document.getElementById('feedbackForm').reset();
+                } else {
+                    alert('❌ ' + data.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('❌ Server error. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-paper-plane"></i> ${t('feedback_submit')}`;
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             updateUserInfo();

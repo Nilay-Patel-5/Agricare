@@ -205,6 +205,9 @@
                     <a href="weather.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="weather">🌤️ Weather</a>
+                    <a href="qna.php"
+                        class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
+                        data-lang="qna_nav">❓ Q&A</a>
 
                     <a href="about.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
@@ -269,6 +272,8 @@
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">📈 Market</a>
                 <a href="weather.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">🌤️ Weather</a>
+                <a href="qna.php" onclick="closeMobileMenu()"
+                    class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" data-lang="qna_nav">❓ Q&A</a>
 
                 <a href="about.php" onclick="closeMobileMenu()"
                     class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">ℹ️ About</a>

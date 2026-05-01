@@ -246,3 +246,19 @@ CREATE TABLE ai_scans (
 
 CREATE INDEX IF NOT EXISTS idx_ai_scans_user_id ON ai_scans(user_id);
 CREATE INDEX IF NOT EXISTS idx_ai_scans_created_at ON ai_scans(created_at);
+
+-------------------------------------------------------------------------------
+-- 13. FEEDBACKS TABLE
+-------------------------------------------------------------------------------
+DROP TABLE IF EXISTS feedbacks CASCADE;
+CREATE TABLE feedbacks (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES farmers(id) ON DELETE CASCADE,
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_feedbacks_user_id ON feedbacks(user_id);
+CREATE INDEX IF NOT EXISTS idx_feedbacks_created_at ON feedbacks(created_at);

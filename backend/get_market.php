@@ -38,9 +38,9 @@ try {
         }
     }
 
-    $latestLocalDate = $pdo->query("SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY TO_DATE(arrival_date, 'DD/MM/YYYY') DESC LIMIT 1")->fetchColumn();
+    $latestLocalDate = $pdo->query("SELECT arrival_date FROM market_prices ORDER BY id DESC LIMIT 1")->fetchColumn();
     $lastSyncTs = !empty($syncMeta['synced_at']) ? strtotime((string) $syncMeta['synced_at']) : 0;
-    $shouldSync = ($latestLocalDate !== $today || !$lastSyncTs || (time() - $lastSyncTs) > 3600); // 1 hour sync gate
+    $shouldSync = (!$lastSyncTs || (time() - $lastSyncTs) > 3600) && ($latestLocalDate !== $today); // 1 hour sync gate
 
     if ($shouldSync) {
         try {
@@ -60,12 +60,7 @@ try {
     $markets = $input['markets'] ?? [];
     $commodities = $input['commodities'] ?? [];
 
-    $dateQuery = "SELECT arrival_date FROM market_prices WHERE state ILIKE 'gujarat' ORDER BY TO_DATE(arrival_date, 'DD/MM/YYYY') DESC LIMIT 1";
-    $dateStmt = $pdo->prepare($dateQuery);
-    $dateStmt->execute();
-    $latestDateResult = $dateStmt->fetch();
-
-    $latestDate = $latestDateResult['arrival_date'] ?? null;
+    $latestDate = $latestLocalDate;
 
     $query = "SELECT * FROM market_prices WHERE state ILIKE 'gujarat'";
     $params = [];
@@ -78,37 +73,44 @@ try {
     if (!empty($districts)) {
         $placeholders = [];
         foreach ($districts as $i => $d) {
-            $clean = trim($d); 
+            $clean = trim(str_replace('Banaskantha', 'Banaskanth', $d));
             $key = "dist$i";
             $placeholders[] = ":$key";
             $params[$key] = "%$clean%";
         }
-        $query .= " AND (" . implode(" OR ", array_map(fn($p) => "district ILIKE $p", $placeholders)) . ")";
+        if (!empty($placeholders)) {
+            $query .= " AND district ILIKE ANY (ARRAY[" . implode(",", $placeholders) . "])";
+        }
     }
 
     if (!empty($markets)) {
         $placeholders = [];
         foreach ($markets as $i => $m) {
             $clean = trim(str_replace(' APMC', '', $m));
+            $baseName = explode('(', $clean)[0]; 
             $key = "mkt$i";
             $placeholders[] = ":$key";
-            $params[$key] = "%$clean%";
+            $params[$key] = "%" . trim($baseName) . "%";
         }
-        $query .= " AND (" . implode(" OR ", array_map(fn($p) => "market ILIKE $p", $placeholders)) . ")";
+        if (!empty($placeholders)) {
+            $query .= " AND market ILIKE ANY (ARRAY[" . implode(",", $placeholders) . "])";
+        }
     }
 
     if (!empty($commodities)) {
         $placeholders = [];
         foreach ($commodities as $i => $c) {
-            $clean = trim($c);
+            $baseName = explode('(', $c)[0];
             $key = "cmd$i";
             $placeholders[] = ":$key";
-            $params[$key] = "%$clean%";
+            $params[$key] = "%" . trim($baseName) . "%";
         }
-        $query .= " AND (" . implode(" OR ", array_map(fn($p) => "commodity ILIKE $p", $placeholders)) . ")";
+        if (!empty($placeholders)) {
+            $query .= " AND commodity ILIKE ANY (ARRAY[" . implode(",", $placeholders) . "])";
+        }
     }
 
-    $query .= " ORDER BY id DESC LIMIT 500";
+    $query .= " ORDER BY district ASC, market ASC, commodity ASC LIMIT 500";
 
     $stmt = $pdo->prepare($query);
     $stmt->execute($params);

@@ -79,7 +79,7 @@ function syncLatestMarketData(int $lookbackDays = 7, int $limit = 500, int $maxP
             continue;
         }
 
-        $targetDate = $arrivalDate;
+        $targetDate = $records[0]['arrival_date'] ?? $arrivalDate;
 
         for ($page = 0; $page < $maxPages; $page++) {
             $offset = $page * $limit;

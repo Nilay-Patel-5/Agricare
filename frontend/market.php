@@ -89,6 +89,9 @@
                     <a href="weather.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="weather">🌤️ Weather</a>
+                    <a href="qna.php"
+                        class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
+                        data-lang="qna_nav">❓ Q&A</a>
                     <a href="about.php"
                         class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2"
                         data-lang="contact">ℹ️ About</a>
@@ -326,12 +329,7 @@
             </div>
         </div>
 
-        <!-- Arrival Date Display -->
-        <div class="flex justify-end mb-4">
-            <div id="arrivalDateDisplay" class="hidden inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 px-4 py-2 rounded-full text-sm font-bold border border-emerald-200 shadow-sm">
-                <i class="far fa-calendar-alt"></i> <span data-lang="data_as_of">Data as of:</span> <span id="arrivalDateText">--</span>
-            </div>
-        </div>
+
 
         <!-- Result Placeholder -->
         <div id="resultsArea">
@@ -505,21 +503,14 @@
             if (!rows || rows.length === 0) {
                 placeholder.classList.remove("hidden");
                 container.classList.add("hidden");
-                const dateDisplay = document.getElementById("arrivalDateDisplay");
-                if (dateDisplay) dateDisplay.classList.add("hidden");
+
                 return;
             }
 
             placeholder.classList.add("hidden");
             container.classList.remove("hidden");
 
-            // Display arrival date
-            const dateDisplay = document.getElementById("arrivalDateDisplay");
-            const dateText = document.getElementById("arrivalDateText");
-            if (dateDisplay && dateText && rows[0].arrival_date) {
-                dateText.innerText = rows[0].arrival_date;
-                dateDisplay.classList.remove("hidden");
-            }
+
 
             const totalPages = Math.ceil(rows.length / PAGE_SIZE);
             const start = (currentPage - 1) * PAGE_SIZE;

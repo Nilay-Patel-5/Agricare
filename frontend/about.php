@@ -58,6 +58,7 @@
                     <a href="index.php#features" class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2" data-lang="features">✨ Features</a>
                     <a href="market.php" class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2" data-lang="market">📈 Market</a>
                     <a href="weather.php" class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2" data-lang="weather">🌤️ Weather</a>
+                    <a href="qna.php" class="text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2" data-lang="qna_nav">❓ Q&A</a>
 
                     <a href="about.php" class="text-emerald-700 bg-emerald-50 font-bold px-6 py-3 rounded-full transition-all decoration-2" data-lang="contact">ℹ️ About</a>
                 </nav>
@@ -97,6 +98,7 @@
                 <a href="index.php#features" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" data-lang="features">✨ Features</a>
                 <a href="market.php" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" data-lang="market">📈 Market</a>
                 <a href="weather.php" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" data-lang="weather">🌤️ Weather</a>
+                <a href="qna.php" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" data-lang="qna_nav">❓ Q&A</a>
 
                 <a href="about.php" onclick="closeMobileMenu()" class="block text-lg font-semibold text-emerald-600 py-2 border-b bg-emerald-50 rounded pl-2" data-lang="contact">ℹ️ About</a>
                 <a href="login.php" data-lang="loginBtn" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">Login</a>
@@ -243,6 +245,7 @@
                 home: '🏠 Home',
                 market: '📈 Market',
                 weather: '🌤️ Weather',
+                qna_nav: '❓ Q&A',
                 contact: 'ℹ️ About',
                 loginBtn: 'Login',
                 registerBtn: 'Register',
@@ -281,6 +284,7 @@
                 home: '🏠 મુખ્ય',
                 market: '📈 બજાર',
                 weather: '🌤️ હવામાન',
+                qna_nav: '❓ પ્રશ્નોત્તરી',
                 contact: 'ℹ️ પરિચય',
                 loginBtn: 'લોગિન',
                 registerBtn: 'નોંધણી',
@@ -319,6 +323,7 @@
                 home: '🏠 होम',
                 market: '📈 बाज़ार',
                 weather: '🌤️ मौसम',
+                qna_nav: '❓ प्रश्नोत्तरी',
                 contact: 'ℹ️ परिचय',
                 loginBtn: 'लॉगिन',
                 registerBtn: 'रजिस्टर',
