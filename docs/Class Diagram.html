@@ -1,0 +1,270 @@
+<style>
+#cd { width:100%; overflow-x:auto; background:#ffffff; padding:16px; box-sizing:border-box; border-radius:8px; }
+#cd svg { min-width:1000px; background:#ffffff; }
+</style>
+<div id="cd"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: 'Arial, sans-serif',
+  themeVariables: {
+    darkMode: false,
+    fontSize: '12px',
+    fontFamily: 'Arial, sans-serif',
+    primaryColor: '#B5D4F4',
+    primaryTextColor: '#042C53',
+    primaryBorderColor: '#185FA5',
+    secondaryColor: '#9FE1CB',
+    secondaryTextColor: '#04342C',
+    secondaryBorderColor: '#0F6E56',
+    tertiaryColor: '#CECBF6',
+    tertiaryTextColor: '#26215C',
+    tertiaryBorderColor: '#534AB7',
+    lineColor: '#444444',
+    textColor: '#111111',
+    background: '#ffffff',
+    nodeBorder: '#888888',
+    clusterBkg: '#f4f4f4',
+    titleColor: '#111111',
+    edgeLabelBackground: '#ffffff',
+    attributeBackgroundColorOdd: '#EAF4FF',
+    attributeBackgroundColorEven: '#ffffff',
+    classText: '#111111',
+  },
+  classDiagram: { useMaxWidth: false },
+});
+
+const diagram = `classDiagram
+    class Farmer {
+        +int id
+        +string name
+        +string email
+        +string phone
+        +string district
+        +string city
+        +string pincode
+        +string prefLang
+        +register()
+        +login()
+        +updateProfile()
+        +submitFeedback()
+        +performAIScan()
+    }
+    class Admin {
+        +int id
+        +string name
+        +string email
+        +string password
+        +datetime createdAt
+        +login()
+        +manageFarmers()
+        +manageSubsidies()
+        +managePesticides()
+        +viewFeedback()
+        +viewDashboardStats()
+    }
+    class Feedback {
+        +int id
+        +int userId
+        +string subject
+        +text message
+        +int rating
+        +datetime createdAt
+        +submitFeedback()
+        +getFeedbacks()
+    }
+    class AIScan {
+        +int id
+        +int userId
+        +string pestName
+        +datetime createdAt
+        +saveScanResult()
+        +getScanHistory()
+    }
+    class ChatMessage {
+        +int id
+        +int userId
+        +string sessionKey
+        +string role
+        +text message
+        +string model
+        +saveMessage()
+        +getChatHistory()
+    }
+    class Crop {
+        +int id
+        +string nameEn
+        +string nameGu
+        +string nameHi
+        +string seasonEn
+        +string category
+        +string imageUrl
+        +getCrops()
+        +getSchedule()
+    }
+    class CropSchedule {
+        +int id
+        +int cropId
+        +int monthIndex
+        +string activityType
+        +string activityColor
+        +text taskEn
+        +getTasksByCrop()
+        +getTasksByMonth()
+    }
+    class Pesticide {
+        +int id
+        +string nameEn
+        +string brand
+        +string category
+        +string priceRange
+        +text usageEn
+        +text targetPestsEn
+        +getPesticides()
+        +searchByPest()
+        +addPesticide()
+        +updatePesticide()
+    }
+    class PestPesticideMapping {
+        +int id
+        +int pesticideId
+        +string pestName
+        +string effectiveness
+        +mapPestToPesticide()
+        +getRecommendations()
+    }
+    class MarketPrice {
+        +int id
+        +string state
+        +string district
+        +string market
+        +string commodity
+        +string variety
+        +int minPrice
+        +int maxPrice
+        +int modalPrice
+        +datetime createdAt
+        +getPrices()
+        +filterPrices()
+        +syncPrices()
+    }
+    class Subsidy {
+        +int id
+        +string titleEn
+        +string titleGu
+        +string categoryEn
+        +text descriptionEn
+        +text benefitsEn
+        +string applyLink
+        +string status
+        +listSubsidies()
+        +searchSubsidies()
+        +addSubsidy()
+        +updateSubsidy()
+        +deleteSubsidy()
+    }
+    class Shop {
+        +int id
+        +string name
+        +string district
+        +string city
+        +text address
+        +string phone
+        +decimal latitude
+        +decimal longitude
+        +bool verified
+        +findNearbyShops()
+        +getShopDetails()
+    }
+    class WeatherCache {
+        +int id
+        +string city
+        +json jsonData
+        +datetime fetchedAt
+        +getCachedWeather()
+        +updateWeatherCache()
+    }
+    class News {
+        +int id
+        +string titleEn
+        +text contentEn
+        +string imageUrl
+        +string category
+        +datetime publishedAt
+        +getNews()
+        +filterNews()
+    }
+    class AuthService {
+        +registerFarmer()
+        +loginFarmer()
+        +loginAdmin()
+        +verifyCredentials()
+    }
+    class AIService {
+        +analyzeImage()
+        +detectDisease()
+        +storeScan()
+    }
+    class ChatbotService {
+        +buildContext()
+        +generateResponse()
+        +storeMessage()
+    }
+    class MarketService {
+        +fetchMarketPrices()
+        +filterMarketPrices()
+        +syncMarketPrices()
+    }
+    class WeatherService {
+        +fetchWeather()
+        +readCache()
+        +writeCache()
+    }
+
+    Farmer "1" --> "0..*" Feedback : submits
+    Farmer "1" --> "0..*" AIScan : performs
+    Farmer "1" --> "0..*" ChatMessage : has
+    Crop "1" --> "0..*" CropSchedule : contains
+    Pesticide "1" --> "0..*" PestPesticideMapping : maps
+    AIScan ..> PestPesticideMapping : matches pestName
+    MarketPrice ..> Crop : commodity match
+    Admin ..> Farmer : manages
+    Admin ..> Subsidy : manages
+    Admin ..> Pesticide : manages
+    Admin ..> Feedback : reviews
+    AuthService ..> Farmer : authenticates
+    AuthService ..> Admin : authenticates
+    MarketService ..> MarketPrice : manages
+    WeatherService ..> WeatherCache : uses
+    AIService ..> AIScan : creates
+    AIService ..> Pesticide : recommends
+    ChatbotService ..> ChatMessage : stores
+`;
+
+const { svg } = await mermaid.render('cd-svg', diagram);
+document.getElementById('cd').innerHTML = svg;
+
+setTimeout(() => {
+  const svgEl = document.querySelector('#cd svg');
+  if (svgEl) {
+    svgEl.style.background = '#ffffff';
+    svgEl.querySelectorAll('rect, polygon').forEach(el => {
+      const fill = el.getAttribute('fill');
+      if (fill === 'none' || !fill) return;
+      if (fill.toLowerCase() === '#1e1e1e' || fill.toLowerCase() === '#2d2d2d') {
+        el.setAttribute('fill', '#ffffff');
+      }
+    });
+    svgEl.querySelectorAll('text').forEach(el => {
+      const fill = el.getAttribute('fill');
+      if (fill && (fill.toLowerCase() === '#ffffff' || fill.toLowerCase() === '#f0f0f0')) {
+        const parent = el.closest('.classTitle, .label');
+        if (!parent) el.setAttribute('fill', '#111111');
+      }
+    });
+  }
+}, 800);
+</script>
