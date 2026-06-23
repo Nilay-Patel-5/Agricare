@@ -2,6 +2,9 @@
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const FormData = require('form-data');
+const path = require('path');
+const fs = require('fs');
 const config = require('../config/env');
 
 const predictCliPath = path.join(__dirname, '../../../ai/predict_cli.py');
@@ -78,13 +81,13 @@ Return ONLY a valid JSON object matching this structure EXACTLY:
         for (const model of fallbackModels) {
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            signal: AbortSignal.timeout(30000)
-        });
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    signal: AbortSignal.timeout(30000)
+                });
 
-        const data = await response.json();
+                const data = await response.json();
                 if (!response.ok) {
                     lastError = data?.error?.message || 'Gemini Vision request failed.';
                     continue; // Try next model
@@ -105,20 +108,62 @@ Return ONLY a valid JSON object matching this structure EXACTLY:
     }
 };
 
+const callRemotePythonAPI = async (imagePath, lang) => {
+    try {
+        const formData = new FormData();
+        formData.append('image', fs.createReadStream(imagePath));
+        formData.append('lang', lang);
+
+        // Remove trailing slash if present
+        const apiUrl = process.env.PYTHON_API_URL.replace(/\/$/, '') + '/predict';
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            body: formData,
+            // Add form-data headers explicitly
+            headers: formData.getHeaders(),
+            signal: AbortSignal.timeout(60000)
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            return { error: data.error || 'Remote Python API failed.' };
+        }
+        
+        return data;
+    } catch (err) {
+        console.error('Remote API Error:', err);
+        return { error: `Remote API Error: ${err.message}` };
+    }
+};
+
 const runDiseaseDetection = async (imagePath, lang = 'en') => {
-    const pythonCmd = await getPythonCommand();
     const resolvedPath = path.resolve(imagePath);
 
     if (!fs.existsSync(resolvedPath)) {
         return { error: `Image file not found: ${imagePath}` };
     }
 
+    // Tier 1: Dedicated Python Microservice (Option 3 architecture)
+    if (process.env.PYTHON_API_URL) {
+        console.log(`Forwarding image to dedicated Python API at ${process.env.PYTHON_API_URL}`);
+        const result = await callRemotePythonAPI(resolvedPath, lang);
+        if (!result.error) {
+            return result;
+        }
+        console.error("Dedicated API failed, falling back to lower tiers...");
+    }
+
+    const pythonCmd = await getPythonCommand();
+
+    // Tier 2: Vercel Limitation Fallback
     // On Vercel, Python CLI script and Keras models won't exist. Fallback immediately to save time.
     if (!fs.existsSync(predictCliPath) || process.env.VERCEL === '1') {
         console.log("Vercel or missing Python script detected. Falling back to Gemini Vision.");
         return fallbackGeminiVision(resolvedPath, lang);
     }
 
+    // Tier 3: Local CLI execution (localhost testing)
     return new Promise((resolve) => {
         const cmd = `${pythonCmd} "${predictCliPath}" --image "${resolvedPath}" --lang "${lang}"`;
         
