@@ -2,6 +2,7 @@
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const config = require('../config/env');
 
 const predictCliPath = path.join(__dirname, '../../../ai/predict_cli.py');
 const aiDir = path.join(__dirname, '../../../ai');
@@ -29,6 +30,69 @@ const getPythonCommand = () => {
     });
 };
 
+const fallbackGeminiVision = async (imagePath, lang) => {
+    const apiKeys = [...(config.geminiApiKeys || [])];
+    if (apiKeys.length === 0 || !apiKeys[0] || apiKeys[0] === 'YOUR_GEMINI_API_KEY_HERE') {
+        return { error: 'Python is not available on this server, and no Gemini API key is configured for fallback.' };
+    }
+
+    try {
+        const base64Image = fs.readFileSync(imagePath, { encoding: 'base64' });
+        const mimeType = imagePath.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+
+        const prompt = `You are an expert agronomist AI. Analyze the uploaded image of a plant/leaf.
+Identify the plant and any disease/pest present. If it's healthy, label it as "Healthy".
+Respond entirely in ${lang === 'gu' ? 'Gujarati' : lang === 'hi' ? 'Hindi' : 'English'}, except for the "disease" field which must be the formal English class name.
+
+Return ONLY a valid JSON object matching this structure EXACTLY:
+{
+  "label": "Common Name of Pest/Disease (or Healthy)",
+  "disease": "Scientific/Formal class name (e.g. Corn___Northern_Leaf_Blight)",
+  "plant": "Name of the crop",
+  "confidence": 0.95,
+  "info": {
+    "desc": "Short description of the condition",
+    "irrigation": "Irrigation advice",
+    "treatment": "Treatment or action required"
+  }
+}`;
+
+        const payload = {
+            contents: [{
+                parts: [
+                    { text: prompt },
+                    { inlineData: { mimeType, data: base64Image } }
+                ]
+            }],
+            generationConfig: {
+                temperature: 0.2,
+                responseMimeType: "application/json"
+            }
+        };
+
+        // Try random key for load balancing
+        const apiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: AbortSignal.timeout(30000)
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            return { error: data?.error?.message || 'Gemini Vision request failed.' };
+        }
+
+        const responseText = data.candidates[0].content.parts[0].text;
+        const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(cleanedText);
+
+    } catch (err) {
+        return { error: `AI Fallback Error: ${err.message}` };
+    }
+};
+
 const runDiseaseDetection = async (imagePath, lang = 'en') => {
     const pythonCmd = await getPythonCommand();
     const resolvedPath = path.resolve(imagePath);
@@ -37,17 +101,20 @@ const runDiseaseDetection = async (imagePath, lang = 'en') => {
         return { error: `Image file not found: ${imagePath}` };
     }
 
-    if (!fs.existsSync(predictCliPath)) {
-        return { error: `Prediction CLI script not found at: ${predictCliPath}` };
+    // On Vercel, Python CLI script and Keras models won't exist. Fallback immediately to save time.
+    if (!fs.existsSync(predictCliPath) || process.env.VERCEL === '1') {
+        console.log("Vercel or missing Python script detected. Falling back to Gemini Vision.");
+        return fallbackGeminiVision(resolvedPath, lang);
     }
 
     return new Promise((resolve) => {
         const cmd = `${pythonCmd} "${predictCliPath}" --image "${resolvedPath}" --lang "${lang}"`;
         
-        exec(cmd, { cwd: aiDir, timeout: 120000 }, (error, stdout, stderr) => {
+        exec(cmd, { cwd: aiDir, timeout: 60000 }, async (error, stdout, stderr) => {
             if (error) {
-                console.error(`CLI execution error: ${stderr || error.message}`);
-                return resolve({ error: stderr.trim() || error.message });
+                console.error(`Local Python CLI failed: ${stderr || error.message}. Falling back to Gemini...`);
+                const fallbackResult = await fallbackGeminiVision(resolvedPath, lang);
+                return resolve(fallbackResult);
             }
 
             try {
@@ -55,7 +122,8 @@ const runDiseaseDetection = async (imagePath, lang = 'en') => {
                 resolve(result);
             } catch (jsonErr) {
                 console.error(`Invalid JSON returned from Python CLI: ${stdout}`);
-                resolve({ error: 'Invalid JSON response from AI prediction engine.' });
+                const fallbackResult = await fallbackGeminiVision(resolvedPath, lang);
+                resolve(fallbackResult);
             }
         });
     });
