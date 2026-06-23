@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer base {
   ::-webkit-scrollbar {
@@ -20,4 +20,4 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #059669; /* emerald-600 */
   }
-}
+}

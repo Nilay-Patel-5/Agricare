@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>FAQ | AgriCare Gujarat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/frontend/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&family=Noto+Sans+Gujarati:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+            background-image: linear-gradient(rgba(248, 250, 252, 0.75), rgba(248, 250, 252, 0.75)), url('/frontend/assets/images/faq_bg.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+        .gu-text { font-family: 'Noto Sans Gujarati', sans-serif; }
+        .hi-text { font-family: 'Noto Sans Devanagari', sans-serif; }
+        
+        .qna-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease;
+        }
+        
+        .qna-accordion-item.active .qna-accordion-content {
+            max-height: 500px;
+            padding-bottom: 1.5rem;
+        }
+        
+        .qna-accordion-item.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .category-btn.active {
+            background-color: #10b981;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon-inside {
+            position: absolute;
+            left: 1.5rem;
+            z-index: 10;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .search-input-field {
+            width: 100%;
+            padding: 1.25rem 2rem 1.25rem 4rem !important;
+            border-radius: 9999px;
+            background-color: white;
+            border: 2px solid transparent;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            font-size: 1.125rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input-field:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+
+        .search-wrapper:focus-within .search-icon-inside {
+            color: #10b981;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full bg-white/95 backdrop-blur-3xl shadow-lg border-b-4 border-emerald-500 z-50 transition-all duration-500">
+        <div class="max-w-[1400px] mx-auto px-6 lg:px-12 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="flex items-center gap-4 group">
+                    <div class="w-14 h-14 lg:w-16 lg:h-16 flex-shrink-0 bg-gradient-to-br from-yellow-400 via-orange-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg group-hover:scale-110 transition-all duration-300">
+                        <i class="fas fa-wheat-awn"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <h1 class="text-2xl lg:text-3xl font-black text-gray-800 tracking-tight" data-lang="logo">AgriCare</h1>
+                        <p class="text-xs font-bold text-emerald-600 tracking-wider uppercase hidden sm:block" data-lang="tagline">Gujarat's Smart Farming Platform</p>
+                    </div>
+                </a>
+
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="/" class="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2 whitespace-nowrap" ><i class="fas fa-home text-emerald-600"></i> <span data-lang="home">Home</span></a>
+                    <a href="/#features" class="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2 whitespace-nowrap" ><i class="fas fa-star text-emerald-600"></i> <span data-lang="features">Features</span></a>
+                    <a href="/market" class="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2 whitespace-nowrap" ><i class="fas fa-chart-line text-emerald-600"></i> <span data-lang="market">Market</span></a>
+                    <a href="/weather" class="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2 whitespace-nowrap" ><i class="fas fa-cloud-sun text-emerald-600 relative top-[1px]"></i> <span data-lang="weather">Weather</span></a>
+                    <a href="/faq" class="inline-flex items-center gap-2 text-emerald-600 bg-emerald-50 font-bold px-6 py-3 rounded-full transition-all underline underline-offset-4 decoration-2 whitespace-nowrap" ><i class="fas fa-question-circle text-emerald-600"></i> <span data-lang="qna_nav">FAQ</span></a>
+                    <a href="/about" class="inline-flex items-center gap-2 text-gray-600 hover:text-emerald-600 font-bold px-6 py-3 rounded-full hover:bg-emerald-50 transition-all hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4 active:underline active:underline-offset-4 decoration-2 whitespace-nowrap" ><i class="fas fa-info-circle text-emerald-600"></i> <span data-lang="contact">About</span></a>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <div class="hidden sm:flex bg-gray-100 p-1 rounded-xl">
+                        <button onclick="changeLang('en')" class="lang-btn px-3 py-1 text-sm font-bold rounded-lg transition-all" data-lang-key="en">EN</button>
+                        <button onclick="changeLang('gu')" class="lang-btn px-3 py-1 text-sm font-bold rounded-lg transition-all" data-lang-key="gu">ગુ</button>
+                        <button onclick="changeLang('hi')" class="lang-btn px-3 py-1 text-sm font-bold rounded-lg transition-all" data-lang-key="hi">हिં</button>
+                    </div>
+                    <a href="/login" class="hidden lg:inline-flex text-emerald-700 font-bold py-3 px-6" data-lang="loginBtn">Login</a>
+                    <a href="/register" class="hidden lg:inline-flex bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-bold py-3 px-8 rounded-full shadow-lg animate-pulse" data-lang="registerBtn">Register</a>
+
+                    <button id="mobileMenuBtn" class="lg:hidden text-2xl text-gray-700 p-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="mobileMenuOverlay" class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+    <div id="mobileMenu" class="lg:hidden fixed right-0 top-0 h-full w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[60] p-6 overflow-y-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-black text-emerald-800" data-lang="menu_title">Menu</h2>
+            <button onclick="closeMobileMenu()" class="text-2xl text-gray-500 hover:text-red-500"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="flex gap-2 mb-8 justify-center bg-gray-50 p-3 rounded-xl">
+            <button onclick="changeLang('en')" class="flex-1 py-2 font-bold rounded bg-white shadow text-emerald-600 text-center">EN</button>
+            <button onclick="changeLang('gu')" class="flex-1 py-2 font-bold rounded hover:bg-white text-gray-600 text-center">ગુ</button>
+            <button onclick="changeLang('hi')" class="flex-1 py-2 font-bold rounded hover:bg-white text-gray-600 text-center">हिं</button>
+        </div>
+
+        <nav class="space-y-4">
+            <a href="/" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" ><i class="fas fa-home text-emerald-600"></i> <span data-lang="home">Home</span></a>
+            <a href="/#features" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" ><i class="fas fa-star text-emerald-600"></i> <span data-lang="features">Features</span></a>
+            <a href="/market" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" ><i class="fas fa-chart-line text-emerald-600"></i> <span data-lang="market">Market</span></a>
+            <a href="/weather" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" ><i class="fas fa-cloud-sun text-emerald-600"></i> <span data-lang="weather">Weather</span></a>
+            <a href="/faq" onclick="closeMobileMenu()" class="block text-lg font-semibold text-emerald-600 py-2 border-b bg-emerald-50 rounded pl-2" ><i class="fas fa-question-circle text-emerald-600"></i> <span data-lang="qna_nav">FAQ</span></a>
+
+            <a href="/about" onclick="closeMobileMenu()" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b" ><i class="fas fa-info-circle text-emerald-600"></i> <span data-lang="contact">About</span></a>
+            <a href="/login" data-lang="loginBtn" class="block text-lg font-semibold text-gray-700 hover:text-emerald-600 py-2 border-b">Login</a>
+            <a href="/register" data-lang="registerBtn" class="block bg-emerald-600 text-white font-bold py-3 rounded-xl text-center mt-6 shadow-lg">Register Now</a>
+        </nav>
+    </div>
+
+    <main class="pt-32 pb-20">
+        <div class="max-w-4xl mx-auto px-6">
+            <!-- Hero Section -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl lg:text-6xl font-black text-gray-900 mb-6" data-lang="qna_title">Frequently Asked <span class="text-emerald-600">Questions</span></h1>
+                <p class="text-xl text-gray-600" data-lang="qna_subtitle">Find quick answers to common questions about AgriCare and its features.</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-wrapper mb-10">
+                <i class="fas fa-search search-icon-inside text-xl transition-colors"></i>
+                <input type="text" id="qnaSearch" onkeyup="filterQuestions()" 
+                    data-lang="qna_search_placeholder" placeholder="Search for a question..." 
+                    class="search-input-field">
+            </div>
+
+            <!-- Categories -->
+            <div class="flex flex-wrap gap-3 mb-12 justify-center">
+                <button onclick="filterCategory('all')" class="category-btn active px-6 py-3 rounded-full font-bold transition-all border-2 border-gray-100 hover:border-emerald-200" data-lang="qna_cat_all">All Questions</button>
+                <button onclick="filterCategory('market')" class="category-btn px-6 py-3 rounded-full font-bold transition-all border-2 border-gray-100 hover:border-emerald-200" data-lang="qna_cat_market">Market Data</button>
+                <button onclick="filterCategory('disease')" class="category-btn px-6 py-3 rounded-full font-bold transition-all border-2 border-gray-100 hover:border-emerald-200" data-lang="qna_cat_disease">Disease Detection</button>
+                <button onclick="filterCategory('general')" class="category-btn px-6 py-3 rounded-full font-bold transition-all border-2 border-gray-100 hover:border-emerald-200" data-lang="qna_cat_general">General Help</button>
+            </div>
+
+            <!-- FAQ Accordion -->
+            <div id="qnaList" class="space-y-4">
+                <!-- Q1 -->
+                <div class="qna-accordion-item bg-white rounded-3xl shadow-md overflow-hidden border border-gray-100" data-category="general">
+                    <button onclick="toggleAccordion(this)" class="w-full px-8 py-6 flex justify-between items-center text-left hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-gray-800" data-lang="qna_q1">What is AgriCare?</span>
+                        <i class="fas fa-chevron-down toggle-icon text-emerald-500 transition-transform duration-300"></i>
+                    </button>
+                    <div class="qna-accordion-content px-8">
+                        <p class="text-gray-600 text-lg leading-relaxed" data-lang="qna_a1">AgriCare is a comprehensive digital platform designed for Gujarat's farmers. It provides real-time market prices (Mandi), hyper-local weather alerts, AI-based crop disease identification, and information on government subsidies.</p>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="qna-accordion-item bg-white rounded-3xl shadow-md overflow-hidden border border-gray-100" data-category="general">
+                    <button onclick="toggleAccordion(this)" class="w-full px-8 py-6 flex justify-between items-center text-left hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-gray-800" data-lang="qna_q2">Is AgriCare free to use?</span>
+                        <i class="fas fa-chevron-down toggle-icon text-emerald-500 transition-transform duration-300"></i>
+                    </button>
+                    <div class="qna-accordion-content px-8">
+                        <p class="text-gray-600 text-lg leading-relaxed" data-lang="qna_a2">Yes, AgriCare is a free platform dedicated to empowering farmers with technology and data to improve their crop yields and income.</p>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="qna-accordion-item bg-white rounded-3xl shadow-md overflow-hidden border border-gray-100" data-category="market">
+                    <button onclick="toggleAccordion(this)" class="w-full px-8 py-6 flex justify-between items-center text-left hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-gray-800" data-lang="qna_q3">How often is the market data updated?</span>
+                        <i class="fas fa-chevron-down toggle-icon text-emerald-500 transition-transform duration-300"></i>
+                    </button>
+                    <div class="qna-accordion-content px-8">
+                        <p class="text-gray-600 text-lg leading-relaxed" data-lang="qna_a3">Our market data is synchronized hourly with the official government records (Data.gov.in). Most Mandis update their arrival prices once a day.</p>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="qna-accordion-item bg-white rounded-3xl shadow-md overflow-hidden border border-gray-100" data-category="market">
+                    <button onclick="toggleAccordion(this)" class="w-full px-8 py-6 flex justify-between items-center text-left hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-gray-800" data-lang="qna_q4">Why can't I find a specific Mandi/Market?</span>
+                        <i class="fas fa-chevron-down toggle-icon text-emerald-500 transition-transform duration-300"></i>
+                    </button>
+                    <div class="qna-accordion-content px-8">
+                        <p class="text-gray-600 text-lg leading-relaxed" data-lang="qna_a4">We cover all major APMCs in Gujarat. If a specific small yard is missing, it might be because they haven't uploaded their data to the central government portal yet.</p>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="qna-accordion-item bg-white rounded-3xl shadow-md overflow-hidden border border-gray-100" data-category="disease">
+                    <button onclick="toggleAccordion(this)" class="w-full px-8 py-6 flex justify-between items-center text-left hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-gray-800" data-lang="qna_q5">How accurate is the Crop Disease Detector?</span>
+                        <i class="fas fa-chevron-down toggle-icon text-emerald-500 transition-transform duration-300"></i>
+                    </button>
+                    <div class="qna-accordion-content px-8">
+                        <p class="text-gray-600 text-lg leading-relaxed" data-lang="qna_a5">Our AI model is trained on thousands of plant images and has an accuracy of over 90% for supported crops. However, for critical decisions, we always recommend consulting a local agricultural expert.</p>
+                    </div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="qna-accordion-item bg-white rounded-3xl shadow-md overflow-hidden border border-gray-100" data-category="disease">
+                    <button onclick="toggleAccordion(this)" class="w-full px-8 py-6 flex justify-between items-center text-left hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-gray-800" data-lang="qna_q6">What should I do if the AI cannot identify the disease?</span>
+                        <i class="fas fa-chevron-down toggle-icon text-emerald-500 transition-transform duration-300"></i>
+                    </button>
+                    <div class="qna-accordion-content px-8">
+                        <p class="text-gray-600 text-lg leading-relaxed" data-lang="qna_a6">Ensure you take a clear, well-lit photo of a single leaf. Avoid blurry images or photos containing multiple types of plants. If it still fails, the specific crop or disease might not be in our database yet.</p>
+                    </div>
+                </div>
+
+                <!-- Q7 -->
+                <div class="qna-accordion-item bg-white rounded-3xl shadow-md overflow-hidden border border-gray-100" data-category="general">
+                    <button onclick="toggleAccordion(this)" class="w-full px-8 py-6 flex justify-between items-center text-left hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-gray-800" data-lang="qna_q7">How do I change the application language?</span>
+                        <i class="fas fa-chevron-down toggle-icon text-emerald-500 transition-transform duration-300"></i>
+                    </button>
+                    <div class="qna-accordion-content px-8">
+                        <p class="text-gray-600 text-lg leading-relaxed" data-lang="qna_a7">You can switch between English, Gujarati, and Hindi anytime using the language toggle buttons located at the top right of the navigation bar.</p>
+                    </div>
+                </div>
+
+                <div id="noResults" class="hidden text-center py-12">
+                    <div class="text-6xl mb-4 text-gray-200"><i class="fas fa-search"></i></div>
+                    <p class="text-xl text-gray-500" data-lang="qna_no_results">No questions match your search.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="contact" class="bg-gray-900 text-white pt-20 pb-10">
+        <div class="desktop-container px-6 lg:px-12">
+            <div class="grid lg:grid-cols-4 gap-12 mb-16">
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-2xl">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <span class="text-3xl font-black" data-lang="logo">AgriCare</span>
+                    </div>
+                    <p class="text-gray-400 text-lg mb-8 max-w-md" data-lang="footer-desc">
+                        Empowering farmers with data, connecting markets with transparency, and building a sustainable
+                        future.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition-colors"><i
+                                class="fab fa-twitter"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition-colors"><i
+                                class="fab fa-facebook"></i></a>
+                        <a href="#"
+                            class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-500 transition-colors"><i
+                                class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xl font-bold mb-6 border-l-4 border-emerald-500 pl-4" data-lang="solutions">
+                        Solutions</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="/#features" class="hover:text-emerald-400 transition-colors" data-lang="features">Features</a></li>
+                        <li><a href="/login" class="hover:text-emerald-400 transition-colors" data-lang="sol_advisory">Crop
+                                Advisory</a></li>
+                        <li><a href="/login" class="hover:text-emerald-400 transition-colors" data-lang="calendar">Crop
+                                Calendar</a></li>
+                        <li><a href="/login" class="hover:text-emerald-400 transition-colors" data-lang="subsidies">Government
+                                Subsidies</a></li>
+                        <li><a href="/login" class="hover:text-emerald-400 transition-colors" data-lang="sol_disease">Crop
+                                Disease Identification</a></li>
+                        <li><a href="/market" class="hover:text-emerald-400 transition-colors"
+                                data-lang="sol_market">Market
+                                Connect</a></li>
+                        <li><a href="/weather" class="hover:text-emerald-400 transition-colors" data-lang="sol_weather">Weather
+                                Station</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xl font-bold mb-6 border-l-4 border-orange-500 pl-4" data-lang="contact">About
+                    </h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li data-lang="location">Location: Gujarat, India</li>
+                        <li data-lang="email"> Contact: project@agricare.demo</li>
+                        <li data-lang="phone"> Phone: Available on request</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 flex justify-center items-center text-gray-500 text-sm">
+                <p data-lang="copyright">© 2026 AgriCare. Made with <i class="fas fa-heart"></i>️ for Farmers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/js/translations.js"></script>
+    <script>
+        function toggleAccordion(btn) {
+            const item = btn.parentElement;
+            const isActive = item.classList.contains('active');
+            
+            // Close all others
+            document.querySelectorAll('.qna-accordion-item').forEach(i => i.classList.remove('active'));
+            
+            // Toggle current
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        }
+
+        function filterCategory(cat) {
+            // Update buttons
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const items = document.querySelectorAll('.qna-accordion-item');
+            items.forEach(item => {
+                if (cat === 'all' || item.getAttribute('data-category') === cat) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            checkEmpty();
+        }
+
+        function filterQuestions() {
+            const query = document.getElementById('qnaSearch').value.toLowerCase().trim();
+            const items = document.querySelectorAll('.qna-accordion-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            checkEmpty();
+        }
+
+        function checkEmpty() {
+            const items = document.querySelectorAll('.qna-accordion-item');
+            const visible = Array.from(items).some(i => i.style.display !== 'none');
+            const noResults = document.getElementById('noResults');
+            
+            if (!visible) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        function changeLang(lang) {
+            localStorage.setItem('agricare_lang', lang);
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow', 'text-emerald-700');
+                btn.classList.add('text-gray-500');
+            });
+            document.querySelectorAll(`button[data-lang-key="${lang}"]`).forEach(btn => {
+                btn.classList.add('bg-white', 'shadow', 'text-emerald-700');
+                btn.classList.remove('text-gray-500');
+            });
+
+            document.querySelectorAll('[data-lang]').forEach(element => {
+                const key = element.getAttribute('data-lang');
+                if (translations[lang] && translations[lang][key]) {
+                    element.innerHTML = translations[lang][key];
+                }
+            });
+
+            const body = document.body;
+            body.classList.remove('gu-text', 'hi-text');
+            if (lang === 'gu') body.classList.add('gu-text');
+            if (lang === 'hi') body.classList.add('hi-text');
+            
+            // Update search placeholder
+            const searchInput = document.getElementById('qnaSearch');
+            if (translations[lang] && translations[lang]['qna_search_placeholder']) {
+                searchInput.placeholder = translations[lang]['qna_search_placeholder'];
+            }
+        }
+
+        // Mobile Menu Logic
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('mobileMenuOverlay');
+        const menuBtn = document.getElementById('mobileMenuBtn');
+
+        if (menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                overlay.classList.add('opacity-100');
+            });
+        }
+
+        function closeMobileMenu() {
+            if (mobileMenu) {
+                mobileMenu.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        if (overlay) overlay.addEventListener('click', closeMobileMenu);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialLang = localStorage.getItem('agricare_lang') || 'en';
+            changeLang(initialLang);
+        });
+    </script>
+</body>
+
+</html>

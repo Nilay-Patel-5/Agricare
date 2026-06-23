@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AgriCare | Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/dashboard/../frontend/output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .pulse-animation { animation: pulse 2s infinite; }
+
+        .tab-btn { transition: all 0.2s ease; }
+        .tab-btn.active {
+            background: white;
+            color: #0f172a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+        .tab-btn:not(.active) {
+            color: #64748b;
+        }
+        .tab-btn:not(.active):hover {
+            color: #0f172a;
+            background: rgba(255,255,255,0.4);
+        }
+
+        .rating-bar-track {
+            background: #f1f5f9;
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .rating-bar-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 1s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 1.25rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 24px rgba(15,23,42,0.06);
+            padding: 1.5rem;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 1.25rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 24px rgba(15,23,42,0.06);
+            padding: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 overflow-hidden font-sans">
+    <div id="progressBar"></div>
+    <div class="flex h-screen overflow-hidden">
+        
+        <%- include('_sidebar.ejs') %>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col w-0 overflow-hidden relative">
+            <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-slate-200 rounded-full blur-[150px] -mr-64 -mt-64 z-0"></div>
+            <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-100/50 rounded-full blur-[130px] -ml-48 -mb-48 z-0"></div>
+
+            <!-- Header -->
+            <header class="relative z-10 bg-white/60 backdrop-blur-2xl border-b border-slate-200 px-8 py-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div class="flex items-center gap-3">
+                    <button class="lg:hidden text-slate-500 hover:text-emerald-600 mr-2" onclick="toggleSidebar()">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div>
+                       <h2 class="text-2xl font-black text-slate-900 tracking-tight" id="tab-page-title">System Overview</h2>
+                       <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]" id="tab-page-subtitle">Live Data Control</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Tab switcher -->
+                    <div class="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+                        <button id="tab-btn-overview" onclick="switchTab('overview')"
+                            class="tab-btn active flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest">
+                            <i class="fas fa-chart-line"></i> Overview
+                        </button>
+                        <button id="tab-btn-analytics" onclick="switchTab('analytics')"
+                            class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest">
+                            <i class="fas fa-magnifying-glass-chart"></i> Analytics
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest pulse-animation">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> System Live
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="flex-1 relative overflow-y-auto custom-scrollbar p-8 z-10 space-y-8">
+
+                <!-- ===================== TAB 1: OVERVIEW ===================== -->
+                <div id="tab-overview">
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="glass-card p-6 rounded-2xl shadow-lg border border-white">
+                           <div class="flex items-center justify-between mb-4">
+                               <div class="w-12 h-12 bg-sky-100 rounded-xl flex items-center justify-center text-sky-600">
+                                   <i class="fas fa-users text-xl"></i>
+                               </div>
+                               <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full uppercase tracking-widest">Live</span>
+                           </div>
+                           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-[0.15em] mb-1">Total Farmers</h4>
+                           <p class="text-3xl font-black text-slate-900" id="stat-farmers">—</p>
+                           <p class="text-xs text-slate-500 mt-2">Verified registrations</p>
+                        </div>
+
+                        <div class="glass-card p-6 rounded-2xl shadow-lg border border-white">
+                           <div class="flex items-center justify-between mb-4">
+                               <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
+                                   <i class="fas fa-hand-holding-heart text-xl"></i>
+                               </div>
+                               <span class="text-[9px] font-black text-slate-400 bg-slate-50 px-2 py-1 rounded-full uppercase tracking-widest">Active</span>
+                           </div>
+                           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-[0.15em] mb-1">Subsidies</h4>
+                           <p class="text-3xl font-black text-slate-900" id="stat-subsidies">—</p>
+                           <p class="text-xs text-slate-500 mt-2">Published schemes</p>
+                        </div>
+
+                        <div class="glass-card p-6 rounded-2xl shadow-lg border border-white">
+                           <div class="flex items-center justify-between mb-4">
+                               <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600">
+                                   <i class="fas fa-store text-xl"></i>
+                               </div>
+                               <span class="text-[9px] font-black text-amber-600 bg-amber-50 px-2 py-1 rounded-full uppercase tracking-widest">Markets</span>
+                           </div>
+                           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-[0.15em] mb-1">Market Data</h4>
+                           <p class="text-3xl font-black text-slate-900" id="stat-markets">—</p>
+                           <p class="text-xs text-slate-500 mt-2">Regional mandi connectivity</p>
+                        </div>
+
+                        <div class="glass-card p-6 rounded-2xl shadow-lg border border-white">
+                           <div class="flex items-center justify-between mb-4">
+                               <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-600">
+                                   <i class="fas fa-microscope text-xl"></i>
+                               </div>
+                               <span class="text-[9px] font-black text-green-600 bg-green-50 px-2 py-1 rounded-full uppercase tracking-widest">AI Scans</span>
+                           </div>
+                           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-[0.15em] mb-1">Diagnostics</h4>
+                           <p class="text-3xl font-black text-slate-900" id="stat-scans">—</p>
+                           <p class="text-xs text-slate-500 mt-2">Pest detections processed</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <!-- Recent Activity -->
+                        <div>
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4 px-2">
+                                <h3 class="text-xl font-black text-slate-900 tracking-tight">Recent Onboarding</h3>
+                                <a href="/admin-dashboard/users" class="text-xs font-bold text-emerald-600 uppercase tracking-widest hover:underline hover:text-emerald-700 transition-colors">Farmer Registry →</a>
+                            </div>
+                            <div class="glass-card rounded-2xl border border-white overflow-hidden shadow-lg">
+                                <table class="w-full text-left text-sm">
+                                    <thead class="bg-slate-50 border-b border-slate-100">
+                                        <tr>
+                                            <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Farmer</th>
+                                            <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">District</th>
+                                            <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Contact</th>
+                                            <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-users-table" class="divide-y divide-slate-100">
+                                        <tr><td colspan="4" class="px-6 py-12 text-center text-slate-400"><i class="fas fa-circle-notch animate-spin text-xl"></i></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /tab-overview -->
+
+                <!-- ===================== TAB 2: ADVANCED ANALYTICS ===================== -->
+                <div id="tab-analytics" class="hidden space-y-8">
+
+                    <!-- KPI Cards Row -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="kpi-card flex flex-col gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center text-violet-600 text-xl">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Chat Messages</p>
+                                <p class="text-4xl font-black text-slate-900 mt-1" id="kpi-chat">—</p>
+                            </div>
+                            <p class="text-sm text-slate-500">Total chatbot interactions</p>
+                        </div>
+                        <div class="kpi-card flex flex-col gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 text-xl">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Chat Sessions</p>
+                                <p class="text-4xl font-black text-slate-900 mt-1" id="kpi-sessions">—</p>
+                            </div>
+                            <p class="text-sm text-slate-500">Unique conversation threads</p>
+                        </div>
+                        <div class="kpi-card flex flex-col gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-pink-100 flex items-center justify-center text-pink-600 text-xl">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Avg. Rating</p>
+                                <p class="text-4xl font-black text-slate-900 mt-1" id="kpi-rating">—</p>
+                            </div>
+                            <p class="text-sm text-slate-500" id="kpi-rating-sub">— reviews collected</p>
+                        </div>
+                        <div class="kpi-card flex flex-col gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600 text-xl">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Msgs / Session</p>
+                                <p class="text-4xl font-black text-slate-900 mt-1" id="kpi-msgs-per-session">—</p>
+                            </div>
+                            <p class="text-sm text-slate-500">Avg. engagement depth</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row 1: Registrations Trend + Pest Distribution -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Registration Trend -->
+                        <div class="chart-container">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-black text-slate-900 tracking-tight">Registrations</h3>
+                                    <p class="text-sm text-slate-500 mt-1">New farmers — last 7 days</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center text-sky-600 text-lg">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div style="position:relative; height:200px;">
+                                <canvas id="chart-reg-trend"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Top Pest Detections -->
+                        <div class="chart-container">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-black text-slate-900 tracking-tight">Top Diagnoses</h3>
+                                    <p class="text-sm text-slate-500 mt-1">Most detected crop diseases / pests</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600 text-lg">
+                                    <i class="fas fa-microscope"></i>
+                                </div>
+                            </div>
+                            <div style="position:relative; height:200px;">
+                                <canvas id="chart-pests"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row 2: Districts doughnut + Feedback ratings -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Top Districts -->
+                        <div class="chart-container">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-black text-slate-900 tracking-tight">User Distribution</h3>
+                                    <p class="text-sm text-slate-500 mt-1">Top 10 districts by registered farmers</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 text-lg">
+                                    <i class="fas fa-map-location-dot"></i>
+                                </div>
+                            </div>
+                            <div style="position:relative; height:300px;">
+                                <canvas id="chart-districts"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Feedback Ratings Breakdown -->
+                        <div class="chart-container self-start">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-black text-slate-900 tracking-tight">Feedback Ratings</h3>
+                                    <p class="text-sm text-slate-500 mt-1">Star-by-star breakdown</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center text-pink-600 text-lg">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <div id="ratings-breakdown" class="space-y-5">
+                                <p class="text-slate-400 text-base text-center py-6"><i class="fas fa-circle-notch animate-spin"></i></p>
+                            </div>
+                            <!-- Summary row -->
+                            <div id="ratings-summary" class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
+                                <div class="text-center">
+                                    <p class="text-3xl font-black text-slate-900" id="summary-avg">—</p>
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Most Given ★</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-3xl font-black text-slate-900" id="summary-total">—</p>
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Total Reviews</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-3xl font-black text-red-500" id="summary-positive">—</p>
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Critical (1-2★)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Derived Insights Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="kpi-card flex flex-col gap-4 border-l-4 border-emerald-400">
+                            <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Scans per Farmer</p>
+                            <p class="text-4xl font-black text-emerald-600" id="insight-scans-per-farmer">—</p>
+                            <p class="text-sm text-slate-500">Avg. AI diagnostics per registered user</p>
+                        </div>
+                        <div class="kpi-card flex flex-col gap-4 border-l-4 border-indigo-400">
+                            <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Platform Engagement</p>
+                            <p class="text-4xl font-black text-indigo-600" id="insight-engagement">—%</p>
+                            <p class="text-sm text-slate-500">Farmers who used at least one AI feature</p>
+                        </div>
+                        <div class="kpi-card flex flex-col gap-4 border-l-4 border-pink-400">
+                            <p class="text-xs font-black text-slate-500 uppercase tracking-widest">Satisfaction Score</p>
+                            <p class="text-4xl font-black text-pink-600" id="insight-satisfaction">—%</p>
+                            <p class="text-sm text-slate-500">Reviews with rating ≥ 4 stars</p>
+                        </div>
+                    </div>
+
+                </div><!-- /tab-analytics -->
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // ── Chart instances ──
+        let chartRegTrend = null;
+        let chartPests    = null;
+        let chartDistricts = null;
+
+        // ── Shared palette ──
+        const PALETTE = [
+            '#10b981','#6366f1','#f59e0b','#ef4444','#8b5cf6',
+            '#14b8a6','#f97316','#06b6d4','#ec4899','#84cc16'
+        ];
+
+        // ── Tab switcher ──
+        function switchTab(tab) {
+            const tabs  = ['overview', 'analytics'];
+            const titles = {
+                overview:  { title: 'System Overview',       sub: 'Live Data Control' },
+                analytics: { title: 'Advanced Analytics',    sub: 'Insights & Metrics' }
+            };
+            tabs.forEach(t => {
+                document.getElementById('tab-' + t).classList.toggle('hidden', t !== tab);
+                const btn = document.getElementById('tab-btn-' + t);
+                btn.classList.toggle('active', t === tab);
+            });
+            document.getElementById('tab-page-title').textContent    = titles[tab].title;
+            document.getElementById('tab-page-subtitle').textContent = titles[tab].sub;
+
+            // Charts rendered while hidden have 0-size canvas — resize them once visible
+            if (tab === 'analytics') {
+                requestAnimationFrame(() => {
+                    [chartRegTrend, chartPests, chartDistricts].forEach(c => {
+                        if (c) c.resize();
+                    });
+                });
+            }
+        }
+
+        // ── Chart helpers ──
+        function buildOrUpdateChart(instance, id, type, labels, datasets, options = {}) {
+            if (instance) { instance.destroy(); }
+            const ctx = document.getElementById(id).getContext('2d');
+            return new Chart(ctx, { type, data: { labels, datasets }, options: { responsive: true, ...options } });
+        }
+
+        // ── Main data loader ──
+        async function loadOverview() {
+            try {
+                const userStr = localStorage.getItem('agricare_user') || '{}';
+                const res  = await fetch('/backend/admin_stats_api.php', { headers: { 'X-User-Data': userStr } });
+                const data = await res.json();
+
+                // ── Overview KPIs ──
+                document.getElementById('stat-farmers').textContent   = (data.farmers  || 0).toLocaleString('en-IN');
+                document.getElementById('stat-subsidies').textContent = (data.subsidies || 0).toLocaleString('en-IN');
+                document.getElementById('stat-markets').textContent   = (data.markets  || 0).toLocaleString('en-IN');
+                document.getElementById('stat-scans').textContent     = (data.scans    || 0).toLocaleString('en-IN');
+
+                // ── Recent Users Table ──
+                const tbody = document.getElementById('recent-users-table');
+                if (data.recentUsers && data.recentUsers.length > 0) {
+                    tbody.innerHTML = data.recentUsers.map(u => `
+                        <tr class="hover:bg-slate-50 transition-colors border-t border-slate-50">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 font-black text-[10px] uppercase shadow-sm">
+                                        ${(u.name || 'F').charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 leading-tight">${u.name}</p>
+                                        <p class="text-[9px] text-slate-400">${u.phone || ''}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-xs text-slate-600 font-bold">${u.district || '—'}</td>
+                            <td class="px-6 py-4 text-xs text-slate-400 font-medium">${u.phone || '—'}</td>
+                            <td class="px-6 py-4 text-xs text-slate-400 font-medium">
+                                ${new Date(u.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short'})}
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="py-12 text-center text-slate-400">No recent signups</td></tr>';
+                }
+
+                // ── Analytics section ──
+                const a = data.analytics || {};
+
+                // KPI cards
+                const chat     = a.totalChatMessages || 0;
+                const sessions = a.uniqueSessions    || 0;
+                const avgRat   = a.avgRating         || 0;
+                const feedbacks= a.totalFeedbacks    || 0;
+                const msgsPerSession = sessions > 0 ? (chat / sessions).toFixed(1) : '—';
+
+                document.getElementById('kpi-chat').textContent            = chat.toLocaleString('en-IN');
+                document.getElementById('kpi-sessions').textContent        = sessions.toLocaleString('en-IN');
+                document.getElementById('kpi-rating').textContent          = avgRat ? `${avgRat} ★` : '—';
+                document.getElementById('kpi-rating-sub').textContent      = `${feedbacks.toLocaleString('en-IN')} reviews collected`;
+                document.getElementById('kpi-msgs-per-session').textContent = msgsPerSession;
+
+                // Derived insights
+                const farmers = data.farmers || 0;
+                const scans   = data.scans   || 0;
+                document.getElementById('insight-scans-per-farmer').textContent =
+                    farmers > 0 ? (scans / farmers).toFixed(2) : '—';
+
+                const engagedFarmers = (a.topPests || []).reduce((s, p) => s + p.count, 0);
+                document.getElementById('insight-engagement').textContent =
+                    farmers > 0 ? Math.min(100, Math.round((engagedFarmers / farmers) * 100)) + '%' : '—%';
+
+                const rb = a.ratingBreakdown || {};
+                const highRatings = (rb[4] || 0) + (rb[5] || 0);
+                document.getElementById('insight-satisfaction').textContent =
+                    feedbacks > 0 ? Math.round((highRatings / feedbacks) * 100) + '%' : '—%';
+
+                // Registration trend chart
+                const trend = a.regTrend || [];
+                chartRegTrend = buildOrUpdateChart(chartRegTrend, 'chart-reg-trend', 'line',
+                    trend.map(t => t.label),
+                    [{
+                        label: 'Registrations',
+                        data: trend.map(t => t.count),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16,185,129,0.10)',
+                        fill: true,
+                        tension: 0.45,
+                        pointBackgroundColor: '#10b981',
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        borderWidth: 2.5
+                    }],
+                    {
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f1f5f9' } },
+                            x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+                        }
+                    }
+                );
+
+                // Top pests bar chart
+                const pests = (a.topPests || []).slice(0, 8);
+                chartPests = buildOrUpdateChart(chartPests, 'chart-pests', 'bar',
+                    pests.map(p => p.name.length > 20 ? p.name.slice(0, 18) + '…' : p.name),
+                    [{
+                        label: 'Detections',
+                        data: pests.map(p => p.count),
+                        backgroundColor: pests.map((_, i) => PALETTE[i % PALETTE.length] + 'cc'),
+                        borderColor:     pests.map((_, i) => PALETTE[i % PALETTE.length]),
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    }],
+                    {
+                        indexAxis: 'y',
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: '#f1f5f9' } },
+                            y: { ticks: { font: { size: 10 } }, grid: { display: false } }
+                        }
+                    }
+                );
+
+                // District horizontal bar chart
+                const districts = (a.topDistricts || []).slice(0, 10).reverse();
+                chartDistricts = buildOrUpdateChart(chartDistricts, 'chart-districts', 'bar',
+                    districts.map(d => d.district),
+                    [{
+                        label: 'Farmers',
+                        data: districts.map(d => d.count),
+                        backgroundColor: districts.map((_, i) => PALETTE[(9 - i) % PALETTE.length] + 'dd'),
+                        borderColor:     districts.map((_, i) => PALETTE[(9 - i) % PALETTE.length]),
+                        borderWidth: 1.5,
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }],
+                    {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ` ${ctx.parsed.x} farmer${ctx.parsed.x !== 1 ? 's' : ''}`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, font: { size: 11, family: 'Poppins' }, color: '#64748b' },
+                                grid: { color: '#f1f5f9' },
+                                border: { display: false }
+                            },
+                            y: {
+                                ticks: { font: { size: 11, family: 'Poppins' }, color: '#1e293b' },
+                                grid: { display: false },
+                                border: { display: false }
+                            }
+                        }
+                    }
+                );
+
+                // Rating bars
+                const ratingEl = document.getElementById('ratings-breakdown');
+                if (feedbacks > 0) {
+                    const starColors = { 5: '#22c55e', 4: '#84cc16', 3: '#f59e0b', 2: '#f97316', 1: '#ef4444' };
+                    ratingEl.innerHTML = [5, 4, 3, 2, 1].map(star => {
+                        const cnt = rb[star] || 0;
+                        const pct = feedbacks > 0 ? Math.round((cnt / feedbacks) * 100) : 0;
+                        return `
+                            <div class="flex items-center gap-3">
+                                <span class="text-[11px] font-black text-slate-600 w-6 shrink-0">${star}★</span>
+                                <div class="rating-bar-track flex-1">
+                                    <div class="rating-bar-fill" style="width:${pct}%; background:${starColors[star]};"></div>
+                                </div>
+                                <span class="text-[11px] font-bold text-slate-500 w-12 text-right shrink-0">${cnt} (${pct}%)</span>
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Populate summary row
+                    // Modal rating = the star level with the highest count
+                    const modalStar = [5,4,3,2,1].reduce((best, s) => (rb[s]||0) > (rb[best]||0) ? s : best, 5);
+                    const criticalCount = (rb[1] || 0) + (rb[2] || 0);
+                    document.getElementById('summary-avg').textContent      = `${modalStar} ★`;
+                    document.getElementById('summary-total').textContent    = feedbacks.toLocaleString('en-IN');
+                    document.getElementById('summary-positive').textContent = criticalCount;
+                } else {
+                    ratingEl.innerHTML = '<p class="text-slate-400 text-sm text-center py-6">No feedback yet</p>';
+                    document.getElementById('ratings-summary').classList.add('hidden');
+                }
+
+            } catch (err) {
+                console.error('Failed to load stats:', err);
+            }
+        }
+        
+        loadOverview();
+        setInterval(loadOverview, 300000); // 5 min refresh
+
+        // Universal Scroll Progress Bar
+        document.addEventListener('scroll', function(e) {
+            let target = e.target;
+            if (target === document) target = document.documentElement;
+            let winScroll = target.scrollTop;
+            let height = target.scrollHeight - target.clientHeight;
+            if (height <= 0) return;
+            let scrolled = (winScroll / height) * 100;
+            const bar = document.getElementById("progressBar");
+            if (bar) {
+                bar.style.width = scrolled + "%";
+                bar.style.height = "5px";
+                bar.style.background = "linear-gradient(90deg, #10b981, #f59e0b)";
+                bar.style.position = "fixed";
+                bar.style.top = "0";
+                bar.style.left = "0";
+                bar.style.zIndex = "9999";
+                bar.style.transition = "width 0.1s";
+            }
+        }, true);
+    </script>
+</body>
+</html>

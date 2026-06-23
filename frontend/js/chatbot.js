@@ -18,8 +18,8 @@
     const imagePreview = document.getElementById('imagePreview');
     const removeImgBtn = document.getElementById('removeImgBtn');
 
-    const apiUrl = '../backend/chat_api.php';
-    const shopsApiUrl = '../backend/shops_api.php';
+    const apiUrl = '/backend/chat_api.php';
+    const shopsApiUrl = '/backend/shops_api.php';
 
     function getBrowserLocation() {
         return new Promise((resolve) => {
@@ -43,9 +43,9 @@
         if (messagesEl.children.length === 0 || messagesEl.textContent.includes('Start a farming conversation')) {
             messagesEl.innerHTML = '';
         }
-        renderMessage('user', pest ? `${(window.CHAT_T && window.CHAT_T.findShopsMsg && pest) ? 'Show shops for: ' + pest : 'Show shops for: ' + pest}` : ((window.CHAT_T && window.CHAT_T.findShopsMsg) || 'Find nearby agricultural shops 🗺️'));
+        renderMessage('user', pest ? `${(window.CHAT_T && window.CHAT_T.findShopsMsg && pest) ? 'Show shops for: ' + pest : 'Show shops for: ' + pest}` : ((window.CHAT_T && window.CHAT_T.findShopsMsg) || 'Find nearby agricultural shops'));
 
-        const loadingEl = renderMessage('assistant', (window.CHAT_T && window.CHAT_T.gettingLocation) || '📍 Getting your location & finding nearby shops...');
+        const loadingEl = renderMessage('assistant', (window.CHAT_T && window.CHAT_T.gettingLocation) || '<i class="fas fa-map-marker-alt text-emerald-600 animate-pulse"></i> Getting your location & finding nearby shops...');
 
         try {
             const gps = await getBrowserLocation();
@@ -116,7 +116,7 @@
         const btnInput = document.getElementById('muteBtnInput');
 
         if (isSpeaking) {
-            if (btnDesktop) btnDesktop.innerHTML = '<i class="fas fa-stop"></i> Voice <span>Stop</span>';
+            if (btnDesktop) btnDesktop.innerHTML = 'Voice <span>Stop</span>';
             if (btnMobile) btnMobile.innerHTML = '<i class="fas fa-stop"></i>';
             if (btnInput) btnInput.innerHTML = '<i class="fas fa-stop text-lg"></i>';
             return;
@@ -472,7 +472,7 @@
         `;
 
         if (data.pesticides && data.pesticides.length > 0) {
-            pestHtml += `<div class="px-5 py-4 border-b border-gray-100"><p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">${t.recommendedPesticides || '💊 Recommended Pesticides'}</p><div class="space-y-2">`;
+            pestHtml += `<div class="px-5 py-4 border-b border-gray-100"><p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">${t.recommendedPesticides || '<i class="fas fa-flask text-emerald-600"></i> Recommended Pesticides'}</p><div class="space-y-2">`;
             data.pesticides.forEach((p) => {
                 pestHtml += `<div class="flex items-start justify-between gap-3 rounded-xl bg-gray-50 border border-gray-200 px-4 py-3">
                     <div><p class="font-black text-gray-800 text-sm">${escapeHtml(p.name || '')}</p>
@@ -486,7 +486,7 @@
         }
 
         if (data.shops && data.shops.length > 0) {
-            pestHtml += `<div class="px-5 py-4"><p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">${t.nearbyShops || '🏪 Nearby Agricultural Shops'}</p><div class="space-y-3">`;
+            pestHtml += `<div class="px-5 py-4"><p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3">${t.nearbyShops || '<i class="fas fa-store text-emerald-600"></i> Nearby Agricultural Shops'}</p><div class="space-y-3">`;
             data.shops.forEach((s) => {
                 pestHtml += buildShopCard(s);
             });
@@ -522,8 +522,8 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="font-bold text-gray-800 text-sm truncate">${escapeHtml(s.name || '')}</p>
-                        <p class="text-xs text-gray-500 mt-0.5">📍 ${escapeHtml((s.address || '') + (s.city ? ', ' + s.city : ''))}</p>
-                        ${s.phone ? `<p class="text-xs text-gray-500 mt-0.5">📞 ${escapeHtml(s.phone)}</p>` : ''}
+                        <p class="text-xs text-gray-500 mt-0.5"><i class='fas fa-map-marker-alt text-emerald-600'></i> ${escapeHtml((s.address || '') + (s.city ? ', ' + s.city : ''))}</p>
+                        ${s.phone ? `<p class="text-xs text-gray-500 mt-0.5"><i class='fas fa-phone text-emerald-600'></i> ${escapeHtml(s.phone)}</p>` : ''}
                     </div>
                 </div>
                 <div class="flex gap-2 mt-3 flex-wrap">${mapBtn}${dirBtn}</div>
@@ -536,8 +536,8 @@
         const t = window.CHAT_T || {};
 
         const gpsNote = data.gps
-            ? `<span class="text-[10px] text-gray-300 font-medium ml-2 bg-black/30 px-2 py-0.5 rounded-full">📍 GPS: ${data.gps.lat.toFixed(4)}, ${data.gps.lng.toFixed(4)}</span>`
-            : `<span class="text-[10px] text-gray-300 font-medium ml-2 bg-black/30 px-2 py-0.5 rounded-full">📍 Based on district</span>`;
+            ? `<span class="text-[10px] text-gray-300 font-medium ml-2 bg-black/30 px-2 py-0.5 rounded-full"><i class='fas fa-map-marker-alt text-emerald-600'></i> GPS: ${data.gps.lat.toFixed(4)}, ${data.gps.lng.toFixed(4)}</span>`
+            : `<span class="text-[10px] text-gray-300 font-medium ml-2 bg-black/30 px-2 py-0.5 rounded-full"><i class='fas fa-map-marker-alt text-emerald-600'></i> Based on district</span>`;
 
         let html = `
             <div class="max-w-3xl w-full flex gap-4">
@@ -577,7 +577,7 @@
         }
 
         if (data.shops && data.shops.length > 0) {
-            html += `<div class="px-5 py-4"><p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">🏪 Shops in Database Near You</p><div class="space-y-3">`;
+            html += `<div class="px-5 py-4"><p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3"><i class="fas fa-store text-emerald-600"></i> Shops in Database Near You</p><div class="space-y-3">`;
             data.shops.forEach((s) => {
                 html += buildShopCard(s);
             });
@@ -592,7 +592,7 @@
                 <div class="pt-3 border-t border-slate-100 mt-3">
                     <a href="${moreUrl}" target="_blank" rel="noopener"
                        class="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-emerald-600 text-white text-xs font-black shadow-md hover:opacity-90 transition-opacity">
-                        <i class="fas fa-search-location"></i> ${(window.CHAT_T && window.CHAT_T.searchMoreShops) || '🔍 Search More Shops on Google Maps'}
+                        <i class="fas fa-search-location"></i> ${(window.CHAT_T && window.CHAT_T.searchMoreShops) || 'Search More Shops on Google Maps'}
                     </a>
                 </div>
             `;
