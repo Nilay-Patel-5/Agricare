@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
+const mongoose = require('mongoose');
 
 const Admin = require('../models/Admin');
 const Farmer = require('../models/Farmer');
@@ -844,6 +845,7 @@ router.route('/chat_api.php')
 
             // session retrieval
             if (req.query.sessions !== undefined) {
+                console.log('Fetching sessions for reqUserId:', reqUserId);
                 // Return unique session keys first user message
                 const history = await ChatMessage.aggregate([
                     { $match: { user_id: new mongoose.Types.ObjectId(reqUserId), role: 'user' } },
@@ -862,15 +864,14 @@ router.route('/chat_api.php')
                     created_at: h.createdAt.toISOString(),
                     last_activity: h.createdAt.toISOString()
                 }));
+                console.log('Returned sessions count:', sessions.length);
                 return res.json({ sessions });
             }
 
             const sessionKey = req.query.session_key || 'guest';
             const history = await ChatMessage.find({
-                $or: [
-                    { user_id: reqUserId },
-                    { session_key: sessionKey }
-                ]
+                user_id: reqUserId,
+                session_key: sessionKey
             }).sort({ createdAt: 1 }).limit(50);
 
             return res.json({
@@ -987,8 +988,13 @@ ${shopContext || 'No shops listed'}
             const conversation = [
                 {
                     role: 'system',
-                    content: `You are AgriBot, a professional farming assistant. You must reply ONLY in the farmer's preferred language: ${farmer.pref_lang === 'gu' ? 'Gujarati' : farmer.pref_lang === 'hi' ? 'Hindi' : 'English'}.
-Rules: Be extremely brief, practical, and action-oriented. Address the farmer by name and use the context details provided below. Keep your responses formatted clearly with markdown.`
+                    content: `You are AgriBot, an elite Agricultural Expert AI possessing deep knowledge of agronomy, plant pathology, meteorology, soil science, and agricultural economics. 
+You must reply ONLY in the farmer's preferred language: ${farmer.pref_lang === 'gu' ? 'Gujarati' : farmer.pref_lang === 'hi' ? 'Hindi' : 'English'}.
+Rules:
+1. Provide highly actionable, scientifically accurate, and comprehensive step-by-step advice.
+2. Address the farmer by name and deeply integrate the context details provided below into your strategy.
+3. If the farmer asks a non-agricultural question, politely steer the conversation back to farming.
+4. Use structured markdown formatting (bold text, bullet points, numbered lists) to make complex advice easy to read and extremely professional.`
                 },
                 {
                     role: 'user',
