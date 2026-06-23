@@ -8,6 +8,14 @@
   ],
   "routes": [
     {
+      "src": "/frontend/(.*)",
+      "dest": "/frontend/$1"
+    },
+    {
+      "src": "/dashboard/(.*)",
+      "dest": "/dashboard/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "backend/src/server.js"
     }
