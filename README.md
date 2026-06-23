@@ -24,13 +24,14 @@ AgriCare provides a centralized platform that delivers live mandi prices, weathe
 - Admin & farmer management
 - Crop disease detection  
 - Chatbot & Crop Calendar
+- Government Subsidies Tracking
 
 ## Tech Stack
 
 - Frontend: HTML, CSS, JavaScript, Tailwind CSS, EJS  
 - Backend: Node.js, Express.js  
 - Database: MongoDB (via Mongoose)
-- APIs: Agmarknet API, Weather API  
+- APIs: Agmarknet API, OpenMateo Weather API  
 
 ## System Architecture
 
@@ -38,11 +39,16 @@ User → Frontend (EJS/Tailwind) → Node.js Backend → APIs / MongoDB → Resp
 
 ## Database Design
 
-- users (farmers, admins)  
-- markets  
-- districts  
-- commodities  
-- market_prices  
+- admins
+- aiscans
+- chatmessages
+- crops
+- farmers(users) 
+- marketsprices
+- pesticides
+- sessions
+- shops
+- subsidies 
 
 ## Screenshots
 
