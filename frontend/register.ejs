@@ -19,10 +19,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        @media (min-width: 1024px) {
+            html, body {
+                overflow: hidden !important;
+                height: 100vh !important;
+            }
+        }
         body {
-
             font-family: 'Poppins', sans-serif;
-
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        ::-webkit-scrollbar {
+            display: none !important;
         }
 
 
@@ -127,7 +137,7 @@
             appearance: none;
             border-radius: 1rem;
             width: 100%;
-            padding: 12px 40px 12px 16px;
+            padding: 8px 30px 8px 14px;
 
             border: 1px solid #e5e7eb;
             color: #1f2937;
@@ -227,13 +237,13 @@
 
 
 
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+<body class="bg-gray-50 flex items-center justify-center min-h-screen lg:overflow-hidden">
 
-    <div id="progressBar"></div>
 
-    <div class="flex w-full h-screen bg-white overflow-hidden">
 
-        <div class="hidden lg:flex lg:w-1/2 relative bg-emerald-900 overflow-hidden items-end justify-start">
+    <div class="flex w-full min-h-screen bg-white">
+
+        <div class="hidden lg:flex lg:w-1/2 sticky top-0 h-screen relative bg-emerald-900 overflow-hidden items-end justify-start">
 
             <div class="absolute inset-0 bg-emerald-900/30 mix-blend-multiply z-10"></div>
 
@@ -251,7 +261,7 @@
 
 
 
-        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-teal-50">
+        <div class="w-full lg:w-1/2 lg:h-screen flex items-start lg:items-center justify-center p-4 sm:p-6 lg:p-8 relative lg:overflow-hidden max-lg:overflow-y-auto bg-gradient-to-br from-emerald-50 via-white to-teal-50">
 
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-200 rounded-full blur-3xl opacity-50 z-0"></div>
 
@@ -259,7 +269,7 @@
 
 
 
-            <div class="max-w-xl w-full space-y-6 relative z-10 glass-card p-6 sm:p-8 rounded-[2rem] border border-white/60 shadow-xl">
+            <div class="max-w-xl w-full space-y-2 relative z-10 glass-card p-5 sm:p-6 rounded-[2rem] border border-white/60 shadow-xl my-4 lg:my-0">
 
                 <div class="text-center relative z-10">
 
@@ -279,7 +289,7 @@
 
                     <a href="/" class="inline-flex items-center gap-3 group mb-2">
 
-                        <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition-transform">
+                        <div class="w-8 h-8 text-sm bg-gradient-to-br from-yellow-400 to-emerald-600 rounded-xl flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition-transform">
 
                             <i class="fas fa-wheat-awn"></i>
 
@@ -303,7 +313,7 @@
 
 
 
-                <div class="flex justify-center mb-4 relative z-10">
+                <div class="flex justify-center mb-2 relative z-10">
 
                     <div class="flex bg-gray-100/70 p-1 rounded-full shadow-sm">
 
@@ -311,7 +321,7 @@
 
                         <button type="button" onclick="changeLang('gu')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="gu">&#2711;&#2753;</button>
 
-                        <button type="button" onclick="changeLang('hi')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="hi">&#2361;&#2367;&#2306;</button>
+                        <button type="button" onclick="changeLang('hi')" class="lang-btn px-3 py-2 text-xs font-bold rounded-full mx-0.5 hover:bg-emerald-100 transition-all" data-lang-key="hi">हि</button>
 
                     </div>
 
@@ -319,13 +329,13 @@
 
 
 
-                <form id="registerForm" class="mt-4 space-y-4 relative z-10" onsubmit="handleRegister(event)">
+                <form id="registerForm" class="mt-2 space-y-2 relative z-10" onsubmit="handleRegister(event)">
 
                     <input type="hidden" id="reg-role-input" value="farmer">
 
 
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
 
                         <div>
 
@@ -333,7 +343,7 @@
 
                             <input id="full_name" type="text" required
 
-                                class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                                class="appearance-none rounded-2xl block w-full px-3 py-2 text-sm border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
 
                                 placeholder="Nilay Rajeshbhai Patel" data-lang-placeholder="placeholderFullName" oninput="validateFullName()">
 
@@ -349,7 +359,7 @@
 
                             <input id="email" type="email"
 
-                                class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                                class="appearance-none rounded-2xl block w-full px-3 py-2 text-sm border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
 
                                 placeholder="name@example.com" oninput="validateEmail()" onblur="validateEmail(true)">
                             <p id="email-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1"></p>
@@ -364,7 +374,7 @@
 
                             <input id="phone_no" type="tel" required
 
-                                class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                                class="appearance-none rounded-2xl block w-full px-3 py-2 text-sm border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
 
                                 placeholder="9876543210" oninput="validatePhone()">
 
@@ -442,7 +452,7 @@
 
                             <input id="pincode" type="text" required maxlength="6"
 
-                                class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
+                                class="appearance-none rounded-2xl block w-full px-3 py-2 text-sm border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm"
 
                                 placeholder="392001" oninput="validatePincode()" onblur="validatePincode(true)">
                             <p id="pincode-error" class="hidden text-xs text-red-500 mt-1 font-bold ml-1"></p>
@@ -487,7 +497,7 @@
 
                                 <input id="pin" type="password" inputmode="numeric" required maxlength="6"
 
-                                    class="appearance-none rounded-2xl block w-full px-4 py-3 border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm pr-10"
+                                    class="appearance-none rounded-2xl block w-full px-3 py-2 text-sm border border-gray-200 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all sm:text-sm pr-10"
 
                                     placeholder="******" oninput="validatePin()">
 
@@ -511,7 +521,7 @@
 
                         <button id="submit-btn" type="submit"
 
-                            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all">
+                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-bold rounded-2xl text-white bg-gradient-to-r from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 transition-all">
 
                             <span data-lang="submitBtn">Create Account</span>
 

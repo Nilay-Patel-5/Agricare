@@ -168,8 +168,8 @@
                                         <tr>
                                             <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Farmer</th>
                                             <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">District</th>
-                                            <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Contact</th>
-                                            <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Date</th>
+                                            <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">Contact</th>
+                                            <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">Date</th>
                                         </tr>
                                     </thead>
                                     <tbody id="recent-users-table" class="divide-y divide-slate-100">
@@ -412,8 +412,8 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-xs text-slate-600 font-bold">${u.district || '—'}</td>
-                            <td class="px-6 py-4 text-xs text-slate-400 font-medium">${u.phone || '—'}</td>
-                            <td class="px-6 py-4 text-xs text-slate-400 font-medium">
+                            <td class="px-6 py-4 text-xs text-slate-400 font-medium hidden md:table-cell">${u.phone || '—'}</td>
+                            <td class="px-6 py-4 text-xs text-slate-400 font-medium hidden md:table-cell">
                                 ${new Date(u.created_at).toLocaleDateString('en-IN', {day:'2-digit', month:'short'})}
                             </td>
                         </tr>

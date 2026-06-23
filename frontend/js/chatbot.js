@@ -114,18 +114,20 @@
         const btnDesktop = document.getElementById('muteBtnDesktop');
         const btnMobile = document.getElementById('muteBtnMobile');
         const btnInput = document.getElementById('muteBtnInput');
+        const t = window.CHAT_T || {};
+        const voiceText = t.voice || 'Voice';
 
         if (isSpeaking) {
-            if (btnDesktop) btnDesktop.innerHTML = 'Voice <span>Stop</span>';
+            if (btnDesktop) btnDesktop.innerHTML = `${voiceText} <span>Stop</span>`;
             if (btnMobile) btnMobile.innerHTML = '<i class="fas fa-stop"></i>';
             if (btnInput) btnInput.innerHTML = '<i class="fas fa-stop text-lg"></i>';
             return;
         }
 
         const iconClass = isMuted ? 'fa-volume-mute' : 'fa-volume-up';
-        const labelText = isMuted ? 'Off' : 'On';
+        const labelText = isMuted ? (t.voiceOff || 'Off') : (t.voiceOn || 'On');
 
-        if (btnDesktop) btnDesktop.innerHTML = `<i class="fas ${iconClass}"></i> Voice <span>${labelText}</span>`;
+        if (btnDesktop) btnDesktop.innerHTML = `<i class="fas ${iconClass} mr-1"></i><span data-lang="voice">${voiceText}</span> <span id="voiceStateLabel">${labelText}</span>`;
         if (btnMobile) btnMobile.innerHTML = `<i class="fas ${iconClass}"></i>`;
         if (btnInput) btnInput.innerHTML = `<i class="fas ${iconClass} text-lg"></i>`;
     }
@@ -397,10 +399,20 @@
 
     function renderProfileSummary() {
         const user = getUserPayload();
+        const t = window.CHAT_T || {};
         const name = user.name || 'Guest farmer';
-        const district = user.district || 'district not set';
-        const crop = user.crop || 'crop not selected';
-        profileSummaryEl.textContent = `${name} • ${district} • ${crop}`;
+        
+        let districtStr = user.district || 'district not set';
+        if (user.district && t[user.district.toLowerCase()]) {
+            districtStr = t[user.district.toLowerCase()];
+        }
+        
+        let cropStr = user.crop || 'crop not selected';
+        if (cropStr === 'crop not selected' && t.cropNotSelected) {
+            cropStr = t.cropNotSelected;
+        }
+
+        profileSummaryEl.textContent = `${name} • ${districtStr} • ${cropStr}`;
     }
 
     function renderMessage(role, text) {
@@ -627,11 +639,17 @@
             return;
         }
 
+        const t = window.CHAT_T || {};
+        const todayGroup = t.today || 'Today';
+        const yesterdayGroup = t.yesterday || 'Yesterday';
+        const prev7Group = t.previous7Days || 'Previous 7 Days';
+        const olderGroup = t.older || 'Older';
+
         const groups = {
-            Today: [],
-            Yesterday: [],
-            'Previous 7 Days': [],
-            Older: []
+            [todayGroup]: [],
+            [yesterdayGroup]: [],
+            [prev7Group]: [],
+            [olderGroup]: []
         };
 
         const now = new Date();
@@ -646,10 +664,10 @@
             const d = new Date(s.last_activity);
             const dateStr = d.toDateString();
 
-            if (dateStr === todayStr) groups.Today.push(s);
-            else if (dateStr === yesterdayStr) groups.Yesterday.push(s);
-            else if (d > sevenDaysAgo) groups['Previous 7 Days'].push(s);
-            else groups.Older.push(s);
+            if (dateStr === todayStr) groups[todayGroup].push(s);
+            else if (dateStr === yesterdayStr) groups[yesterdayGroup].push(s);
+            else if (d > sevenDaysAgo) groups[prev7Group].push(s);
+            else groups[olderGroup].push(s);
         });
 
         Object.keys(groups).forEach((groupName) => {
