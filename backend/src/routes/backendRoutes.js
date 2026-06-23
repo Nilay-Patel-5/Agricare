@@ -199,7 +199,7 @@ router.post('/register_api.php', async (req, res) => {
         }
 
         // Validate Pincode district boundaries using postal API
-        const pincodesDir = path.join(__dirname, '../cache/pincodes');
+        const pincodesDir = process.env.VERCEL === '1' ? '/tmp/pincodes' : path.join(__dirname, '../cache/pincodes');
         const pincodeCachePath = path.join(pincodesDir, `${inputPincode}.json`);
         let pincodeLookupDistricts = [];
         let pincodeApiFailed = false;
@@ -393,7 +393,7 @@ router.post('/get_market.php', async (req, res) => {
         const { districts = [], markets = [], commodities = [] } = req.body || {};
         
         // Simple Caching logic
-        const cachePath = path.join(__dirname, '../cache/get_market_cache.json');
+        const cachePath = process.env.VERCEL === '1' ? '/tmp/get_market_cache.json' : path.join(__dirname, '../cache/get_market_cache.json');
         
         // Check if cached
         const hasFilters = districts.length > 0 || markets.length > 0 || commodities.length > 0;
@@ -406,7 +406,7 @@ router.post('/get_market.php', async (req, res) => {
         }
 
         // Trigger market sync asynchronously in background if out-of-sync
-        const syncMetaPath = path.join(__dirname, '../cache/last_market_sync.json');
+        const syncMetaPath = process.env.VERCEL === '1' ? '/tmp/last_market_sync.json' : path.join(__dirname, '../cache/last_market_sync.json');
         let shouldSync = true;
         
         if (fs.existsSync(syncMetaPath)) {
@@ -489,7 +489,7 @@ router.post('/get_market.php', async (req, res) => {
 // 6. GET FILTERS API (For Mandi Search Autocomplete lists)
 router.post('/get_filters.php', async (req, res) => {
     try {
-        const cachePath = path.join(__dirname, '../cache/get_filters_cache.json');
+        const cachePath = process.env.VERCEL === '1' ? '/tmp/get_filters_cache.json' : path.join(__dirname, '../cache/get_filters_cache.json');
         
         if (fs.existsSync(cachePath)) {
             const stat = fs.statSync(cachePath);
@@ -729,7 +729,8 @@ router.get('/ai_health.php', (req, res) => {
 
 // Multipart/form-data upload setup for disease diagnostic
 const multer = require('multer');
-const upload = multer({ dest: path.join(__dirname, '../cache/uploads/') });
+const uploadDir = process.env.VERCEL === '1' ? '/tmp/uploads/' : path.join(__dirname, '../cache/uploads/');
+const upload = multer({ dest: uploadDir });
 
 router.post('/ai_predict.php', upload.single('image'), async (req, res) => {
     try {

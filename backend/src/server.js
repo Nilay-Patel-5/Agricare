@@ -18,7 +18,7 @@ const app = express();
 connectDB();
 
 // Ensure upload cache directories exist
-const uploadDir = path.join(__dirname, 'cache/uploads');
+const uploadDir = process.env.VERCEL === '1' ? '/tmp/uploads' : path.join(__dirname, 'cache/uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -147,7 +147,11 @@ app.use('/frontend', express.static(path.join(__dirname, '../../frontend')));
 app.use('/dashboard', express.static(path.join(__dirname, '../../dashboard')));
 
 // Start Server
-app.listen(config.port, () => {
-    console.log(`Server is running on port ${config.port}`);
-// Restart server trigger
-});
+if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
+    app.listen(config.port, () => {
+        console.log(`Server is running on port ${config.port}`);
+    });
+}
+
+// Export for Vercel Serverless
+module.exports = app;
