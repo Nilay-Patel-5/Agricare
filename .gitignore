@@ -10,6 +10,8 @@ node_modules/
 # AI / ML (IMPORTANT)
 # =========================
 ai/dataset/
+ai/Disease Detection/
+ai/data/
 ai/*.keras
 ai/*.h5
 ai/*.ipynb
@@ -56,6 +58,11 @@ Thumbs.db
 # Tailwind generated file
 frontend/output.css
 
+# =========================
+# Backend Temporary Files
+# =========================
+backend/cache/
+backend/last_market_sync.json
 # VS Code settings
 .vscode/
 
