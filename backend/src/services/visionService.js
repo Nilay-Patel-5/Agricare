@@ -70,9 +70,14 @@ Return ONLY a valid JSON object matching this structure EXACTLY:
             }
         };
 
-        // Try random key for load balancing
+        // Try multiple models to avoid 'model not found' errors
+        const fallbackModels = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash'];
         const apiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        
+        let lastError = 'All models failed';
+        for (const model of fallbackModels) {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
@@ -80,13 +85,20 @@ Return ONLY a valid JSON object matching this structure EXACTLY:
         });
 
         const data = await response.json();
-        if (!response.ok) {
-            return { error: data?.error?.message || 'Gemini Vision request failed.' };
-        }
+                if (!response.ok) {
+                    lastError = data?.error?.message || 'Gemini Vision request failed.';
+                    continue; // Try next model
+                }
 
-        const responseText = data.candidates[0].content.parts[0].text;
-        const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-        return JSON.parse(cleanedText);
+                const responseText = data.candidates[0].content.parts[0].text;
+                const cleanedText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+                return JSON.parse(cleanedText);
+            } catch (err) {
+                lastError = err.message;
+            }
+        }
+        
+        return { error: lastError };
 
     } catch (err) {
         return { error: `AI Fallback Error: ${err.message}` };
