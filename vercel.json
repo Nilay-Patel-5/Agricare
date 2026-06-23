@@ -3,29 +3,16 @@
   "builds": [
     {
       "src": "backend/src/server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "frontend/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "dashboard/**",
-      "use": "@vercel/static"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["frontend/**", "dashboard/**"]
+      }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/frontend/(.*)",
-      "dest": "/frontend/$1"
-    },
-    {
-      "src": "/dashboard/(.*)",
-      "dest": "/dashboard/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "backend/src/server.js"
+      "source": "/(.*)",
+      "destination": "/backend/src/server.js"
     }
   ]
 }
