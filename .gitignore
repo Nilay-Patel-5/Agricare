@@ -43,7 +43,7 @@ backend/ollama.local.php
 # =========================
 # Build / Generated files
 # =========================
-frontend/output.css
+# frontend/output.css
 
 # =========================
 # VS Code
@@ -56,7 +56,7 @@ frontend/output.css
 Thumbs.db
 .DS_Store
 # Tailwind generated file
-frontend/output.css
+# frontend/output.css
 
 # =========================
 # Backend Temporary Files
