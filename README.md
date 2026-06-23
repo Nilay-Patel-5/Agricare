@@ -1,98 +1,83 @@
-# AgriCare 🌾
-Smart Agriculture Platform for Real-Time Market Insights, Crop Management, and AI-Powered Guidance.
+## Project Title & Tagline
+
+# AgriCare  
+Smart Agriculture Platform for Real-Time Market Insights
 
 ## Project Description
-AgriCare is an advanced, full-stack web platform designed to assist farmers by providing real-time mandi prices, weather updates, and actionable agricultural insights. Recently overhauled into a modern Node.js/Express ecosystem, the platform integrates government APIs and leverages AI for crop disease detection. Its responsive, multilingual, and intuitive glassmorphism UI ensures critical information is highly accessible to farmers across any device.
+
+AgriCare is a web-based platform designed to assist farmers by providing real-time mandi prices, weather updates, and agricultural insights. It integrates government APIs and utilizes AI models to ensure accurate and up-to-date information, helping farmers make better decisions.
 
 ## Problem Statement
+
 Farmers often lack access to real-time market prices, reliable agricultural data, and immediate crop health diagnostics, leading to poor decision-making and financial loss.
 
 ## Solution
-AgriCare provides a centralized, robust platform that delivers:
-- **Live Mandi Prices** through real-time API integrations and cached aggregations.
-- **Multilingual Support** ensuring seamless localization (English, Gujarati, Hindi).
-- **AI-Powered Diagnostics** for crop disease detection directly within the platform.
-- **Responsive & Accessible UI** custom-built to work flawlessly on both low-end mobile devices and large desktop monitors.
 
-## Key Features
-- 📈 **Live Mandi Price Tracking** (State, District, Commodity filtering)
-- 🤖 **AI Crop Disease Detection**
-- 💬 **Interactive Farmer Chatbot**
-- 🌦️ **Real-Time Weather Updates**
-- 🌍 **Multi-language Support** (Local translations dynamically loaded)
-- 📅 **Crop Calendar** for seasonal planning
-- 🧑‍🌾 **Admin & Farmer Dashboards** with analytics and role-based management
-- 📱 **Highly Responsive UI** with glassmorphism aesthetics and custom scroll-lock behaviors
+AgriCare provides a centralized platform that delivers live mandi prices, weather updates, AI disease detection, and multilingual support, making it accessible and highly useful for farmers on both mobile and desktop.
 
-## Tech Stack (Fully Modernized)
-- **Frontend**: HTML5, CSS3, JavaScript (Vanilla), Tailwind CSS, EJS Templates
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB (via Mongoose ODM)
-- **Security & Auth**: JWT (JSON Web Tokens), bcryptjs, express-session
-- **APIs & Data**: Agmarknet API, OpenWeather API, Axios for external fetching
-- **AI/ML**: Keras/H5 Models (for disease detection)
+## Features
+
+- Live mandi price tracking  
+- Search & filter (state, district, commodity)  
+- Weather updates  
+- Multi-language support  
+- Admin & farmer management
+- Crop disease detection  
+- Chatbot & Crop Calendar
+
+## Tech Stack
+
+- Frontend: HTML, CSS, JavaScript, Tailwind CSS, EJS  
+- Backend: Node.js, Express.js  
+- Database: MongoDB (via Mongoose)
+- APIs: Agmarknet API, Weather API  
 
 ## System Architecture
-`User` → `Tailwind & EJS Frontend` → `Express.js Routes` → `MongoDB Aggregations / External APIs` → `Response` → `Dynamic UI`
 
-## Database Design (Collections)
-- `users` (Farmers, Admins)
-- `markets`
-- `districts`
-- `commodities`
-- `market_prices` (with historical aggregation pipelines)
+User → Frontend (EJS/Tailwind) → Node.js Backend → APIs / MongoDB → Response → UI
 
-## Installation & Setup
+## Database Design
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Nilay-Patel-5/Agricare.git
-   cd Agricare
-   ```
+- users (farmers, admins)  
+- markets  
+- districts  
+- commodities  
+- market_prices  
 
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+## Screenshots
 
-3. **Configure Environment Variables**
-   Create a `.env` file in the root directory and configure:
-   ```env
-   PORT=3000
-   MONGODB_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
-   WEATHER_API_KEY=your_openweather_api_key
-   ```
+- ...
 
-4. **Build Tailwind CSS (Optional/Dev)**
-   ```bash
-   npm run watch:css
-   ```
+## Installation
 
-5. **Start the Development Server**
-   ```bash
-   npm run dev
-   ```
-   *The application will now be running on `http://localhost:3000`*
+1. Clone repository  
+2. Run `npm install` to install dependencies
+3. Configure your `.env` file (MongoDB URI, JWT Secret, Weather API Key)
+4. Run `npm run dev` to start the Node.js development server
+5. Access the project on `http://localhost:3000`
 
-## API Integration
-- **Agmarknet API**: Fetches real-time crop prices in JSON format, cached locally to prevent rate-limiting and improve speed.
-- **OpenWeather API**: Dynamically updates localized weather conditions based on the user's selected district.
+## API Usage
 
-## Challenges Overcome
-- **Architecture Migration**: Successfully migrated from legacy PHP/PostgreSQL to a modern, scalable Node.js/MongoDB architecture.
-- **Responsive Layout Control**: Mastered viewport overflow handling and custom scrollbars to ensure complex forms (like the Register and Dashboard pages) fit perfectly on small laptops and mobile devices without visual clipping.
-- **Complex Aggregations**: Built efficient MongoDB aggregation pipelines (`test_agg.js`) to handle thousands of market price data points instantly.
+Agmarknet API is used to fetch real-time crop prices in JSON format, which is cached locally by our Node server to improve load times.
+
+## Challenges
+
+- Migrating architecture from legacy PHP to modern Node.js
+- Creating responsive, scroll-locked glassmorphism layouts for all devices
+- Writing complex MongoDB aggregation pipelines for real-time market data
 
 ## Future Scope
-- 📱 **Dedicated Native Mobile App** (React Native / Flutter)
-- 🔐 **OTP-Based Login System** for rural accessibility
-- 🚜 **Predictive Yield Analysis** using advanced Machine Learning
+
+- AI-based yield prediction  
+- Dedicated Native Mobile app  
+- OTP login system  
 
 ## Team
-- **Nilay Patel** – Full Stack Developer
-- **Garv** – Backend Developer
-- **Mihir** – Frontend Developer
+
+- Nilay Patel – Full Stack  
+- Garv – Backend 
+- Mihir – Frontend
 
 ## License
-Academic Project (SGP CEUP201)
+
+Academic project (SGP CEUP201)
