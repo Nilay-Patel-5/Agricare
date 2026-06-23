@@ -46,11 +46,11 @@ User → Frontend (EJS/Tailwind) → Node.js Backend → APIs / MongoDB → Resp
 
 ## Screenshots
 
-![Landing Page](images/landing-page.png)
-![Registration Form](images/register-page.png)
-![Live Market Dashboard](images/market-dashboard.png)
-![AI Disease Detector](images/ai-disease-detector.png)
-![Mobile View](images/admin-page-mobile-view.png)
+![Landing Page](frontend/assets/images/landing-page.png)
+![Registration Form](frontend/assets/images/register-page.png)
+![Live Market Dashboard](frontend/assets/images/market-dashboard.png)
+![AI Disease Detector](frontend/assets/images/ai-disease-detector.png)
+![Mobile View](frontend/assets/images/admin-page-mobile-view.png)
 
 ## Installation
 
