@@ -13,6 +13,7 @@ app = Flask(__name__)
 # Configure Keras/TF
 os.environ["KERAS_BACKEND"] = "tensorflow"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import tensorflow as tf
 tf.config.threading.set_inter_op_parallelism_threads(1)
@@ -183,7 +184,8 @@ def predict():
         img_array = np.array(img, dtype=np.float32) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
         
-        predictions = global_model.predict(img_array, verbose=0)[0]
+        # Prevent TF from allocating massive batch overhead for a single image
+        predictions = global_model(img_array, training=False).numpy()[0]
         
         top_idx = np.argmax(predictions)
         label = CLASS_NAMES[top_idx]
