@@ -1,3 +1,4 @@
+# pyright: reportMissingImports=false
 import os
 import json
 import numpy as np
@@ -18,7 +19,7 @@ MODEL_BASE_NAME = "plant_disease_model"
 KERAS_MODEL_PATH = os.path.join(DIR_PATH, f"{MODEL_BASE_NAME}.keras")
 IMAGE_SIZE = (128, 128)
 
-# Load model globally on startup to prevent slow re-loading on every request!
+# Load model globally on startup to prevent slow `re-loading on every request!
 print("Loading Keras Model... This might take a few seconds.")
 try:
     global_model = keras.models.load_model(KERAS_MODEL_PATH)
