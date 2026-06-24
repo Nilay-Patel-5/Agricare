@@ -760,9 +760,9 @@ router.post('/ai_predict.php', upload.single('image'), async (req, res) => {
                 plant: predictResult.plant || 'Detected',
                 confidence: predictResult.confidence,
                 info: {
-                    desc: predictResult.info?.desc || 'The plant appears healthy.',
-                    irrigation: predictResult.info?.irrigation || 'Maintain normal watering.',
-                    treatment: predictResult.info?.treatment || 'No treatment required.'
+                    desc: predictResult.info?.desc || (lang === 'gu' ? 'છોડ તંદુરસ્ત લાગે છે.' : lang === 'hi' ? 'पौधा स्वस्थ प्रतीत होता है।' : 'The plant appears healthy.'),
+                    irrigation: predictResult.info?.irrigation || (lang === 'gu' ? 'સામાન્ય કાળજી અને પિયત ચાલુ રાખો.' : lang === 'hi' ? 'सामान्य देखभाल जारी रखें।' : 'Maintain normal watering.'),
+                    treatment: predictResult.info?.treatment || (lang === 'gu' ? 'કોઈ સારવારની જરૂર નથી.' : lang === 'hi' ? 'किसी उपचार की आवश्यकता नहीं है।' : 'No treatment required.')
                 }
             });
         }
@@ -776,12 +776,26 @@ router.post('/ai_predict.php', upload.single('image'), async (req, res) => {
             ]
         });
 
-        let treatment = predictResult.info?.treatment || 'Ensure proper air circulation. ';
+        let treatment = predictResult.info?.treatment || (lang === 'gu' ? 'યોગ્ય હવા ઉજાસ જાળવો. ' : lang === 'hi' ? 'उचित वायु संचार सुनिश्चित करें। ' : 'Ensure proper air circulation. ');
         if (pDocs.length > 0) {
-            const names = pDocs.map(p => `Use ${p.brand} (${p.name})`);
-            treatment += names.join(', ') + '.';
+            if (lang === 'gu') {
+                const names = pDocs.map(p => `${p.brand} (${p.name}) નો ઉપયોગ કરો`);
+                treatment += " " + names.join(', ') + '.';
+            } else if (lang === 'hi') {
+                const names = pDocs.map(p => `${p.brand} (${p.name}) का उपयोग करें`);
+                treatment += " " + names.join(', ') + '।';
+            } else {
+                const names = pDocs.map(p => `Use ${p.brand} (${p.name})`);
+                treatment += " " + names.join(', ') + '.';
+            }
         } else {
-            treatment += 'Consult your local agri-expert for specific local pesticide brands.';
+            if (lang === 'gu') {
+                treatment += ' વિશિષ્ટ સ્થાનિક જંતુનાશક બ્રાન્ડ્સ માટે તમારા સ્થાનિક કૃષિ-નિષ્ણાતની સલાહ લો.';
+            } else if (lang === 'hi') {
+                treatment += ' विशिष्ट स्थानीय कीटनाशक ब्रांडों के लिए अपने स्थानीय कृषि विशेषज्ञ से सलाह लें।';
+            } else {
+                treatment += ' Consult your local agri-expert for specific local pesticide brands.';
+            }
         }
 
         // Log scan event — always store raw English class name for analytics
