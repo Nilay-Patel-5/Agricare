@@ -118,7 +118,7 @@ const callRemotePythonAPI = async (imagePath, lang) => {
 
         const response = await axios.post(apiUrl, formData, {
             headers: formData.getHeaders(),
-            timeout: 15000 // 15 seconds max wait. If Render is asleep, it will timeout here.
+            timeout: 120000 // 120 seconds max wait to allow Render free tier to spin up.
         });
 
         return response.data;
@@ -140,12 +140,8 @@ const runDiseaseDetection = async (imagePath, lang = 'en') => {
         console.log(`Forwarding image to dedicated Python API at ${process.env.PYTHON_API_URL}`);
         const result = await callRemotePythonAPI(resolvedPath, lang);
         
-        if (!result.error) {
-            return result; // Success from Render!
-        }
-        
-        console.error(`Remote Python API failed or timed out (${result.error}). Falling back to Gemini...`);
-        return fallbackGeminiVision(resolvedPath, lang);
+        // Return result directly, avoiding Gemini fallback so the user's model is explicitly used
+        return result;
     }
 
     const pythonCmd = await getPythonCommand();
