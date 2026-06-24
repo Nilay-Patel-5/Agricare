@@ -5,7 +5,6 @@ const fs = require('fs');
 const FormData = require('form-data');
 const path = require('path');
 const fs = require('fs');
-const FormData = require('form-data');
 const axios = require('axios');
 const config = require('../config/env');
 
