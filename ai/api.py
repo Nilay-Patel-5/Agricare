@@ -6,12 +6,17 @@ from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import keras
 from PIL import Image
+import gc
 
 app = Flask(__name__)
 
 # Configure Keras/TF
 os.environ["KERAS_BACKEND"] = "tensorflow"
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+import tensorflow as tf
+tf.config.threading.set_inter_op_parallelism_threads(1)
+tf.config.threading.set_intra_op_parallelism_threads(1)
 
 # Paths
 DIR_PATH = os.path.dirname(__file__)
@@ -228,6 +233,7 @@ def predict():
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)
+        gc.collect()
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 8000)))
