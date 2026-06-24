@@ -729,7 +729,7 @@ router.get('/ai_health.php', (req, res) => {
 
 // Multipart/form-data upload setup for disease diagnostic
 const multer = require('multer');
-const uploadDir = process.env.VERCEL === '1' ? '/tmp/uploads/' : path.join(__dirname, '../cache/uploads/');
+const uploadDir = process.env.VERCEL === '1' ? '/tmp' : path.join(__dirname, '../cache/uploads/');
 const upload = multer({ dest: uploadDir });
 
 router.post('/ai_predict.php', upload.single('image'), async (req, res) => {
