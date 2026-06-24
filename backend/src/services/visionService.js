@@ -139,10 +139,9 @@ const runDiseaseDetection = async (imagePath, lang = 'en') => {
     if (process.env.PYTHON_API_URL) {
         console.log(`Forwarding image to dedicated Python API at ${process.env.PYTHON_API_URL}`);
         const result = await callRemotePythonAPI(resolvedPath, lang);
-        if (!result.error) {
-            return result;
-        }
-        console.error("Dedicated API failed, falling back to lower tiers...");
+        
+        // Return the result directly, whether it's a success or an error, so we can debug Render.
+        return result;
     }
 
     const pythonCmd = await getPythonCommand();
