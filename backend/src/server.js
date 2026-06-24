@@ -71,7 +71,12 @@ const viewRequireAuth = (role) => (req, res, next) => {
 app.get('/', (req, res) => res.render('index'));
 
 // Clean frontend routes
-app.get('/market', (req, res) => res.render('market'));
+app.get('/market', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.render('market');
+});
 app.get('/weather', (req, res) => res.render('weather'));
 app.get('/faq', (req, res) => res.render('faq'));
 app.get('/qna', (req, res) => res.redirect('/faq'));
