@@ -5,6 +5,8 @@ const fs = require('fs');
 const FormData = require('form-data');
 const path = require('path');
 const fs = require('fs');
+const FormData = require('form-data');
+const axios = require('axios');
 const config = require('../config/env');
 
 const predictCliPath = path.join(__dirname, '../../../ai/predict_cli.py');
@@ -117,23 +119,15 @@ const callRemotePythonAPI = async (imagePath, lang) => {
         // Remove trailing slash if present
         const apiUrl = process.env.PYTHON_API_URL.replace(/\/$/, '') + '/predict';
 
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            body: formData,
-            // Add form-data headers explicitly
+        const response = await axios.post(apiUrl, formData, {
             headers: formData.getHeaders(),
-            signal: AbortSignal.timeout(60000)
+            timeout: 60000
         });
 
-        const data = await response.json();
-        if (!response.ok) {
-            return { error: data.error || 'Remote Python API failed.' };
-        }
-        
-        return data;
+        return response.data;
     } catch (err) {
-        console.error('Remote API Error:', err);
-        return { error: `Remote API Error: ${err.message}` };
+        console.error('Remote API Error:', err.response?.data || err.message);
+        return { error: err.response?.data?.error || `Remote API Error: ${err.message}` };
     }
 };
 
