@@ -138,10 +138,35 @@ const runDiseaseDetection = async (imagePath, lang = 'en') => {
     // Tier 1: Dedicated Python Microservice (Option 3 architecture)
     if (process.env.PYTHON_API_URL) {
         console.log(`Forwarding image to dedicated Python API at ${process.env.PYTHON_API_URL}`);
-        const result = await callRemotePythonAPI(resolvedPath, lang);
         
-        // Return result directly, avoiding Gemini fallback so the user's model is explicitly used
-        return result;
+        // Use a 20-second timeout for the Python API.
+        // If it takes longer (e.g., cold start on Render free tier), fall back to Gemini.
+        const PYTHON_TIMEOUT_MS = 20000;
+        
+        try {
+            const formData = new FormData();
+            formData.append('image', fs.createReadStream(resolvedPath));
+            formData.append('lang', lang);
+            const apiUrl = process.env.PYTHON_API_URL.replace(/\/$/, '') + '/predict';
+
+            const response = await axios.post(apiUrl, formData, {
+                headers: formData.getHeaders(),
+                timeout: PYTHON_TIMEOUT_MS
+            });
+
+            // Got a valid response — return it directly
+            return response.data;
+
+        } catch (err) {
+            const isTimeout = err.code === 'ECONNABORTED' || err.message?.toLowerCase().includes('timeout');
+            if (isTimeout) {
+                console.warn(`Python API timed out after ${PYTHON_TIMEOUT_MS / 1000}s. Falling back to Gemini Vision...`);
+            } else {
+                console.warn(`Python API failed (${err.message}). Falling back to Gemini Vision...`);
+            }
+            // Fall through to Gemini fallback
+            return fallbackGeminiVision(resolvedPath, lang);
+        }
     }
 
     const pythonCmd = await getPythonCommand();

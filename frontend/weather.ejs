@@ -509,6 +509,8 @@
                 'footer-desc': 'Empowering farmers with data, connecting markets with transparency, and building a sustainable future.',
                 solutions: 'Solutions',
                 sol_advisory: 'Crop Advisory',
+                calendar: 'Crop Calendar',
+                subsidies: 'Government Subsidies',
                 sol_disease: 'Crop Disease Identification',
                 sol_market: 'Market Connect',
                 sol_weather: 'Weather Station',
@@ -562,6 +564,8 @@
                 'footer-desc': 'ખેડૂતોને સશક્તિકરણ, પારદર્શિતા સાથે બજારોને જોડવું અને ટકાઉ ભવિષ્યનું નિર્માણ.',
                 solutions: 'ઉકેલો',
                 sol_advisory: 'પાક સલાહ',
+                calendar: 'પાક કેલેન્ડર',
+                subsidies: 'સરકારી સહાય',
                 sol_disease: 'પાક રોગ ઓળખ',
                 sol_market: 'બજાર જોડાણ',
                 sol_weather: 'હવામાન સ્ટેશન',
@@ -615,6 +619,8 @@
                 'footer-desc': 'किसानों को डेटा के साथ सशक्त बनाना और एक स्थायी भविष्य का निर्माण करना।',
                 solutions: 'समाधान',
                 sol_advisory: 'फसल सलाह',
+                calendar: 'फसल कैलेंडर',
+                subsidies: 'सरकारी सब्सिडी',
                 sol_disease: 'फसल रोग पहचान',
                 sol_market: 'बाज़ार संपर्क',
                 sol_weather: 'मौसम स्टेशन',
@@ -1076,7 +1082,7 @@
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
                 if (translations[lang] && translations[lang][key]) {
-                    el.innerText = translations[lang][key];
+                    el.innerHTML = translations[lang][key];
                 }
             });
 

@@ -20,8 +20,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import tensorflow as tf
-tf.config.threading.set_inter_op_parallelism_threads(1)
-tf.config.threading.set_intra_op_parallelism_threads(1)
+# Note: Do NOT throttle threads here — it slows down the one-time JIT compilation at startup
 
 # Paths
 DIR_PATH = os.path.dirname(__file__)
@@ -29,11 +28,18 @@ MODEL_BASE_NAME = "plant_disease_model"
 KERAS_MODEL_PATH = os.path.join(DIR_PATH, f"{MODEL_BASE_NAME}.keras")
 IMAGE_SIZE = (128, 128)
 
-# Load model globally on startup to prevent slow `re-loading on every request!
+# Load model globally on startup to prevent slow re-loading on every request!
 print("Loading Keras Model... This might take a few seconds.")
 try:
     global_model = keras.models.load_model(KERAS_MODEL_PATH)
     print("Model loaded successfully!")
+    # Warmup: run one dummy inference so TensorFlow's JIT compilation
+    # happens NOW at startup — not during the first user scan (which would cause a 10-40s delay).
+    print("Warming up model... (first-time JIT compilation)")
+    _dummy = np.zeros((1, IMAGE_SIZE[0], IMAGE_SIZE[1], 3), dtype=np.float32)
+    _ = global_model(_dummy, training=False)
+    del _dummy
+    print("Model warmup complete! Ready to scan.")
 except Exception as e:
     print(f"Error loading model: {e}")
     global_model = None

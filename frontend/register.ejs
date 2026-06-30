@@ -1158,8 +1158,8 @@
                 
                 // Real-time auto-formatting logic
                 let rawValue = el.value;
-                // 1. Remove non-alphabetic/space characters
-                let cleanedValue = rawValue.replace(/[^\p{L}\s]/gu, '');
+                // 1. Remove non-alphabetic/space characters (allow marks for Indic languages)
+                let cleanedValue = rawValue.replace(/[^\p{L}\p{M}\s]/gu, '');
                 // 2. Prevent consecutive spaces while typing
                 cleanedValue = cleanedValue.replace(/\s{2,}/g, ' ');
                 // 3. Auto-capitalize the first letter of each word
@@ -1208,7 +1208,7 @@
                     errorMsg = lang === 'gu' ? 'નામના દરેક ભાગમાં ઓછામાં ઓછા 2 અક્ષર હોવા જોઈએ' : 
                                lang === 'hi' ? 'नाम के प्रत्येक भाग में कम से कम 2 अक्षर होने चाहिए' : 
                                'Each part of the name must be at least 2 characters';
-                } else if (!/^[\p{L}]{2,}(?:\s[\p{L}]{2,})+$/u.test(val)) {
+                } else if (!/^[\p{L}\p{M}]{2,}(?:\s[\p{L}\p{M}]{2,})+$/u.test(val)) {
                     errorMsg = lang === 'gu' ? 'નામમાં માત્ર અક્ષરો અને જગ્યાઓ હોવી જોઈએ' : 
                                lang === 'hi' ? 'नाम में केवल अक्षर और रिक्त स्थान होने चाहिए' : 
                                'Name should contain only letters and spaces';
