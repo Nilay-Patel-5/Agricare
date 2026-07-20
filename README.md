@@ -84,7 +84,7 @@ Agmarknet API is used to fetch real-time crop prices in JSON format, which is ca
 
 ## Team
 
-- Nilay Patel – Frontend + Backend 
+- Nilay Patel – Full Stack + ML
 - Garv – Frontend + ML
 - Mihir – Backend + ML
 
