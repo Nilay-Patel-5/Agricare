@@ -26,7 +26,7 @@ import tensorflow as tf
 DIR_PATH = os.path.dirname(__file__)
 MODEL_BASE_NAME = "plant_disease_model"
 KERAS_MODEL_PATH = os.path.join(DIR_PATH, f"{MODEL_BASE_NAME}.keras")
-IMAGE_SIZE = (128, 128)
+IMAGE_SIZE = (224, 224)   # EfficientNetB0 native size (v2 model)
 
 # Load model globally on startup to prevent slow re-loading on every request!
 print("Loading Keras Model... This might take a few seconds.")
