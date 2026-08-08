@@ -746,8 +746,31 @@ router.post('/ai_predict.php', upload.single('image'), async (req, res) => {
         // delete temp file
         fs.unlink(req.file.path, () => {});
 
-        if (predictResult.error) {
-            return res.status(500).json({ error: 'AI prediction failed: ' + predictResult.error });
+        if (predictResult.error || predictResult.notFound || predictResult.disease === 'unknown') {
+            const notFoundTitles = {
+                en: "No Plant Disease Detected",
+                gu: "કોઈ રોગ જણાયો નથી",
+                hi: "कोई रोग नहीं मिला"
+            };
+            const notFoundDescs = {
+                en: "The uploaded image does not show recognizable plant leaf disease symptoms. Please upload a clear, focused, well-lit photo of the crop leaf to scan again.",
+                gu: "અપલોડ કરેલી છબીમાં છોડના રોગના કોઈ સ્પષ્ટ લક્ષણો જણાયા નથી. કૃપા કરીને પાનનો સ્પષ્ટ, કેન્દ્રિત અને સારો પ્રકાશ હોય તેવો ફોટો અપલોડ કરી ફરી સ્કેન કરો.",
+                hi: "अपलोड की गई तस्वीर में पौधे के किसी रोग के लक्षण नहीं मिले हैं। कृपया फसल की पत्ती की स्पष्ट, केंद्रित और अच्छी रोशनी वाली तस्वीर अपलोड करके पुनः स्कैन करें।"
+            };
+
+            return res.json({
+                label: notFoundTitles[lang] || notFoundTitles.en,
+                plant: lang === 'gu' ? 'અજ્ઞાત' : lang === 'hi' ? 'अज्ञात' : 'Unknown',
+                confidence: 0.0,
+                disease: 'unknown',
+                engine: 'Keras Model (plant_disease_model.keras)',
+                top3: [],
+                info: {
+                    desc: notFoundDescs[lang] || notFoundDescs.en,
+                    irrigation: 'N/A',
+                    treatment: 'N/A'
+                }
+            });
         }
 
         const identifiedPest = predictResult.label || 'Unknown';
@@ -759,6 +782,8 @@ router.post('/ai_predict.php', upload.single('image'), async (req, res) => {
                 label: identifiedPest,
                 plant: predictResult.plant || 'Detected',
                 confidence: predictResult.confidence,
+                engine: predictResult.engine || 'Keras Model (plant_disease_model.keras)',
+                top3: predictResult.top3 || [],
                 info: {
                     desc: predictResult.info?.desc || (lang === 'gu' ? 'છોડ તંદુરસ્ત લાગે છે.' : lang === 'hi' ? 'पौधा स्वस्थ प्रतीत होता है।' : 'The plant appears healthy.'),
                     irrigation: predictResult.info?.irrigation || (lang === 'gu' ? 'સામાન્ય કાળજી અને પિયત ચાલુ રાખો.' : lang === 'hi' ? 'सामान्य देखभाल जारी रखें।' : 'Maintain normal watering.'),
@@ -821,6 +846,7 @@ router.post('/ai_predict.php', upload.single('image'), async (req, res) => {
             label: commonName || identifiedPest,
             plant: predictResult.plant || 'Detected',
             confidence: predictResult.confidence,
+            engine: predictResult.engine || 'Keras Model (plant_disease_model.keras)',
             top3: predictResult.top3 || [],
             info: {
                 desc: predictResult.info?.desc || `Identified as ${identifiedPest}`,

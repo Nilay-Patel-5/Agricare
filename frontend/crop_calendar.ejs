@@ -267,8 +267,8 @@
             Object.values(cropsData).forEach(crop => {
                 const isActive = String(crop.id) === String(activeCrop);
                 const btn = document.createElement('button');
-                btn.className = `w-full text-left px-6 py-4 rounded-2xl font-bold transition-all flex items-center gap-4 ${isActive ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'bg-white text-gray-600 hover:bg-emerald-50 border border-gray-100'}`;
-                btn.innerHTML = `<span class="text-2xl flex items-center justify-center w-8 h-8">${getFormalCropIcon(crop.name.en)}</span> <span>${crop.name[currentLang]}</span>`;
+                btn.className = `w-full text-left px-6 py-4 rounded-2xl font-bold transition-all flex items-center gap-3.5 ${isActive ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'bg-white text-gray-700 hover:bg-emerald-50 border border-gray-100'}`;
+                btn.innerHTML = `<span class="w-2 h-2 rounded-full ${isActive ? 'bg-white' : 'bg-emerald-500'} shrink-0"></span> <span class="text-base font-semibold tracking-tight truncate">${crop.name[currentLang]}</span>`;
                 btn.onclick = () => {
                     activeCrop = crop.id;
                     renderSidebar();
@@ -282,7 +282,10 @@
             const crop = cropsData[activeCrop];
             document.getElementById('activeCropName').innerText = crop.name[currentLang];
             document.getElementById('activeCropSeason').innerText = crop.season[currentLang];
-            document.getElementById('activeCropIcon').innerHTML = getFormalCropIcon(crop.name.en);
+            const activeIconEl = document.getElementById('activeCropIcon');
+            if (activeIconEl) {
+                activeIconEl.innerHTML = '<i class="fas fa-wheat-awn text-emerald-600 text-2xl"></i>';
+            }
 
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';

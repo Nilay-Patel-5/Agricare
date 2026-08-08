@@ -119,3 +119,8 @@ backend/cache/
 backend/src/cache/
 backend/src/cache/*.json
 backend/last_market_sync.json
+.venv/
+venv/
+__pycache__/
+*.pyc
+ai/__pycache__/
